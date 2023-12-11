@@ -1,0 +1,16 @@
+project:
+  title: "TOPS SCHOOL Water Resources Module"
+  type: website
+  output-dir: docs
+format:
+  html:
+    embed-resources: true
+    theme: 
+      - sandstone
+    css: "https://github.com/ciesin-geospatial/TOPSTSCHOOL/blob/main/custom.scss"
+    toc: true
+    toc-title: Contents
+    toc-location: left
+
+
+
