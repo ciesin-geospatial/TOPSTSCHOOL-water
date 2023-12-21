@@ -16,7 +16,7 @@ The MODIS/Aqua+Terra Global Flood Product L3 Near Real Time (NRT) 250m Global Fl
 
 [CRM SEARCH](https://cmr.earthdata.nasa.gov/search/concepts/C2018599131-LANCEMODIS.html)
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 packages_to_check <- c("stars", "httr", "jsonlite", "tmap")
 
 # Check and install packages
@@ -99,6 +99,7 @@ if(!file.exists("modis_nrt_flood.nc")) {
     download_link <- content_items$downloadsLink
     print(download_link)
     
+    stars::write_stars(raster_df, "modis_nrt_flood.nc")
    
   } else {
     print("Request failed with status code", http_status(response)$status_code)
@@ -110,9 +111,7 @@ if(!file.exists("modis_nrt_flood.nc")) {
 
 ```
 
-
-Use the "read_stars()" function from the "stars" R Library to read the geoTiff raster.
-The raster is assigned to the "x" variable:
+Use the "read_stars()" function from the "stars" R Library to read the geoTiff raster. The raster is assigned to the "x" variable:
 
 ```{r}
 
@@ -120,6 +119,7 @@ raster_df <- stars::read_stars(download_link)
 ```
 
 Set the Coordinate reference system (CRS) to "EPSG:4326"
+
 ```{r}
 my_raster <- st_set_crs(raster_df, st_crs("EPSG:4326"))
 st_crs(my_raster)
@@ -139,17 +139,18 @@ Refer to the [MODIS NRT Global Flood Product User Guide](https://www.earthdata.n
 
 NRT Flood data has 5 classifications:
 
-| Code | Definition                                            |
-|:----:|:------------------------------------------------------|
-|  0   | No Water                                              |
-|  1   | Surface Water                                         |
-|  2   | Recurring flood[^lance_modis_nrt_globalflood_mcdwd-1] |
-|  3   | Flood (unusual)                                       |
-| 255  | Insufficient data                                     |
+| Code | Definition          |
+|:----:|:--------------------|
+|  0   | No Water            |
+|  1   | Surface Water       |
+|  2   | Recurring flood[^1] |
+|  3   | Flood (unusual)     |
+| 255  | Insufficient data   |
 
-[^lance_modis_nrt_globalflood_mcdwd-1]: Value 2 (Recurring flood) is not populated in the beta release.
+[^1]: Value 2 (Recurring flood) is not populated in the beta release.
 
 Create a classified legend; however, the NRT Flood data is stored in decimal numbers (aka floating-point). Create class breaks dividing the data by these breaks, and corresponding colors and labels:
+
 ```{r}
 class_breaks <- c(-Inf, 0.1, 1.1, 2.1, 3.1)
 colors <- c( "gray", "blue", "yellow","red")
@@ -159,11 +160,13 @@ labels = c("0: No Water", "1: Surface Water", "2: Recurring flood", "3: Flood (u
 ```
 
 Add a title for the plot that includes the year, day of year, and tile code:
+
 ```{r}
 title = paste("NRT Flood", year_day, tile_code)
 ```
 
 Generate a plot from the tmap library using the tm_shape() function. With style as "cat," meaning categorical. T
+
 ```{r}
 tmap_mode("view")
 ## tmap mode set to plotting
@@ -178,5 +181,3 @@ tm_shape(my_raster, style="cat" )+
 
 
 ```
-
-
