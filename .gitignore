@@ -2,3 +2,7 @@
 wsim-gldas-vis_files
 water-wsim-gldas-v1-composite-anom-one-month-netcdf
 water-wsim-gldas-v1-composite-one-month-netcdf
+.Rproj.user
+composite_anom_1mo.nc
+modis_nrt_flood.nc
+wsim_gldas_tex.nc
