@@ -12,6 +12,7 @@ institute: "Research Scientist, ISciences, LLC"
 date: "January 9, 2024"
 output-dir: docs
 preview-links: true
+highlight-style: dracula
 format: 
   revealjs:
     footer: "SEDAC Workshop on Open Science"
@@ -27,19 +28,108 @@ format:
 -   Technical details
 -   Proposed analyses and outputs
 
-## Learning Objectives
-
-We are currently in the early development phases and need to adjust the narrative voice between 3 learning/content components:
-
-- Water resources 
-- Technical data
-- Technical coding
-
 ## WSIM-GLDAS
 
 WSIM-GLDAS is an open source dataset that characterizes surpluses and deficits of freshwater and the parameters determining these anomalies.
 
 - Globally rasterized dataset issued monthly for 1948-2014
 - Composite surplus/deficit anomalies
-- Multitude of 
+- Multitude of additional metrics and integration periods
 - [Freely available on SEDAC](https://sedac.ciesin.columbia.edu/data/set/water-wsim-gldas-v1)
+
+::: {.notes}
+The datasets are available as multidimensional netCDF files
+:::
+
+## Open Science Components
+
+Like all other components of the SCHOOL project, the water resource modules are entirely open source.
+
+- Open source computing (R, Rstudio, VS Code, QGIS, etc.)
+- Open source datasets; freely available and well documented
+- Open source development
+- Open source "results" on GitHub Pages
+
+::: {.notes}
+- Development components are also open science. We're bringing along research assistants with descriptive vignette templates/lessons
+- I'm developing on a mix of tech stacks, but it's important to make sure our modules work on Linux/Ubuntu
+:::
+
+## Narrative Objectives
+
+We are currently in the early development phases and need to adjust the narrative voice between 3 learning/content components.
+
+- Water resources 
+- Technical data
+- Technical coding
+
+::: {.notes}
+One goal of these two days is to solicit feedback regarding objectives like these. 
+:::
+
+## Water Resource Narrative
+
+These include introducing the domain knowledge and human narrative that can be derived from these datasets.
+
+- Understanding the socioeconomic and environmental impacts of droughts and floods.
+- Exploring drought and flooding events in areas of interest to you and learning about the impacts to local water supplies, agriculture, recreation, and tourism. 
+- Basic background on the water cycle.
+
+## Technical Data Narrative
+
+- What does water resource data "look" like?
+- Where do you find it and *how* do you get it?
+
+## Coding Narrative
+
+Are we interested at all in teaching people how to code? Unlikely but then how do you address all the code.
+
+```{.r}
+# generate a vector of dates for subsetting
+keeps<-seq(lubridate::ymd("2000-01-01"),
+           lubridate::ymd("2014-12-01"), 
+           by = "month")
+           
+# filter using that vector
+wsim_gldas_anoms <- dplyr::filter(wsim_gldas_anoms, time %in% keeps)
+
+# verify the time dimension was properly subsetted
+print(wsim_gldas_anoms)
+
+# do a visual check with the first 6 time-steps
+wsim_gldas_anoms |>
+  dplyr::slice(index = 1:6, along = "time") |>
+  plot(key.pos = 1)
+```
+
+## Outputs and Analyses
+
+Whatever the chosen narrative voice and content, we hope to bring greater understanding for each module through visualizations and analysis. The WSIM-GLDAS water resource modules will achieve this by creating:
+
+- National and regional 12 month integration composite surplus/deficit maps
+- Time series illustrations of point locations
+- Population exposure time series figures and tables
+
+## Composite Surplus and Deficit Maps
+
+Twelve month integration maps illustrate the observed drought or flooding of an area relative to a long term baseline period.
+
+::: {.notes}
+- Longer term integration plots quickly summarize climate trends for large areas, and help users identify areas of interes. 
+:::
+
+## Location of Interest
+
+Point location time series figures illustrate long term trends for a single location on a month to month basis. 
+
+::: {.notes}
+- These plots can really bring the impacts of droughts and floods to a specific point; your home, your school, etc.
+:::
+
+## Population Exposure 
+
+Population exposure plots and tables help illustrate the sociological impacts of droughts and floods.
+
+::: {.notes}
+- Commonplace to show maps depicting extreme heat or floods in a particular area, but does anyone actually live there?
+:::
