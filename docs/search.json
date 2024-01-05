@@ -138,5 +138,33 @@
     "title": "MODIS NRT Global Flood Product",
     "section": "Footnotes",
     "text": "Footnotes\n\n\nValue 2 (Recurring flood) is not populated in the beta release.↩︎"
+  },
+  {
+    "objectID": "presentations/sedac-open-science-brinks-01_09_24.html#outline",
+    "href": "presentations/sedac-open-science-brinks-01_09_24.html#outline",
+    "title": "TOPS-SCHOOL WSIM (GLDAS)",
+    "section": "Outline",
+    "text": "Outline\n\nLearning objectives\nTechnical details\nOpen Science Components"
+  },
+  {
+    "objectID": "presentations/sedac-open-science-brinks-01_09_24.html#presentation-outline",
+    "href": "presentations/sedac-open-science-brinks-01_09_24.html#presentation-outline",
+    "title": "TOPS-SCHOOL WSIM (GLDAS)",
+    "section": "Presentation Outline",
+    "text": "Presentation Outline\n\nLearning objectives\nOpen Science Components\nTechnical details\nProposed analyses and outputs"
+  },
+  {
+    "objectID": "presentations/sedac-open-science-brinks-01_09_24.html#learning-objectives",
+    "href": "presentations/sedac-open-science-brinks-01_09_24.html#learning-objectives",
+    "title": "TOPS-SCHOOL WSIM (GLDAS)",
+    "section": "Learning Objectives",
+    "text": "Learning Objectives\nWe are currently in the early development phases and need to adjust the narrative voice between 3 learning/content components:\n\nWater resources\nTechnical data\nTechnical coding"
+  },
+  {
+    "objectID": "presentations/sedac-open-science-brinks-01_09_24.html#wsim-gldas",
+    "href": "presentations/sedac-open-science-brinks-01_09_24.html#wsim-gldas",
+    "title": "TOPS-SCHOOL WSIM (GLDAS)",
+    "section": "WSIM-GLDAS",
+    "text": "WSIM-GLDAS\nWSIM-GLDAS is an open source dataset that characterizes surpluses and deficits of freshwater and the parameters determining these anomalies.\n\nFreely available on SEDAC\n\n\n\n\nSEDAC Workshop on Open Science"
   }
 ]

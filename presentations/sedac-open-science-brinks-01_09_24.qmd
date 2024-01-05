@@ -1,0 +1,45 @@
+---
+title: "TOPS-SCHOOL WSIM (GLDAS)"
+title-slide-attributes:
+  data-background-image: "school_logo.png"
+  data-background-size: contain
+  data-background-opacity: "0.25"
+width: 1600
+height: 900
+subtitle: "Lessons Detailing Exploratory Drought and Flood Analysis"
+author: "Joshua Brinks"
+institute: "Research Scientist, ISciences, LLC"
+date: "January 9, 2024"
+output-dir: docs
+preview-links: true
+format: 
+  revealjs:
+    footer: "SEDAC Workshop on Open Science"
+    logo: "isci_logo.png"
+    embed-resources: true
+    css: "https://github.com/ciesin-geospatial/TOPSTSCHOOL/blob/main/custom.scss"
+---
+
+## Presentation Outline
+
+-   Learning objectives
+-   Open Science Components
+-   Technical details
+-   Proposed analyses and outputs
+
+## Learning Objectives
+
+We are currently in the early development phases and need to adjust the narrative voice between 3 learning/content components:
+
+- Water resources 
+- Technical data
+- Technical coding
+
+## WSIM-GLDAS
+
+WSIM-GLDAS is an open source dataset that characterizes surpluses and deficits of freshwater and the parameters determining these anomalies.
+
+- Globally rasterized dataset issued monthly for 1948-2014
+- Composite surplus/deficit anomalies
+- Multitude of 
+- [Freely available on SEDAC](https://sedac.ciesin.columbia.edu/data/set/water-wsim-gldas-v1)
