@@ -6,6 +6,8 @@ title-slide-attributes:
   data-background-opacity: "0.25"
 width: 1600
 height: 900
+transition: slide
+lightbox: true
 subtitle: "Lessons Detailing Exploratory Drought and Flood Analysis"
 author: "Joshua Brinks"
 institute: "Research Scientist, ISciences, LLC"
@@ -15,6 +17,7 @@ preview-links: true
 highlight-style: dracula
 format: 
   revealjs:
+    auto-stretch: false
     footer: "SEDAC Workshop on Open Science"
     logo: "isci_logo.png"
     embed-resources: true
@@ -45,11 +48,19 @@ The datasets are available as multidimensional netCDF files
 
 Like all other components of the SCHOOL project, the water resource modules are entirely open source.
 
+:::: {.columns}
+
+::: {.column width="60%"}
+
 - Open source computing (R, Rstudio, VS Code, QGIS, etc.)
 - Open source datasets; freely available and well documented
 - Open source development
 - Open source "results" on GitHub Pages
-
+:::
+::: {.column width="40%"}
+![](open_science_nasa.jpg)
+:::
+::::
 ::: {.notes}
 - Development components are also open science. We're bringing along research assistants with descriptive vignette templates/lessons
 - I'm developing on a mix of tech stacks, but it's important to make sure our modules work on Linux/Ubuntu
@@ -71,14 +82,30 @@ One goal of these two days is to solicit feedback regarding objectives like thes
 
 These include introducing the domain knowledge and human narrative that can be derived from these datasets.
 
+:::: {.columns}
+
+::: {.column width="50%"}
 - Understanding the socioeconomic and environmental impacts of droughts and floods.
 - Exploring drought and flooding events in areas of interest to you and learning about the impacts to local water supplies, agriculture, recreation, and tourism. 
 - Basic background on the water cycle.
+:::
+
+::: {.column width="50%"}
+![](water_cycle_nasa.jpg){fig-align='center'}
+:::
+
+:::: 
 
 ## Technical Data Narrative
 
 - What does water resource data "look" like?
 - Where do you find it and *how* do you get it?
+
+![](cube2.png){fig-align='center'}
+
+::: {.notes}
+- Here we have a complex structure with data cubes/netcdf, but other lessons in the module and other modules will feature a variety of data structures
+:::
 
 ## Coding Narrative
 
@@ -114,13 +141,24 @@ Whatever the chosen narrative voice and content, we hope to bring greater unders
 
 Twelve month integration maps illustrate the observed drought or flooding of an area relative to a long term baseline period.
 
+![](United_States_Composite_Adjusted_200001-201412_12mo_panel.png){fig-align='center' width=80%}
+
 ::: {.notes}
-- Longer term integration plots quickly summarize climate trends for large areas, and help users identify areas of interes. 
+- Longer term integration plots quickly summarize climate trends for large areas, and help users identify areas of interest. 
 :::
+
+## Composite Surplus and Deficit Maps (cont.)
+
+Now you can zoom in on an area of interest with a monthly time series.
+
+![](Texas_Composite_Adjusted_201101-201112_1mo_panel.png){fig-align='center' width=70%}
+
 
 ## Location of Interest
 
 Point location time series figures illustrate long term trends for a single location on a month to month basis. 
+
+![](Houston_TX_201412_gldas_PETmE_1mo_201001_loi.png){fig-align='center' width=70%}
 
 ::: {.notes}
 - These plots can really bring the impacts of droughts and floods to a specific point; your home, your school, etc.
@@ -129,6 +167,8 @@ Point location time series figures illustrate long term trends for a single loca
 ## Population Exposure 
 
 Population exposure plots and tables help illustrate the sociological impacts of droughts and floods.
+
+![](United_States_of_America_Texas_201312_1mo_int__pop_exposure.png){fig-align='center' width=70%}
 
 ::: {.notes}
 - Commonplace to show maps depicting extreme heat or floods in a particular area, but does anyone actually live there?
