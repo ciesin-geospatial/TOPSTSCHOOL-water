@@ -183,3 +183,22 @@ Population exposure plots and tables help illustrate the sociological impacts of
 ::: {.notes}
 - Commonplace to show maps depicting extreme heat or floods in a particular area, but does anyone actually live there?
 :::
+
+## Current Drafts
+
+Although the module and lesson structure is yet to be finalized, we have some rough drafts in place that demonstrate the baseline technical workflow and present a template for dev assistants.
+
+- [Acquiring and Subsetting WSIM-GLDAS](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/wsim-gldas-acquisition.html)
+- [Visualizing and Exploring WSIM-GLDAS](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/wsim-gldas-vis.html)
+- [MODIS Near Real Time Flood Data](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/LANCE_MODIS_NRT_GlobalFlood_MCDWD.html)
+- [This presentation is also online](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/presentations/sedac-open-science-brinks-01_09_24.html#/title-slide)
+
+## An Open Process
+
+This is an open process reliant on feedback from our:
+
+- Subject matter experts
+- Project managers 
+- Development team
+- Research assistants
+- 
