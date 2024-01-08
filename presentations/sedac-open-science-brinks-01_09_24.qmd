@@ -18,7 +18,7 @@ highlight-style: dracula
 format: 
   revealjs:
     auto-stretch: false
-    footer: "SEDAC Workshop on Open Science"
+    footer: "SEDAC Workshop on Open Science, Palisades NY"
     logo: "isci_logo.png"
     embed-resources: true
     theme: "school_theme.scss"
@@ -201,4 +201,6 @@ This is an open process reliant on feedback from our:
 - Project managers 
 - Development team
 - Research assistants
-- 
+- Users and collaborators like _you_
+
+## Acknowledgements & Questions
