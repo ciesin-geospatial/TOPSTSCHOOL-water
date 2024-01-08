@@ -21,7 +21,7 @@ format:
     footer: "SEDAC Workshop on Open Science"
     logo: "isci_logo.png"
     embed-resources: true
-    css: "https://github.com/ciesin-geospatial/TOPSTSCHOOL/blob/main/custom.scss"
+    theme: "school_theme.scss"
 ---
 
 ## Presentation Outline
@@ -35,10 +35,20 @@ format:
 
 WSIM-GLDAS is an open source dataset that characterizes surpluses and deficits of freshwater and the parameters determining these anomalies.
 
+:::: {.columns}
+
+::: {.column width="55%"}
 - Globally rasterized dataset issued monthly for 1948-2014
 - Composite surplus/deficit anomalies
 - Multitude of additional metrics and integration periods
 - [Freely available on SEDAC](https://sedac.ciesin.columbia.edu/data/set/water-wsim-gldas-v1)
+:::
+
+::: {.column width="45%"}
+![](Chile_Composite_Adjusted_201301-201412_12mo_panel.png){fig-align='center' width=80%}
+:::
+
+::::
 
 ::: {.notes}
 The datasets are available as multidimensional netCDF files
