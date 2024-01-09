@@ -26,33 +26,19 @@ format:
 
 ## Presentation Outline
 
+-   Module Goals
 -   Learning objectives
 -   Open Science Components
 -   Technical details
 -   Proposed analyses and outputs
 
-## WSIM-GLDAS
+## Lesson Goals
 
-WSIM-GLDAS is an open source dataset that characterizes surpluses and deficits of freshwater and the parameters determining these anomalies.
-
-:::: {.columns}
-
-::: {.column width="55%"}
-- Globally rasterized dataset issued monthly for 1948-2014
-- Composite surplus/deficit anomalies
-- Multitude of additional metrics and integration periods
-- [Freely available on SEDAC](https://sedac.ciesin.columbia.edu/data/set/water-wsim-gldas-v1)
-:::
-
-::: {.column width="45%"}
-![](Chile_Composite_Adjusted_201301-201412_12mo_panel.png){fig-align='center' width=80%}
-:::
-
-::::
-
-::: {.notes}
-The datasets are available as multidimensional netCDF files
-:::
+-   The objective of this lesson is to provide content for learning water resource issues through data exploration and analysis.
+-   We are introducing 3 datasets for this module
+    +   MODIS NRT Flood Data
+    +   NYC Lead Data
+    +   _WSIM-GLDAS_
 
 ## Open Science Components
 
@@ -139,6 +125,29 @@ wsim_gldas_anoms |>
   plot(key.pos = 1)
 ```
 
+## WSIM-GLDAS
+
+WSIM-GLDAS is an open source dataset that characterizes surpluses and deficits of freshwater and the parameters determining these anomalies.
+
+:::: {.columns}
+
+::: {.column width="55%"}
+- Globally rasterized dataset issued monthly for 1948-2014
+- Composite surplus/deficit anomalies
+- Multitude of additional metrics and integration periods
+- [Freely available on SEDAC](https://sedac.ciesin.columbia.edu/data/set/water-wsim-gldas-v1)
+:::
+
+::: {.column width="45%"}
+![](Chile_Composite_Adjusted_201301-201412_12mo_panel.png){fig-align='center' width=80%}
+:::
+
+::::
+
+::: {.notes}
+The datasets are available as multidimensional netCDF files
+:::
+
 ## Outputs and Analyses
 
 Whatever the chosen narrative voice and content, we hope to bring greater understanding for each module through visualizations and analysis. The WSIM-GLDAS water resource modules will achieve this by creating:
@@ -203,4 +212,10 @@ This is an open process reliant on feedback from our:
 - Research assistants
 - Users and collaborators like _you_
 
+We always welcome comments, contributors, and all types of feedback in person, through the TOPS network, and our GitHub repositories.
+
 ## Acknowledgements & Questions
+
+Thanks to everyone at NASA-TOPS, Columbia, ISciences, and the TOPS-SCHOOL team.
+
+![](acknowledge_logos.png){fig-align='center'}
