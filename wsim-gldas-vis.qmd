@@ -118,7 +118,28 @@ Create a multipanel time series of 12 month integration CONUSA; similar to what 
 Load in a CONUSA geojson from geoBoundaries. Copy methods from previous vignette.
 
 ```{r warning = FALSE}
+#Studying the zoomed in histogram and changing the range from [-10,10] will show that most values in CONUS do not range up to -100 so -100 is possibly an outlier; most values are between -5 to 5 so adjust breaks accordingly to get the most out of the spectrum. Breaks chosen are [-5, -3, -1, 0, 1, 3, 5].
+
 wsim_deficit_usa |>
+  dplyr::slice(index = 1:14, along = "time") |>
+  plot(reset = FALSE,
+       col = leg_colors<-c(
+    '#9B0039',
+    # -50 to -40
+    '#D44135',
+    # -40 to -20
+    '#FF8D43',
+    # -20 to -10
+    '#FFC754',
+    # -10 to -5
+    '#FFEDA3',
+    # -5 to -3
+    '#FFFFFF'), breaks = c(-5, -3, -1, 0, 1, 3, 5))
+
+#Plotting without breaks produces a similar but different map.
+
+wsim_deficit_usa |>
+  dplyr::slice(index = 1:14, along = "time") |>
   plot(reset = FALSE,
        col = leg_colors<-c(
     '#9B0039',
@@ -142,6 +163,24 @@ Load in the 1 month integration dataset and subset/index the dataset to the regi
 wsim_gldas_1mo <- stars::read_stars("composite_anom_1mo.nc", proxy = FALSE)
 
 print(wsim_gldas_1mo)
+```
+
+```{r}
+#Picking year of 2012 due to negative deficit located in Mid-America
+
+#Subset for deficit
+wsim_gldas_1mo <- wsim_gldas_1mo['deficit']
+
+#The data starts at year 1948 so reuse the previous sequence of years named 'keeps'
+keeps2<-seq(lubridate::ymd("2000-01-01"),
+           lubridate::ymd("2014-12-01"), 
+           by = "month")
+wsim_gldas_1mo <- dplyr::filter(wsim_gldas_1mo, time %in% keeps2)
+
+#Pulling out the months for
+wsim_gldas_1mo |>
+  dplyr::slice(index = 1:3, along = "time")
+
 ```
 
 Create a multi-panel figure with each panel representing 1 month to identify the most intense months of drought or flooding. Starting with this one maybe use `ggplot` and a nice palette, legend, and panel headings. Will probably have to use some sort of faceting to make individual panels (might not be possible).
