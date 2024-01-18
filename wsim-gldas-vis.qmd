@@ -1,6 +1,6 @@
 ---
 title: "WSIM-GLDAS Dataset Exploration and Visualizations"
-author: "Joshua Brinks & Elaine Fatumi"
+author: "Joshua Brinks & Elaine Famutimi"
 date: "December, 6 2023"
 ---
 
