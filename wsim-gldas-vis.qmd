@@ -224,22 +224,21 @@ Create a multi-panel figure with each panel representing 1 month to identify the
 #try redoing the sequence so that its only 2012 for both ggplot attempts
 
 #Create a new sequence of dates, this time monthly
-#keeps2<-seq(lubridate::ymd("2000-01-01"),
-#           lubridate::ymd("2014-12-01"), 
-#           by = "month")
-#wsim_gldas_1mo <- dplyr::filter(wsim_gldas_1mo, time %in% keeps2)
+keeps3<-seq(lubridate::ymd("2012-01-01"),
+           lubridate::ymd("2012-12-01"), 
+           by = "month")
+wsim_gldas_1mo <- dplyr::filter(wsim_gldas_1mo, time %in% keeps3)
 
-#st_wsim_gldas_1mo <- sf::st_as_sf(wsim_gldas_1mo)
-#ggplot() + stars::geom_stars(data = wsim_gldas_1mo)
-
-#wsim_deficit_usa |>
-#  dplyr::slice(index = 1:14, along = "time") |>
+#using dataframe
 
 df_wsim_gldas_1mo <-as.data.frame(wsim_gldas_1mo, xy = TRUE) 
 
 ggplot(data = df_wsim_gldas_1mo) +
   geom_raster(aes(x = x, y = y, fill = deficit)) +
+  scale_color_gradientn(
+  colors = c('darkred', 'red', 'darkorange', 'orange', 'gold', 'yellow', 'white')) + 
   facet_wrap(time ~ .)
+  
 
 ```
 
@@ -252,12 +251,13 @@ ggplot(data = df_wsim_gldas_1mo) +
 
 ```{r}
 
-wsim_gldas_1mo |>
-  dplyr::slice(index = 145:147, along = "time")
+#wsim_gldas_1mo |>
+#  dplyr::slice(index = 145:147, along = "time")
 
 ggplot2::ggplot() +
   stars::geom_stars(data = wsim_gldas_1mo) +
-  ggplot2::facet_wrap(time ~ .)
+  ggplot2::facet_wrap(time ~ .) 
+  
 
 ```
 
