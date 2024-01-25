@@ -251,11 +251,11 @@ ggplot(data = df_wsim_gldas_1mo) +
 
 ```{r}
 
-#wsim_gldas_1mo |>
-#  dplyr::slice(index = 145:147, along = "time")
 
 ggplot2::ggplot() +
   stars::geom_stars(data = wsim_gldas_1mo) +
+  scale_color_gradientn(
+  colors = c('darkred', 'red', 'darkorange', 'orange', 'gold', 'yellow', 'white')) + 
   ggplot2::facet_wrap(time ~ .) 
   
 
@@ -265,19 +265,35 @@ Visualize an individual cell with particular extreme or maybe volatile values. U
 
 Create a vector with the point location.
 
-```r
+```{r}
+coords <- c(43.965876, 102.193077)
+#coords <- c(102.193077, 43.965876)
+
+#Create a stars object with point coordinates
+#point_stars <- st_as_stars(st_as_sf(st_sfc(st_point(coords), crs = st_crs(wsim_gldas_1mo))))
+
+#point_stars <- st_as_stars(st_sfc(st_point(coords), crs = st_crs(wsim_gldas_1mo)))
+
+#point_stars <- st_sfc(st_point(coords), crs = st_crs(wsim_gldas_1mo))
+#point_stars <- st_set_dimensions(point_stars, values = list(time = seq_len(st_dimensions(wsim_gldas_1mo)$time)))
+
+point_stars <- st_sfc(st_point(coords), crs = st_crs(wsim_gldas_1mo),
+                      dim = names(st_dimensions(wsim_gldas_1mo)))
+
 
 ```
 
 Use `stars::extract` to extract raster values in the stack at the point location. 
 
-```r
-
+```{r}
+extracted_vals <- st_extract(wsim_gldas_1mo, point_stars)
 ```
 
 The resulting data frame of time series values should be inspected. It may also need to be converted from wide format to long format so it may be plotted in `ggplot`. Use either pivot wider/longer from `dplyr` or cast/melt from `data.table`.
 
-```r
+```{r}
+
+
 
 ```
 
