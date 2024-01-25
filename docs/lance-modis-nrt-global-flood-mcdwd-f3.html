@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Juan F. Martinez">
+<meta name="dcterms.date" content="2023-12-14">
+
+<title>MODIS NRT Global Flood Product</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+
+<script src="lance-modis-nrt-global-flood-mcdwd-f3-edit-3_files/libs/clipboard/clipboard.min.js"></script>
+<script src="lance-modis-nrt-global-flood-mcdwd-f3-edit-3_files/libs/quarto-html/quarto.js"></script>
+<script src="lance-modis-nrt-global-flood-mcdwd-f3-edit-3_files/libs/quarto-html/popper.min.js"></script>
+<script src="lance-modis-nrt-global-flood-mcdwd-f3-edit-3_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="lance-modis-nrt-global-flood-mcdwd-f3-edit-3_files/libs/quarto-html/anchor.min.js"></script>
+<link href="lance-modis-nrt-global-flood-mcdwd-f3-edit-3_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="lance-modis-nrt-global-flood-mcdwd-f3-edit-3_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="lance-modis-nrt-global-flood-mcdwd-f3-edit-3_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="lance-modis-nrt-global-flood-mcdwd-f3-edit-3_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="lance-modis-nrt-global-flood-mcdwd-f3-edit-3_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">MODIS NRT Global Flood Product</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Juan F. Martinez </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">December 14, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="modis-near-real-time-nrt-global-flood-product" class="level2">
+<h2 class="anchored" data-anchor-id="modis-near-real-time-nrt-global-flood-product">MODIS Near Real Time (NRT) Global Flood Product</h2>
+<section id="introduction" class="level3">
+<h3 class="anchored" data-anchor-id="introduction">Introduction</h3>
+<p><img src="https://www.earthdata.nasa.gov/sites/default/files/imported/Flood_mekong.png" alt="MODIS NRT FLOOD" width="600"><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p>The <strong>MODIS/Aqua+Terra Global Flood Product L3 Near Real Time (NRT) 250m Global Flood Product (MCDWD_L3_NRT) (beta)</strong> provides daily maps of flooding globally. The product is provided over 3 compositing periods (1-day, 2-day, and 3-day) to minimize the impact of clouds and more rigorously identify flood water (the best composite will depend on the cloudiness for a particular event) <span class="citation" data-cites="lin2019">(<a href="#ref-lin2019" role="doc-biblioref">Lin et al. 2019</a>)</span></p>
+<section id="what-are-modis-and-lance" class="level4">
+<h4 class="anchored" data-anchor-id="what-are-modis-and-lance">What are MODIS and LANCE?</h4>
+<p><strong><em>MODIS NRT Global Flood Products:</em></strong></p>
+<p><a href="https://www.earthdata.nasa.gov/learn/find-data/near-real-time/modis-nrt-global-flood-product">NASA EARTHDATA</a></p>
+<p><a href="https://cmr.earthdata.nasa.gov/search/concepts/C2018599131-LANCEMODIS.html">CRM SEARCH</a></p>
+<p><strong>MODIS</strong></p>
+<p>The Moderate Resolution Imaging Spectroradiometer (MODIS) is a NASA Earth Observing System (EOS) satellite-based sensor system that creates data products including land surface temperatures, land surface reflectance, radiances, clouds, aerosols, water vapor, active fire, snow cover, sea ice measurements, and other factor information. The MODIS Near Real-Time (NRT) data includes the Flood product which is a daily ~250 m resolution product showing flood and surface water detected from the twice-daily overpass of the MODIS optical sensors.</p>
+<p>The satellite data is readily available shortly after it is acquired by the MODIS instrument on board the Terra and Aqua satellites. This space-based instrument distinguishes 36 spectral bands and groups of wavelengths which helps map the extent of snow and ice caused by winter storms and frigid temperatures. Initially, the water-detecting algorithm is applied to both MODIS observations (Terra and Aqua). Due to cloud and terrain shadows create false positives.</p>
+<p><img src="https://modis.gsfc.nasa.gov/about/images/modisComponents.jpg" alt="MODIS Components"><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<p>To minimize errors, the product is generated with three different <strong><em>compositing periods (1-day, 2-day, and 3-day)</em></strong> to compare results and decide which product has better coverage for the event. Further, they have to differentiate floods from expected surface water through the use of MODIS Land Water Mask (MOD44W), which uses a decision tree classifier trained with MODIS data to produce a global water mask <span class="citation" data-cites="carroll2016">(<a href="#ref-carroll2016" role="doc-biblioref">Carroll et al. 2016</a>)</span>.</p>
+<p>MODIS adoption aimed to surpass barriers related to satellite data, including cost, delivery timelines, limited formats, and the need for technical expertise. The transition to GFIMS establishes an operational system at FAO, ensuring continuity in meeting NASA data-user needs <span class="citation" data-cites="lin2019">(<a href="#ref-lin2019" role="doc-biblioref">Lin et al. 2019</a>)</span>.</p>
+<p><strong>LANCE</strong></p>
+<p>The <strong>Land, Atmosphere Near Real-time Capability for EOS (LANCE)</strong> is a NASA initiative that provides near real-time access to satellite data, including MODIS . It allows users to access the latest data within a few hours of satellite overpass, enabling rapid responses to environmental events such as floods. LANCE is particularly valuable for emergency response teams and researchers who require up-to-date information for monitoring and assessing natural disasters <span class="citation" data-cites="LANCE2024">(<a href="#ref-LANCE2024" role="doc-biblioref">Land 2024</a>)</span>.</p>
+<p>LANCE reduces processing time, allowing for timely computation. Users access the data through platforms like Web Map Service (WMS) and Web Coverage Service (WCS), enabling visualization and analysis for informed decision-making. This NRT approach enhances the speed and accessibility of critical information on vegetation conditions <span class="citation" data-cites="zhang2022">(<a href="#ref-zhang2022" role="doc-biblioref">Zhang et al. 2022</a>)</span>.</p>
+</section>
+<section id="modis-nrt-flood-mcdwd-data-products" class="level4">
+<h4 class="anchored" data-anchor-id="modis-nrt-flood-mcdwd-data-products">MODIS NRT Flood MCDWD Data Products</h4>
+<p>The <strong><em>MODIS/Terra+Aqua Combined MODIS Water Detection (MCDWD)</em></strong> algorithm is tailor-made for detecting water bodies using MODIS data obtained from both the Terra and Aqua satellites. This algorithm employs various bands and spectral information to effectively identify and categorize water bodies. This enhances the accuracy and reliability of the flood product generated <span class="citation" data-cites="slayback2023">(<a href="#ref-slayback2023" role="doc-biblioref">Slayback 2023</a>)</span>.</p>
+<p>The MODIS Near Real-Time (NRT) Flood dataset offers multiple products, each accompanied by corresponding layers. The specific layers depend on the temporal aggregation:</p>
+<p><strong><em>MCDWD_F1_L3_NRT (1-Day product)</em></strong> This product type is the most basic level and provides binary information about water occurrence. Pixels are classified as either containing water or not, offering a simple way to identify flooded areas.</p>
+<p><strong><em>MCDWD_F1CS_L3_NRT (1-Day CS)</em></strong>: F1CS has a cloud shadow mask applied on the version of the MCDWD_F1_L3_NRT product</p>
+<p><strong><em>MCDWD_F2_L3_NRT (2-Day)</em></strong>: F2 provides additional information by categorizing water occurrences into three categories: no water, low-confidence water, and high-confidence water. This classification allows for a more nuanced understanding of the extent of the flood and its associated confidence levels.</p>
+<p><strong><em>MCDWD_F3_L3_NRT (3-Day)</em></strong>: The F3 product, based on the MCDWD (MODIS/Terra+Aqua Combined MODIS Water Detection) is an algorithm that further refines flood mapping by adding additional spectral information. These results create a more accurate representation of water bodies and flooded areas <span class="citation" data-cites="slayback2023">(<a href="#ref-slayback2023" role="doc-biblioref">Slayback 2023</a>)</span>.</p>
+</section>
+</section>
+<section id="reading-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="reading-the-data">Reading the Data</h3>
+<p>For this exercise, we will be using the MCDWD L3 F3 product: <a href="https://nrt3.modaps.eosdis.nasa.gov/archive/allData/61/MCDWD_L3_F3_NRT/">LANCE NRT Flood</a></p>
+<p>First, install and load the R packages required for this exercise:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>packages_to_check <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"stars"</span>, <span class="st">"httr"</span>, <span class="st">"jsonlite"</span>, <span class="st">"tmap"</span>, <span class="st">"basemaps"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Check and install packages</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (package_name <span class="cf">in</span> packages_to_check) {</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span>package_name <span class="sc">%in%</span> <span class="fu">rownames</span>(<span class="fu">installed.packages</span>())) {</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">install.packages</span>(package_name)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="fu">paste</span>(<span class="st">"Package"</span>, package_name, <span class="st">"installed.</span><span class="sc">\n</span><span class="st">"</span>))</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="fu">paste</span>(<span class="st">"Package"</span>, package_name, <span class="st">"is already installed.</span><span class="sc">\n</span><span class="st">"</span>))</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(package_name, <span class="at">character.only =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Package stars is already installed.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: abind</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: sf</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Linking to GEOS 3.10.2, GDAL 3.4.1, PROJ 8.2.1; sf_use_s2() is TRUE</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Package httr is already installed.
+Package jsonlite is already installed.
+Package tmap is already installed.
+Package basemaps is already installed.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#in case tmap does not install</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">#remotes::install_github('r-tmap/tmap')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="check-what-days-are-available-for-the-mcdwd-l3-f3-product-by-going-to-this-link-lance-nrt-primary-server-or-secondary." class="level4">
+<h4 class="anchored" data-anchor-id="check-what-days-are-available-for-the-mcdwd-l3-f3-product-by-going-to-this-link-lance-nrt-primary-server-or-secondary.">Check what days are available for the MCDWD L3 F3 product by going to this link: <a href="https://nrt3.modaps.eosdis.nasa.gov/archive/allData/61/MCDWD_L3_F3_NRT/">LANCE NRT Primary Server</a> or <a href="https://nrt4.modaps.eosdis.nasa.gov/archive/allData/61/MCDWD_L3_F3_NRT">Secondary</a>.</h4>
+<p>Based on availability, edit the year_day variable YYYY-DD. Example: ‘2022-01’</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#add the year and date you want to search for (YYYY-DD, 2022-01)</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>year_day <span class="ot">&lt;-</span> <span class="st">'2024-023'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="determine-tiles-of-interest" class="level4">
+<h4 class="anchored" data-anchor-id="determine-tiles-of-interest">Determine tiles of interest:</h4>
+<p><a href="https://www.earthdata.nasa.gov/s3fs-public/2023-01/MCDWD_GlobalTileMapHoriz_Website_865x2250.jpg?VersionId=lOQ_j47U8T.j7UUqibD7SM63FVHjM_V5">MODIS NRT Tile Map</a></p>
+<p><img src="https://www.earthdata.nasa.gov/s3fs-public/2023-01/MCDWD_GlobalTileMapHoriz_Website_865x2250.jpg?VersionId=lOQ_j47U8T.j7UUqibD7SM63FVHjM_V5" alt="A hand in water" width="100%"></p>
+<p>Based on availability, edit the tile_code variable:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#add tile code from the map above (written as h00v00)</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>tile_code <span class="ot">&lt;-</span> <span class="st">'h05v05'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This is the NRT Flood F3 (MCDWD_L3_F3) API URL:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#API_URL &lt;- paste0('https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/details?products=MCDWD_L3_F3_NRT&amp;archiveSets=61&amp;temporalRanges=')</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># if the primary server is down, the secondary server may be available:</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>API_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">'https://nrt4.modaps.eosdis.nasa.gov/api/v2/content/details?products=MCDWD_L3_F3_NRT&amp;archiveSets=61&amp;temporalRanges='</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can combine the API URL above with the year_day provided and print the available datasets:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#pasting together URL and year_day</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="fu">paste0</span>(API_URL, year_day)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(url)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "https://nrt4.modaps.eosdis.nasa.gov/api/v2/content/details?products=MCDWD_L3_F3_NRT&amp;archiveSets=61&amp;temporalRanges=2024-023"</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="load-data" class="level3">
+<h3 class="anchored" data-anchor-id="load-data">Load Data</h3>
+<p>Access the NASA Earthdata with the GET function:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make the GET request</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>response <span class="ot">&lt;-</span> httr<span class="sc">::</span><span class="fu">GET</span>(url)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Check response status from the GET function:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>response</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Response [https://nrt4.modaps.eosdis.nasa.gov/api/v2/content/details?products=MCDWD_L3_F3_NRT&amp;archiveSets=61&amp;temporalRanges=2024-023]
+  Date: 2024-01-25 18:20
+  Status: 200
+  Content-Type: application/json;charset=UTF-8
+  Size: 113 kB</code></pre>
+</div>
+</div>
+<p>Out of the response from the server, well check if the response was a success with <code>if (http_status(response)$category == "Success")</code>. If this statement is true, then the content will be assigned to the variable <code>data</code> in JSON format, which is then parsed to a data frame using <code>data_parsed &lt;- jsonlite::fromJSON(data)</code>. The data frame contains <code>data_parsed$content</code>, a column with content. We filter the content by tile code using the command <code>content_items &lt;- data_parsed$content[grepl(tile_code, data_parsed$content$name, ignore.case = TRUE), ]</code> and add the results to a data frame.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the response status</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">http_status</span>(response)<span class="sc">$</span>category <span class="sc">==</span> <span class="st">"Success"</span>) {</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Parse the response JSON</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  data <span class="ot">&lt;-</span> <span class="fu">content</span>(response, <span class="at">as =</span> <span class="st">"text"</span>, <span class="at">encoding =</span> <span class="st">"UTF-8"</span>)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  data_parsed <span class="ot">&lt;-</span> jsonlite<span class="sc">::</span><span class="fu">fromJSON</span>(data)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">#filter for the tile code</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  content_items <span class="ot">&lt;-</span> data_parsed<span class="sc">$</span>content[<span class="fu">grepl</span>(tile_code, data_parsed<span class="sc">$</span>content<span class="sc">$</span>name, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>), ]</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="st">"Request failed with status code"</span>, <span class="fu">http_status</span>(response)<span class="sc">$</span>status_code)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(content_items)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   archiveSets      cksum    collections               dataDay
+39          61 3182139075 modis-nrt-c6.1 2024-023 = 2024-01-23
+                                                                                         downloadsLink
+39 https://nrt4.modaps.eosdis.nasa.gov/api/v2/content/archives/MCDWD_L3_F3_NRT.A2024023.h05v05.061.tif
+       fileId                           md5sum      mtime
+39 1994021013 061b3cdc621ffad2cf9a24cbe239ab5b 1706065072
+                                      name        products resourceType
+39 MCDWD_L3_F3_NRT.A2024023.h05v05.061.tif MCDWD_L3_F3_NRT         File
+                                                              self   size
+39 /api/v2/content/details/MCDWD_L3_F3_NRT.A2024023.h05v05.061.tif 794917</code></pre>
+</div>
+</div>
+<p>Select the URL from the ‘downloadsLink’ column in the content_items data frame:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>download_link <span class="ot">&lt;-</span> content_items<span class="sc">$</span>downloadsLink</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(download_link)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "https://nrt4.modaps.eosdis.nasa.gov/api/v2/content/archives/MCDWD_L3_F3_NRT.A2024023.h05v05.061.tif"</code></pre>
+</div>
+</div>
+<p>Use the “read_stars()” function from the “stars” R Library to read the geoTiff raster.<br> The raster is assigned to the “raster_df” variable:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>raster_df <span class="ot">&lt;-</span> stars<span class="sc">::</span><span class="fu">read_stars</span>(download_link)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: ignoring unrecognized unit: none</code></pre>
+</div>
+</div>
+<p>Set the Coordinate Refence System (CRS) to a new raster “my_raster” to plot it in a map. For example, Web Mercator EPSG:3857. Use the st_transform() function:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>raster_df <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(raster_df, <span class="dv">3857</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now the raster data should be stored as a variable “my_raster” with the CRS set to Web Mercator EPSG:3857</p>
+</section>
+<section id="visualizing-nrt-flood-data" class="level3">
+<h3 class="anchored" data-anchor-id="visualizing-nrt-flood-data">Visualizing NRT Flood Data</h3>
+<p>Plot the raster to quickly view it:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(raster_df, <span class="at">axes =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>downsample set to 3</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="lance-modis-nrt-global-flood-mcdwd-f3-edit-3_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<section id="create-nrt-flood-plot-with-classification" class="level4">
+<h4 class="anchored" data-anchor-id="create-nrt-flood-plot-with-classification">Create NRT Flood Plot with Classification</h4>
+<p>Refer to the <a href="https://www.earthdata.nasa.gov/s3fs-public/2023-01/MCDWD_UserGuide_RevC.pdf">MODIS NRT Global Flood Product User Guide</a> for more information.</p>
+<p>NRT Flood data has 5 classifications:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Code</th>
+<th style="text-align: left;">Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">0</td>
+<td style="text-align: left;">No Water</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: left;">Surface Water</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: left;">Recurring flood<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: left;">Flood (unusual)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">255</td>
+<td style="text-align: left;">Insufficient data</td>
+</tr>
+</tbody>
+</table>
+<p>To view the data in this classification, we’ll need to create a classified legend; however, the NRT Flood data is stored in decimal numbers (aka floating-point). Create class breaks dividing the data by the folloing breaks, and corresponding colors and labels:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>class_breaks <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="cn">Inf</span>, <span class="fl">0.1</span>, <span class="fl">1.1</span>, <span class="fl">2.1</span>, <span class="fl">3.1</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>colors <span class="ot">&lt;-</span> <span class="fu">c</span>( <span class="st">"gray"</span>, <span class="st">"blue"</span>, <span class="st">"yellow"</span>,<span class="st">"red"</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>labels <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"0: No Water"</span>, <span class="st">"1: Surface Water"</span>, <span class="st">"2: Recurring flood"</span>, <span class="st">"3: Flood (unusual)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Add a title for the plot that includes the year, day of year, and tile code:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>title <span class="ot">=</span> <span class="fu">paste</span>(<span class="st">"Near Real-Time Flood F3"</span>, year_day, tile_code)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="generate-a-basemap-from-esri-imagery" class="level4">
+<h4 class="anchored" data-anchor-id="generate-a-basemap-from-esri-imagery">Generate a basemap from Esri Imagery</h4>
+<p>To generate a basemap that shows the location of our raster, we must first create a bounding box to match <code>raster_df</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>bbox <span class="ot">&lt;-</span>  <span class="fu">st_bbox</span>(raster_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <code>basemap_stars()</code> function from the <code>stars</code> library allows us to access Esri imagery layers. We choose “world_imagery” as our background and assign it to the object <code>bm_m</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>bm_m <span class="ot">&lt;-</span> <span class="fu">basemap_stars</span>(bbox, <span class="at">map_service =</span> <span class="st">"esri"</span>, <span class="at">map_type =</span> <span class="st">"world_imagery"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Loading basemap 'world_imagery' from map service 'esri'...</code></pre>
+</div>
+</div>
+<p>The <code>st_rgb</code> function lets us turn the RGB stars item into a single image</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>bm_m <span class="ot">&lt;-</span> <span class="fu">st_rgb</span>(bm_m)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="plot-basemap-and-nrt-flood-data" class="level4">
+<h4 class="anchored" data-anchor-id="plot-basemap-and-nrt-flood-data">Plot basemap and NRT Flood data</h4>
+<p>Generate a plot from the tmap library using the <code>tm_shape()</code> function. We will plot the basemap and the raster_df items.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="do">## tmap mode set to "plot"</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>tmap mode set to plotting</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="do">## tmap mode can also be set to "view"</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="co">#tmap_mode("view")</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="co">#create an object the plots the basemap and the NRT flood raster</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="co">#with the tmap library, call the tm_shape() function for the basemap</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>tm_plot <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(bm_m)<span class="sc">+</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_raster</span>()<span class="sc">+</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">#create a new tmap shape for the NRT flood raster with style as "cat," meaning categorical.</span></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(raster_df, <span class="at">style=</span><span class="st">"cat"</span>)<span class="sc">+</span></span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>  <span class="co">#add the classification styling to the raster</span></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_raster</span>( <span class="at">palette =</span> <span class="fu">c</span>(colors),</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> title, </span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">breaks =</span> class_breaks,</span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">labels =</span> labels )<span class="sc">+</span></span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>  <span class="co">#style the plot</span></span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">legend.outside =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_graticules</span>(<span class="at">lines=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>View the plot:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>tm_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>stars object downsampled to 1000 by 1000 cells. See tm_shape manual (argument raster.downsample)</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="lance-modis-nrt-global-flood-mcdwd-f3-edit-3_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+
+</section>
+</section>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
+<div id="ref-carroll2016" class="csl-entry" role="doc-biblioentry">
+Carroll, M. L., C. M. DiMiceli, J. R. G. Townshend, R. A. Sohlberg, A. I. Elders, S. Devadiga, A. M. Sayer, and R. C. Levy. 2016. <span>“Development of an Operational Land Water Mask for MODIS Collection 6, and Influence on Downstream Data Products.”</span> <em>International Journal of Digital Earth</em> 10 (2): 207–18. <a href="https://doi.org/10.1080/17538947.2016.1232756">https://doi.org/10.1080/17538947.2016.1232756</a>.
+</div>
+<div id="ref-LANCE2024" class="csl-entry" role="doc-biblioentry">
+Land, Atmosphere Near real-time Capability for EO (LANCE). 2024. <span>“About LANCE.”</span> January 11, 2024. <a href="https://www.earthdata.nasa.gov/learn/find-data/near-real-time/about-lance">https://www.earthdata.nasa.gov/learn/find-data/near-real-time/about-lance</a>.
+</div>
+<div id="ref-lin2019" class="csl-entry" role="doc-biblioentry">
+Lin, Li, Liping Di, Junmei Tang, Eugene Yu, Chen Zhang, Md. Rahman, Ranjay Shrestha, and Lingjun Kang. 2019. <span>“Improvement and Validation of NASA/MODIS NRT Global Flood Mapping.”</span> <em>Remote Sensing</em> 11 (2): 205. <a href="https://doi.org/10.3390/rs11020205">https://doi.org/10.3390/rs11020205</a>.
+</div>
+<div id="ref-slayback2023" class="csl-entry" role="doc-biblioentry">
+Slayback, D. 2023. <span>“Modis NRT Global Flood Product - Earthdata.”</span> <a href="https://www.earthdata.nasa.gov/s3fs-public/2023-01/MCDWD_UserGuide_RevC.pdf">https://www.earthdata.nasa.gov/s3fs-public/2023-01/MCDWD_UserGuide_RevC.pdf</a>.
+</div>
+<div id="ref-zhang2022" class="csl-entry" role="doc-biblioentry">
+Zhang, Chen, Zhengwei Yang, Liping Di, Eugene G. Yu, Bei Zhang, Weiguo Han, Li Lin, and Liying Guo. 2022. <span>“Near-Real-Time MODIS-Derived Vegetation Index Data Products and Online Services for CONUS Based on NASA LANCE.”</span> <em>Scientific Data</em> 9 (1). <a href="https://doi.org/10.1038/s41597-022-01565-2">https://doi.org/10.1038/s41597-022-01565-2</a>.
+</div>
+</div></section><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Photo Credit, NASA OESDIS.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Photo Credit, NASA GSFC.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Value 2 (Recurring flood) is not populated in the beta release.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
