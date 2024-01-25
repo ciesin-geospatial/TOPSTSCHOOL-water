@@ -266,8 +266,10 @@ Visualize an individual cell with particular extreme or maybe volatile values. U
 Create a vector with the point location.
 
 ```{r}
-coords <- c(43.965876, 102.193077)
-#coords <- c(102.193077, 43.965876)
+#coords <- c(43.965876, -102.193077)
+#coords <- c(-102.193077, 43.965876)
+#Coordinates for Austin Texas
+coords <- c(-97.7431, 30.2672)
 
 #Create a stars object with point coordinates
 #point_stars <- st_as_stars(st_as_sf(st_sfc(st_point(coords), crs = st_crs(wsim_gldas_1mo))))
@@ -292,14 +294,15 @@ extracted_vals <- st_extract(wsim_gldas_1mo, point_stars)
 The resulting data frame of time series values should be inspected. It may also need to be converted from wide format to long format so it may be plotted in `ggplot`. Use either pivot wider/longer from `dplyr` or cast/melt from `data.table`.
 
 ```{r}
-
-
+extracted_df <- data.frame(extracted_vals)
+print(extracted_df)
 
 ```
 
 Once in the proper format, plot using `ggplot`.
 
-```r
+```{r}
+ggplot(extracted_df, aes(x = time, y = deficit)) + geom_line()
 
 ```
 
