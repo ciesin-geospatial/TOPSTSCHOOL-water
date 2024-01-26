@@ -140,7 +140,6 @@ wsim_deficit_usa |>
     '#FFFFFF'), breaks = c(-5,-3,-1,0,1,3,5))
 ```
 
-
 Plotting without breaks produces a similar but different map.
 
 ```{r}
@@ -251,7 +250,7 @@ ggplot2::ggplot(extracted_df, aes(x = time, y = deficit)) + ggplo2::geom_line()
 
 ```
 
-Texas, in 2011, 
+Texas, in 2011, experienced a severe drought which caused rivers to dry up and lakes to reach historic low levels. The drought cost farmers and ranchers an estimated $8 billion in losses. Furthermore, the dry conditions fueled a series of wildfires across the state in early September. Which months had the most severe drought?
 
 ## Population Exposure Plot
 
@@ -292,5 +291,6 @@ Now plot the data in ggplot. I have some existing code I can pull to help with t
 
 ```
 
-[conclusion]
-The insights drawn from various data sources, including remote sensing data, contribute to this understanding. Farahmand et al. (2012) employ remote sensing in monitoring drought, while models like the Global Land Data Assimilation System (GLDAS), as discussed by Rodell et al. (2004), utilize satellite and ground-based observations to provide real-time, high-resolution data on land surface states and fluxes, aiding in a more comprehensive understanding of drought and flooding.
+## Conlusion
+
+The insights drawn from various data sources, including remote sensing data, contribute to the understanding of water availability. Models like the Global Land Data Assimilation System (GLDAS) utilize satellite and ground-based observations to provide real-time, high-resolution data on land surface states and fluxes, aiding in a more comprehensive understanding of drought and flooding.
