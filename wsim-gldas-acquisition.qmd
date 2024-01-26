@@ -24,7 +24,7 @@ WSIM-GLDAS can be download from [SEDAC](https://sedac.ciesin.columbia.edu/data/s
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Coding Review
 
-This lesson uses the [`stars`](), [`sf`](), [`dplyr`](), and [`lubridate`]() packages. If you'd like to learn more about the functions used in this lesson you can use the help guides on their package websites.
+This lesson uses the [`stars`](https://r-spatial.github.io/stars/), [`sf`](https://r-spatial.github.io/sf/), [`dplyr`](https://dplyr.tidyverse.org/), and [`lubridate`](https://lubridate.tidyverse.org/) packages. If you'd like to learn more about the functions used in this lesson you can use the help guides on their package websites.
 :::
 
 ## Reading the Data
@@ -164,6 +164,8 @@ stars::write_mdim(wsim_gldas_anoms_tex, "wsim_gldas_tex.nc")
 
 The size of the pre-processed dataset is 1.6 MB compared to the original dataset of 1.7 GB. This is much more manageable in cloud environments, workshops, and git platforms.
 
+## Lesson 2
+
 In the next lesson we will create more advanced visualizations and extract data of interest.
 
-Lesson 2: WSIM-GLDAS Visualizations and Data Extraction.
+[Lesson 2: WSIM-GLDAS Visualizations and Data Extraction](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/wsim-gldas-vis.html){.btn .btn-primary .btn role="button"} 

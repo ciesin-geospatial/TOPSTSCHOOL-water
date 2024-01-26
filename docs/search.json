@@ -18,35 +18,35 @@
     "href": "wsim-gldas-acquisition.html#introduction",
     "title": "Acquiring and Pre-Processing the WSIM-GLDAS Dataset",
     "section": "Introduction",
-    "text": "Introduction\nWSIM-GLDAS can be download from SEDAC. Downloads are organized by combination of variable (composite surplus/deficit, temperature, PETmE, runoff, soil moisture, precipitation) and integration period (1, 3, 6, 12 months). Each variable-integration combination consists of a NetCDF raster file with a time dimension that contains a raster layer for each of the 804 months between January, 1948 and December, 2014. Some variables also contain multiple attributes each with their own time dimension of 804 rasters. Hence, this is a large file that takes upwards of 2 hours to download and may cause memory issues on certain systems. We will work with the composite anomolies integrated over 1 month periods."
+    "text": "Introduction\nWSIM-GLDAS can be download from SEDAC. Downloads are organized by combination of variable (composite surplus/deficit, temperature, PETmE, runoff, soil moisture, precipitation) and integration period (1, 3, 6, 12 months). Each variable-integration combination consists of a NetCDF raster file with a time dimension that contains a raster layer for each of the 804 months between January, 1948 and December, 2014. Some variables also contain multiple attributes each with their own time dimension of 804 rasters. Hence, this is a large file that takes upwards of 2 hours to download and may cause memory issues on certain systems. We will work with the composite anomolies integrated over 1 month periods.\n\n\n\n\n\n\nCoding Review\n\n\n\nThis lesson uses the stars, sf, dplyr, and lubridate packages. If you’d like to learn more about the functions used in this lesson you can use the help guides on their package websites."
   },
   {
     "objectID": "wsim-gldas-acquisition.html#reading-the-data",
     "href": "wsim-gldas-acquisition.html#reading-the-data",
     "title": "Acquiring and Pre-Processing the WSIM-GLDAS Dataset",
     "section": "Reading the Data",
-    "text": "Reading the Data\nOnce you’ve completed the download and placed the .nc into your working directory read in the file with the stars::read_stars() function.\n\n# proxy = TRUE will limit memory useage but does \n# not always work with certain downstream processing functions\n\nwsim_gldas_anoms &lt;- stars::read_stars(\"composite_anom_1mo.nc\", proxy = FALSE)\n\ndeficit, deficit_cause, surplus, surplus_cause, both, \n\nprint(wsim_gldas_anoms)\n\nstars object with 3 dimensions and 5 attributes\nattribute(s), summary of first 1e+05 cells:\n               Min.     1st Qu.      Median         Mean     3rd Qu.       Max.\ndeficit        -100  -1.8314584  -0.2373874  -1.26453645  -0.2373874   1.896493\ndeficit_cause     1 129.0000000 129.0000000 112.90956000 129.0000000 129.000000\nsurplus        -100  -0.9671488  -0.7329655  -0.95631468  -0.6206152   2.384447\nsurplus_cause     1 129.0000000 129.0000000 127.37130000 129.0000000 129.000000\nboth              0   0.0000000   0.0000000   0.03784493   0.0000000   2.384447\n                NA's\ndeficit        87340\ndeficit_cause      0\nsurplus        98724\nsurplus_cause      0\nboth           98724\ndimension(s):\n     from   to offset delta  refsys                    values x/y\nx       1 1440   -180  0.25  WGS 84                      NULL [x]\ny       1  600     90 -0.25  WGS 84                      NULL [y]\ntime    1  804     NA    NA POSIXct 1948-01-01,...,2014-12-01    \n\n\nThe print command gives some basic information. The outputs tells us we have 5 attributes (deficit, deficit_cause, surplus, surplus_cause, both) and 3 dimensions. The first 2 dimensions are the spatial extents (x/y–longitude/latitude) and time is the 3rd dimension.\nThis means the total number of individual raster layers in this NetCDF is 4020 (5 attributes x 804 time steps/months)."
+    "text": "Reading the Data\nOnce you’ve completed the download and placed the .nc into your working directory read in the file with the stars::read_stars() function.\n\n# proxy = TRUE will limit memory useage but does \n# not always work with certain downstream processing functions\n\nwsim_gldas_anoms &lt;- stars::read_stars(\"composite_anom_12mo.nc\", proxy = FALSE)\n\ndeficit, deficit_cause, surplus, surplus_cause, both, \n\nprint(wsim_gldas_anoms)\n\nstars object with 3 dimensions and 5 attributes\nattribute(s), summary of first 1e+05 cells:\n                      Min.    1st Qu.      Median        Mean    3rd Qu.\ndeficit        -100.000000  -2.366971  -1.9098018  -2.0387177  -1.171102\ndeficit_cause     1.000000 129.000000 129.0000000 121.5036000 129.000000\nsurplus          -4.310967  -1.091849  -0.3321133  -0.3779968   0.224241\nsurplus_cause     1.000000 129.000000 129.0000000 121.4569100 129.000000\nboth              0.000000   0.000000   0.0000000   0.8073860   1.447755\n                     Max.  NA's\ndeficit          1.977621 94083\ndeficit_cause  129.000000     0\nsurplus          3.547665 94088\nsurplus_cause  129.000000     0\nboth           100.000000 94088\ndimension(s):\n     from   to offset delta  refsys                    values x/y\nx       1 1440   -180  0.25  WGS 84                      NULL [x]\ny       1  600     90 -0.25  WGS 84                      NULL [y]\ntime    1  793     NA    NA POSIXct 1948-12-01,...,2014-12-01    \n\n\nThe print command gives some basic information. The outputs tells us we have 5 attributes (deficit, deficit_cause, surplus, surplus_cause, both) and 3 dimensions. The first 2 dimensions are the spatial extents (x/y–longitude/latitude) and time is the 3rd dimension.\nThis means the total number of individual raster layers in this NetCDF is 4020 (5 attributes x 804 time steps/months)."
   },
   {
     "objectID": "wsim-gldas-acquisition.html#attribute-selection",
     "href": "wsim-gldas-acquisition.html#attribute-selection",
     "title": "Acquiring and Pre-Processing the WSIM-GLDAS Dataset",
     "section": "Attribute Selection",
-    "text": "Attribute Selection\nWe can start paring this down by subsetting for just the combined surplus/deficit anomaly (both).\n\nnames(wsim_gldas_anoms)\n\n[1] \"deficit\"       \"deficit_cause\" \"surplus\"       \"surplus_cause\"\n[5] \"both\"         \n\nwsim_gldas_anoms &lt;- wsim_gldas_anoms['both']"
+    "text": "Attribute Selection\nWe can start paring this down by subsetting for just deficits (drought).\n\nnames(wsim_gldas_anoms)\n\n[1] \"deficit\"       \"deficit_cause\" \"surplus\"       \"surplus_cause\"\n[5] \"both\"         \n\nwsim_gldas_anoms &lt;- wsim_gldas_anoms['deficit']"
   },
   {
     "objectID": "wsim-gldas-acquisition.html#time-selection",
     "href": "wsim-gldas-acquisition.html#time-selection",
     "title": "Acquiring and Pre-Processing the WSIM-GLDAS Dataset",
     "section": "Time Selection",
-    "text": "Time Selection\nSpecifying a temporal range of interest will free up more space. We’ll grab every month for 2000-2014. This can be accomplished by generating a sequence for every month between January 2000 and December 2014, and then passing that vector of dates to filter.\n\n# generate a vector of dates for subsetting\nkeeps&lt;-seq(lubridate::ymd(\"2000-01-01\"),\n           lubridate::ymd(\"2014-12-01\"), \n           by = \"month\")\n# filter using that vector\nwsim_gldas_anoms &lt;- dplyr::filter(wsim_gldas_anoms, time %in% keeps)\n\nprint(wsim_gldas_anoms)\n\nstars object with 3 dimensions and 1 attribute\nattribute(s), summary of first 1e+05 cells:\n      Min. 1st Qu. Median     Mean  3rd Qu. Max.  NA's\nboth     0       0      0 5.415477 1.631542  100 98724\ndimension(s):\n     from   to offset delta  refsys                    values x/y\nx       1 1440   -180  0.25  WGS 84                      NULL [x]\ny       1  600     90 -0.25  WGS 84                      NULL [y]\ntime    1  180     NA    NA POSIXct 2000-01-01,...,2014-12-01    \n\n\nNow we’re down to a single attribute (“both”) with 180 time-steps. We can take a look at the first 6 months by passing the object through slice and then into plot.\n\nwsim_gldas_anoms |&gt;\n  dplyr::slice(index = 1:6, along = \"time\") |&gt;\n  plot(key.pos = 1)\n\ndownsample set to 1\n\n\n\n\n\nAlthough we’ve pared it down to a single attribute with a restricted time period of interest, we can take it a step further and reduce the spatial extent to a country or state of interest."
+    "text": "Time Selection\nSpecifying a temporal range of interest will free up more space. We’ll grab every year for 2000-2014. This can be accomplished by generating a sequence for every year between December 2000 and December 2014, and then passing that vector of dates to filter.\n\n# generate a vector of dates for subsetting\nkeeps&lt;-seq(lubridate::ymd(\"2000-12-01\"),\n           lubridate::ymd(\"2014-12-01\"), \n           by = \"year\")\n# filter using that vector\nwsim_gldas_anoms &lt;- dplyr::filter(wsim_gldas_anoms, time %in% keeps)\n\nprint(wsim_gldas_anoms)\n\nstars object with 3 dimensions and 1 attribute\nattribute(s), summary of first 1e+05 cells:\n              Min.   1st Qu.    Median      Mean    3rd Qu.      Max.  NA's\ndeficit  -3.140659 -1.491055 -1.092252 -1.037756 -0.5627083 0.8403344 94083\ndimension(s):\n     from   to offset delta  refsys                    values x/y\nx       1 1440   -180  0.25  WGS 84                      NULL [x]\ny       1  600     90 -0.25  WGS 84                      NULL [y]\ntime    1   15     NA    NA POSIXct 2000-12-01,...,2014-12-01    \n\n\nNow we’re down to a single attribute (“both”) with 15 time-steps. We can take a look at the first 6 years by passing the object through slice and then into plot.\n\nwsim_gldas_anoms |&gt;\n  dplyr::slice(index = 1:6, along = \"time\") |&gt;\n  plot(key.pos = 1, breaks = c(0, -5, -10, -20, -30, -50), key.lab = \"Deficit\")\n\n\n\n\n\n\n\n\nAlthough we’ve pared it down to a single attribute with a restricted time period of interest, we can take it a step further and reduce the spatial extent to a country or state of interest."
   },
   {
     "objectID": "wsim-gldas-acquisition.html#spatial-selection",
     "href": "wsim-gldas-acquisition.html#spatial-selection",
     "title": "Acquiring and Pre-Processing the WSIM-GLDAS Dataset",
     "section": "Spatial Selection",
-    "text": "Spatial Selection\nWe can spatially crop the raster stack with a few different methods. Options include using a bounding box (xmin, ymin, xmax, ymax), another raster object, or a vectorized boundary like a shapefile or geojson.\nUsing a vector boundary is one of the more common geoprocessing tasks. In this example we’ll pull a geojson of the United States from the geoBoundaries API. You can also download vectorized boundaries directly from .\nThe call to geoBoundaries’ API is pretty simple:\n“https://www.geoboundaries.org/api/current/gbOpen/ISO3C/LEVEL/”\nWe adjust the bolded components of the URL address to specify the country we want using the ISO 3 Character Country Code (USA) and the desired Administrative Level (ADM1).\n\nusa &lt;- httr::GET(\"https://www.geoboundaries.org/api/current/gbOpen/USA/ADM1/\")\n\nAfter the GET call, we have to translate the content.\n\nusa &lt;- httr::content(usa)\n\nnames(usa)\n\n [1] \"boundaryID\"                \"boundaryName\"             \n [3] \"boundaryISO\"               \"boundaryYearRepresented\"  \n [5] \"boundaryType\"              \"boundaryCanonical\"        \n [7] \"boundarySource\"            \"boundaryLicense\"          \n [9] \"licenseDetail\"             \"licenseSource\"            \n[11] \"boundarySourceURL\"         \"sourceDataUpdateDate\"     \n[13] \"buildDate\"                 \"Continent\"                \n[15] \"UNSDG-region\"              \"UNSDG-subregion\"          \n[17] \"worldBankIncomeGroup\"      \"admUnitCount\"             \n[19] \"meanVertices\"              \"minVertices\"              \n[21] \"maxVertices\"               \"meanPerimeterLengthKM\"    \n[23] \"minPerimeterLengthKM\"      \"maxPerimeterLengthKM\"     \n[25] \"meanAreaSqKM\"              \"minAreaSqKM\"              \n[27] \"maxAreaSqKM\"               \"staticDownloadLink\"       \n[29] \"gjDownloadURL\"             \"tjDownloadURL\"            \n[31] \"imagePreview\"              \"simplifiedGeometryGeoJSON\"\n\n\nThe parsed content object contains 32 components. Item 29 is a direct link to the geojson file (gjDownloadURL). Read that in and check the visuals.\n\nusa &lt;- sf::st_read(usa$gjDownloadURL)\n\nReading layer `geoBoundaries-USA-ADM1' from data source \n  `https://github.com/wmgeolab/geoBoundaries/raw/c0ed7b8/releaseData/gbOpen/USA/ADM1/geoBoundaries-USA-ADM1.geojson' \n  using driver `GeoJSON'\nSimple feature collection with 56 features and 5 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: -179.1489 ymin: -14.54869 xmax: 179.7785 ymax: 71.36516\nGeodetic CRS:  WGS 84\n\nplot(sf::st_geometry(usa))\n\n\n\n\nThis looks good, but it includes all United States territories. For simplicity, we can get it down to only the contiguous United States.\n\ndrops&lt;-\n  c(\"Alaska\", \"Hawaii\", \n    \"American Samoa\",\n    \"Puerto Rico\",\n    \"Commonwealth of the Northern Mariana Islands\", \n    \"Guam\", \n    \"United States Virgin Islands\")\n\nusa&lt;-usa[!(usa$shapeName %in% drops),]\n\nplot(sf::st_geometry(usa))\n\n\n\n\nWe can take this a step further and select a target state.\n\ntexas &lt;- usa[usa$shapeName == \"Texas\",]\n\nplot(sf::st_geometry(texas))\n\n\n\n\nFrom here we can crop the WSIM GLDAS raster stack by indexing it with the stored boundary of Texas\n\nwsim_gldas_anoms_tex &lt;- wsim_gldas_anoms[texas]\n\nWarning in st_crop.stars(x, i, crop = crop, ...): st_crop: bounding boxes of x\nand y do not overlap\n\n\nFor a final visual check we’ll take the last time-step in the WSIM-GLDAS dataset (180/December, 2014) and plot it with an overlay of the Texas boundary.\n\nwsim_gldas_anoms_tex |&gt;\n  dplyr::slice(index = 180, along = \"time\") |&gt;\n  plot(reset = FALSE)\n\nplot(sf::st_geometry(texas),\n     add = TRUE,\n     lwd = 3,\n     fill = NA,\n     border = 'purple')\n\n\n\n\nThe subsetted dataset may be written to disk, and saved for future modules.\n\nstars::write_stars(wsim_gldas_anoms_tex, \"wsim_gldas_tex.nc\")\n\nThe size of the pre-processed dataset is 1.6 MB compared to the original dataset of 1.7 GB. This is much more manageable in cloud environments, workshops, and git platforms."
+    "text": "Spatial Selection\nWe can spatially crop the raster stack with a few different methods. Options include using a bounding box (xmin, ymin, xmax, ymax), another raster object, or a vectorized boundary like a shapefile or geojson.\nUsing a vector boundary is one of the more common geoprocessing tasks. In this example we’ll pull a geojson of the United States from the geoBoundaries API. You can also download vectorized boundaries directly from .\nThe call to geoBoundaries’ API is pretty simple:\n“https://www.geoboundaries.org/api/current/gbOpen/ISO3C/LEVEL/”\nWe adjust the bolded components of the URL address to specify the country we want using the ISO 3 Character Country Code (USA) and the desired Administrative Level (ADM1).\n\nusa &lt;- httr::GET(\"https://www.geoboundaries.org/api/current/gbOpen/USA/ADM1/\")\n\nAfter the GET call, we have to translate the content.\n\nusa &lt;- httr::content(usa)\n\nnames(usa)\n\n [1] \"boundaryID\"                \"boundaryName\"             \n [3] \"boundaryISO\"               \"boundaryYearRepresented\"  \n [5] \"boundaryType\"              \"boundaryCanonical\"        \n [7] \"boundarySource\"            \"boundaryLicense\"          \n [9] \"licenseDetail\"             \"licenseSource\"            \n[11] \"boundarySourceURL\"         \"sourceDataUpdateDate\"     \n[13] \"buildDate\"                 \"Continent\"                \n[15] \"UNSDG-region\"              \"UNSDG-subregion\"          \n[17] \"worldBankIncomeGroup\"      \"admUnitCount\"             \n[19] \"meanVertices\"              \"minVertices\"              \n[21] \"maxVertices\"               \"meanPerimeterLengthKM\"    \n[23] \"minPerimeterLengthKM\"      \"maxPerimeterLengthKM\"     \n[25] \"meanAreaSqKM\"              \"minAreaSqKM\"              \n[27] \"maxAreaSqKM\"               \"staticDownloadLink\"       \n[29] \"gjDownloadURL\"             \"tjDownloadURL\"            \n[31] \"imagePreview\"              \"simplifiedGeometryGeoJSON\"\n\n\nThe parsed content object contains 32 components. Item 29 is a direct link to the geojson file (gjDownloadURL). Read that in and check the visuals.\n\nusa &lt;- sf::st_read(usa$gjDownloadURL)\n\nReading layer `geoBoundaries-USA-ADM1' from data source \n  `https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/USA/ADM1/geoBoundaries-USA-ADM1.geojson' \n  using driver `GeoJSON'\nSimple feature collection with 56 features and 5 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: -179.1489 ymin: -14.54869 xmax: 179.7785 ymax: 71.36516\nGeodetic CRS:  WGS 84\n\nplot(sf::st_geometry(usa))\n\n\n\n\n\n\n\n\nThis looks good, but it includes all United States territories. For simplicity, we can get it down to only the contiguous United States.\n\ndrops&lt;-\n  c(\"Alaska\", \"Hawaii\", \n    \"American Samoa\",\n    \"Puerto Rico\",\n    \"Commonwealth of the Northern Mariana Islands\", \n    \"Guam\", \n    \"United States Virgin Islands\")\n\nusa&lt;-usa[!(usa$shapeName %in% drops),]\n\nplot(sf::st_geometry(usa))\n\n\n\n\n\n\n\n\nWe can take this a step further and select a target state.\n\ntexas &lt;- usa[usa$shapeName == \"Texas\",]\n\nplot(sf::st_geometry(texas))\n\n\n\n\n\n\n\n\nFrom here we can crop the WSIM GLDAS raster stack by indexing it with the stored boundary of Texas\n\nwsim_gldas_anoms_tex &lt;- wsim_gldas_anoms[texas]\n\nFor a final visual check we’ll take the last time-step in the WSIM-GLDAS dataset (15/December, 2014) and plot it with an overlay of the Texas boundary.\n\nwsim_gldas_anoms_tex |&gt;\n  dplyr::slice(index = 15, along = \"time\") |&gt;\n  plot(reset = FALSE, breaks = c(0,-1,-2,-3,-4,-5))\n\nplot(sf::st_geometry(texas),\n     add = TRUE,\n     lwd = 3,\n     fill = NA,\n     border = 'purple')\n\n\n\n\n\n\n\n\nThe subsetted dataset may be written to disk, and saved for future modules.\n\nstars::write_mdim(wsim_gldas_anoms_tex, \"wsim_gldas_tex.nc\")\n\nThe size of the pre-processed dataset is 1.6 MB compared to the original dataset of 1.7 GB. This is much more manageable in cloud environments, workshops, and git platforms.\nIn the next lesson we will create more advanced visualizations and extract data of interest.\nLesson 2: WSIM-GLDAS Visualizations and Data Extraction"
   },
   {
     "objectID": "wsim-gldas-vis.html",
@@ -74,28 +74,28 @@
     "href": "wsim-gldas-vis.html#setup",
     "title": "WSIM-GLDAS Dataset Exploration and Visualizations",
     "section": "Setup",
-    "text": "Setup\nlibrary(stars) # raster manipulation\nlibrary(sf) # vector manipulation\nlibrary(ggplot2) # advanced plotting\nlibrary(lubridate) # date/time manipulation\nlibrary(exactextractr) # zonal statistics"
+    "text": "Setup"
   },
   {
     "objectID": "wsim-gldas-vis.html#load-data",
     "href": "wsim-gldas-vis.html#load-data",
     "title": "WSIM-GLDAS Dataset Exploration and Visualizations",
     "section": "Load Data",
-    "text": "Load Data\nLoad in data from previous vignette.\nI think the previous vignette should end with a 2000-2014 12-month integration CONUS dataset.\n\nVerify data structure with print or summary."
+    "text": "Load Data\nWe’ll start again with the WSIM-GLDAS 12 month integration anomaly file and quickly subset it to the continental United States.\n\n\nCode\nwsim_gldas &lt;- stars::read_stars(\"composite_anom_12mo.nc\", proxy = FALSE)\n\n\ndeficit, deficit_cause, surplus, surplus_cause, both, \n\n\nCode\nkeeps&lt;-seq(lubridate::ymd(\"2000-12-01\"),\n           lubridate::ymd(\"2014-12-01\"), \n           by = \"year\")\n# filter using that vector\nwsim_gldas &lt;- dplyr::filter(wsim_gldas, time %in% keeps)\n# you may want to clear your memory if your system is limited\ngc()\n\n\n           used  (Mb) gc trigger    (Mb)   max used    (Mb)\nNcells  1004247  53.7    1701542    90.9    1701542    90.9\nVcells 66539286 507.7 3291939742 25115.6 3492724869 26647.4\n\n\nCode\nwsim_deficit &lt;- wsim_gldas['deficit']\n# generate a vector of dates for subsetting\n\nusa &lt;- httr::GET(\"https://www.geoboundaries.org/api/current/gbOpen/USA/ADM1/\")\nusa &lt;- httr::content(usa)\nusa &lt;- sf::st_read(usa$gjDownloadURL)\n\n\nReading layer `geoBoundaries-USA-ADM1' from data source \n  `https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/USA/ADM1/geoBoundaries-USA-ADM1.geojson' \n  using driver `GeoJSON'\nSimple feature collection with 56 features and 5 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: -179.1489 ymin: -14.54869 xmax: 179.7785 ymax: 71.36516\nGeodetic CRS:  WGS 84\n\n\nCode\ndrops&lt;-\n  c(\"Alaska\", \"Hawaii\", \n    \"American Samoa\",\n    \"Puerto Rico\",\n    \"Commonwealth of the Northern Mariana Islands\", \n    \"Guam\", \n    \"United States Virgin Islands\")\n\nusa&lt;-usa[!(usa$shapeName %in% drops),]\nwsim_deficit_usa&lt;-wsim_deficit[usa]\n\n\nNow we’ll verify this with print() and plot().\n\nprint(wsim_deficit_usa)\n\nstars object with 3 dimensions and 1 attribute\nattribute(s):\n         Min.   1st Qu.     Median       Mean     3rd Qu.     Max.   NA's\ndeficit  -100 -1.271282 -0.7135856 -0.8666337 -0.05214565 3.489938 153810\ndimension(s):\n     from  to offset delta  refsys                    values x/y\nx     221 453   -180  0.25  WGS 84                      NULL [x]\ny     163 262     90 -0.25  WGS 84                      NULL [y]\ntime    1  15     NA    NA POSIXct 2000-12-01,...,2014-12-01    \n\n\nThe output shows that we’ve selected a single attribute (‘deficit’) and 15 time-steps in the ‘time’ dimension.\n\nwsim_deficit_usa |&gt;\n  dplyr::slice(index = 15, along = \"time\") |&gt;\n  plot(reset = FALSE, breaks = c(0,-5,-10,-20,-40,-50))\n\nplot(sf::st_geometry(usa),\n     add = TRUE,\n     lwd = 3,\n     fill = NA,\n     border = 'purple')"
   },
   {
     "objectID": "wsim-gldas-vis.html#exploratory-histogram",
     "href": "wsim-gldas-vis.html#exploratory-histogram",
     "title": "WSIM-GLDAS Dataset Exploration and Visualizations",
     "section": "Exploratory Histogram",
-    "text": "Exploratory Histogram\nCreate histogram of raster values for a single time step.\nBasic plotting method is OK, but check if it can be done with ggplotso we can use a uniform palette across all modules.\n\nExtreme values or other items of note might require additional visualization or other data exploration."
+    "text": "Exploratory Histogram\nCreate histogram of raster values for a single time step.\nGet the values out of the raster and create a histogram.\n\n# filter for the first time-step in the file\nusa1 &lt;-\n  wsim_deficit_usa |&gt; dplyr::slice(time, 1)\n\n# extract the values into a data.frame\nusa1&lt;-as.data.frame(as.numeric(wsim_deficit_usa$deficit))\n# appropriately name the values (it was lost in the example)\nnames(usa1)&lt;-\"Deficit\"\n\nCheck the values\n\nggplot2::ggplot(usa1, ggplot2::aes(Deficit))+\n  ggplot2::geom_histogram(na.rm = TRUE)\n\n`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.\n\n\n\n\n\n\n\n\n\nThere are some bad outliers, we can just zoom into the majority of values by setting x-axis limits.\n\nggplot2::ggplot(usa1, ggplot2::aes(Deficit))+\n  ggplot2::geom_histogram(na.rm = TRUE)+\n  ggplot2::xlim(c(-10,0))\n\n`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.\n\n\n\n\n\n\n\n\n\nExtreme values or other items of note might require additional visualization or other data exploration."
   },
   {
     "objectID": "wsim-gldas-vis.html#multi-panel-time-series",
     "href": "wsim-gldas-vis.html#multi-panel-time-series",
     "title": "WSIM-GLDAS Dataset Exploration and Visualizations",
     "section": "Multi-Panel Time Series",
-    "text": "Multi-Panel Time Series\nCreate a multipanel time series of 12 month integration CONUSA; similar to what we used to identify our case studies. Each panel will represent 1 year.\nLoad in a CONUSA geojson from geoBoundaries. Copy methods from previous vignette.\n\nStart with the basic plotting commands–create the time series with slice or other method used in previous vignette.\n\nThe palette will not exist and be difficult to use.\nTry a built in palette for stars (not sure if possible?).\nIntroduce the official WSIM palette. This may only be helpful within a ggplot function.\n# numbers are return period values for a composite surplus (blues) and deficit (reds) dataset\nleg_colors&lt;-c(\n    '#9B0039',\n    # -50 to -40\n    '#D44135',\n    # -40 to -20\n    '#FF8D43',\n    # -20 to -10\n    '#FFC754',\n    # -10 to -5\n    '#FFEDA3',\n    # -5 to -3\n    '#FFFFFF',\n    # -3 to 3\n    '#CEFFAD',\n    # 3 to 5\n    '#00F3B5',\n    # 5 to 10\n    '#00CFCE',\n    # 10 to 20\n    '#009ADE',\n    # 20 to 40\n    '#0045B5')\nOnce hot spots are easily identified pick a region of interest to zoom in on using the 1 month integration dataset.\nLoad in the 1 month integration dataset and subset/index the dataset to the region of interest (copy code from previous vignette). Use dplyr::slice or other method to pull out just the 12 months from the year of interest. Code demonstrating these techniques in previous vignette.\n\nCreate a multi-panel figure with each panel representing 1 month to identify the most intense months of drought or flooding. Starting with this one maybe use ggplot and a nice palette, legend, and panel headings. Will probably have to use some sort of faceting to make individual panels (might not be possible)."
+    "text": "Multi-Panel Time Series\nCreate a multipanel time series of 12 month integration CONUSA; similar to what we used to identify our case studies. Each panel will represent 1 year.**\nLoad in a CONUSA geojson from geoBoundaries. Copy methods from previous vignette.\n\nwsim_deficit_usa |&gt;\n  plot(reset = FALSE,\n       col = leg_colors&lt;-c(\n    '#9B0039',\n    # -50 to -40\n    '#D44135',\n    # -40 to -20\n    '#FF8D43',\n    # -20 to -10\n    '#FFC754',\n    # -10 to -5\n    '#FFEDA3',\n    # -5 to -3\n    '#FFFFFF'))\n\n\n\n\n\n\n\n\nOnce hot spots are easily identified pick a region of interest to zoom in on using the 1 month integration dataset.\nLoad in the 1 month integration dataset and subset/index the dataset to the region of interest (copy code from previous vignette). Use dplyr::slice or other method to pull out just the 12 months from the year of interest. Code demonstrating these techniques in previous vignette.\n\nwsim_gldas_1mo &lt;- stars::read_stars(\"composite_anom_1mo.nc\", proxy = FALSE)\n\ndeficit, deficit_cause, surplus, surplus_cause, both, \n\nprint(wsim_gldas_1mo)\n\nstars object with 3 dimensions and 5 attributes\nattribute(s), summary of first 1e+05 cells:\n               Min.     1st Qu.      Median         Mean     3rd Qu.       Max.\ndeficit        -100  -1.8314584  -0.2373874  -1.26453645  -0.2373874   1.896493\ndeficit_cause     1 129.0000000 129.0000000 112.90956000 129.0000000 129.000000\nsurplus        -100  -0.9671488  -0.7329655  -0.95631468  -0.6206152   2.384447\nsurplus_cause     1 129.0000000 129.0000000 127.37130000 129.0000000 129.000000\nboth              0   0.0000000   0.0000000   0.03784493   0.0000000   2.384447\n                NA's\ndeficit        87340\ndeficit_cause      0\nsurplus        98724\nsurplus_cause      0\nboth           98724\ndimension(s):\n     from   to offset delta  refsys                    values x/y\nx       1 1440   -180  0.25  WGS 84                      NULL [x]\ny       1  600     90 -0.25  WGS 84                      NULL [y]\ntime    1  804     NA    NA POSIXct 1948-01-01,...,2014-12-01    \n\n\nCreate a multi-panel figure with each panel representing 1 month to identify the most intense months of drought or flooding. Starting with this one maybe use ggplot and a nice palette, legend, and panel headings. Will probably have to use some sort of faceting to make individual panels (might not be possible)."
   },
   {
     "objectID": "wsim-gldas-vis.html#use-case-background",
@@ -151,20 +151,146 @@
     "href": "presentations/sedac-open-science-brinks-01_09_24.html#presentation-outline",
     "title": "TOPS-SCHOOL WSIM (GLDAS)",
     "section": "Presentation Outline",
-    "text": "Presentation Outline\n\nLearning objectives\nOpen Science Components\nTechnical details\nProposed analyses and outputs"
+    "text": "Presentation Outline\n\nModule Goals\nLearning objectives\nOpen Science Components\nTechnical details\nProposed analyses and outputs"
   },
   {
     "objectID": "presentations/sedac-open-science-brinks-01_09_24.html#learning-objectives",
     "href": "presentations/sedac-open-science-brinks-01_09_24.html#learning-objectives",
     "title": "TOPS-SCHOOL WSIM (GLDAS)",
     "section": "Learning Objectives",
-    "text": "Learning Objectives\nWe are currently in the early development phases and need to adjust the narrative voice between 3 learning/content components:\n\nWater resources\nTechnical data\nTechnical coding"
+    "text": "Learning Objectives\nWe are currently in the early development phases and need to adjust the narrative voice between 3 learning/content components.\n\nWater resources\nTechnical data\nTechnical coding\n\n\nOne goal of these two days is to solicit feedback regarding objectives like these."
   },
   {
     "objectID": "presentations/sedac-open-science-brinks-01_09_24.html#wsim-gldas",
     "href": "presentations/sedac-open-science-brinks-01_09_24.html#wsim-gldas",
     "title": "TOPS-SCHOOL WSIM (GLDAS)",
     "section": "WSIM-GLDAS",
-    "text": "WSIM-GLDAS\nWSIM-GLDAS is an open source dataset that characterizes surpluses and deficits of freshwater and the parameters determining these anomalies.\n\nFreely available on SEDAC\n\n\n\n\nSEDAC Workshop on Open Science"
+    "text": "WSIM-GLDAS\nWSIM-GLDAS is an open source dataset that characterizes surpluses and deficits of freshwater and the parameters determining these anomalies.\n\n\n\nGlobally rasterized dataset issued monthly for 1948-2014\nComposite surplus/deficit anomalies\nMultitude of additional metrics and integration periods\nFreely available on SEDAC\n\n\n\n\n\n\n\n\n\n\nThe datasets are available as multidimensional netCDF files"
+  },
+  {
+    "objectID": "presentations/sedac-open-science-brinks-01_09_24.html#open-science-components",
+    "href": "presentations/sedac-open-science-brinks-01_09_24.html#open-science-components",
+    "title": "TOPS-SCHOOL WSIM (GLDAS)",
+    "section": "Open Science Components",
+    "text": "Open Science Components\nLike all other components of the SCHOOL project, the water resource modules are entirely open source.\n\n\n\nOpen source computing (R, Rstudio, VS Code, QGIS, etc.)\nOpen source datasets; freely available and well documented\nOpen source development\nOpen source “results” on GitHub Pages\n\n\n\n\n\n\n\nDevelopment components are also open science. We’re bringing along research assistants with descriptive vignette templates/lessons\nI’m developing on a mix of tech stacks, but it’s important to make sure our modules work on Linux/Ubuntu"
+  },
+  {
+    "objectID": "presentations/sedac-open-science-brinks-01_09_24.html#water-resource-objectives",
+    "href": "presentations/sedac-open-science-brinks-01_09_24.html#water-resource-objectives",
+    "title": "TOPS-SCHOOL WSIM (GLDAS)",
+    "section": "Water Resource Objectives",
+    "text": "Water Resource Objectives\nThese include introducing the domain knowledge and human narrative that can be derived from these datasets.\n\nUnderstanding the socioeconomic and environmental impacts of droughts and floods.\nExploring drought and flooding events in areas of interest to you and learning about the impacts to local water supplies, agriculture, recreation, and tourism.\nBasic background on the water cycle."
+  },
+  {
+    "objectID": "presentations/sedac-open-science-brinks-01_09_24.html#technical-data-objectives",
+    "href": "presentations/sedac-open-science-brinks-01_09_24.html#technical-data-objectives",
+    "title": "TOPS-SCHOOL WSIM (GLDAS)",
+    "section": "Technical Data Objectives",
+    "text": "Technical Data Objectives\n\nWhat does water resource data “look” like?\nWhere do you find it and how do you get it?"
+  },
+  {
+    "objectID": "presentations/sedac-open-science-brinks-01_09_24.html#coding-objectives",
+    "href": "presentations/sedac-open-science-brinks-01_09_24.html#coding-objectives",
+    "title": "TOPS-SCHOOL WSIM (GLDAS)",
+    "section": "Coding Objectives",
+    "text": "Coding Objectives\nAre we interested at all in teaching people how to code? Unlikely but then how do you address all the code.\n# generate a vector of dates for subsetting\nkeeps&lt;-seq(lubridate::ymd(\"2000-01-01\"),\n           lubridate::ymd(\"2014-12-01\"), \n           by = \"month\")\n           \n# filter using that vector\nwsim_gldas_anoms &lt;- dplyr::filter(wsim_gldas_anoms, time %in% keeps)\n\n# verify the time dimension was properly subsetted\nprint(wsim_gldas_anoms)\n\n# do a visual check with the first 6 time-steps\nwsim_gldas_anoms |&gt;\n  dplyr::slice(index = 1:6, along = \"time\") |&gt;\n  plot(key.pos = 1)\n\n\n\nSEDAC Workshop on Open Science"
+  },
+  {
+    "objectID": "presentations/sedac-open-science-brinks-01_09_24.html#narrative-objectives",
+    "href": "presentations/sedac-open-science-brinks-01_09_24.html#narrative-objectives",
+    "title": "TOPS-SCHOOL WSIM (GLDAS)",
+    "section": "Narrative Objectives",
+    "text": "Narrative Objectives\nWe are currently in the early development phases and need to adjust the narrative voice between 3 learning/content components.\n\nWater resources\nTechnical data\nTechnical coding\n\n\nOne goal of these two days is to solicit feedback regarding objectives like these."
+  },
+  {
+    "objectID": "presentations/sedac-open-science-brinks-01_09_24.html#water-resource-narrative",
+    "href": "presentations/sedac-open-science-brinks-01_09_24.html#water-resource-narrative",
+    "title": "TOPS-SCHOOL WSIM (GLDAS)",
+    "section": "Water Resource Narrative",
+    "text": "Water Resource Narrative\nThese include introducing the domain knowledge and human narrative that can be derived from these datasets.\n\n\n\nUnderstanding the socioeconomic and environmental impacts of droughts and floods.\nExploring drought and flooding events in areas of interest to you and learning about the impacts to local water supplies, agriculture, recreation, and tourism.\nBasic background on the water cycle."
+  },
+  {
+    "objectID": "presentations/sedac-open-science-brinks-01_09_24.html#technical-data-narrative",
+    "href": "presentations/sedac-open-science-brinks-01_09_24.html#technical-data-narrative",
+    "title": "TOPS-SCHOOL WSIM (GLDAS)",
+    "section": "Technical Data Narrative",
+    "text": "Technical Data Narrative\n\nWhat does water resource data “look” like?\nWhere do you find it and how do you get it?\n\n\n\n\n\n\n\n\nHere we have a complex structure with data cubes/netcdf, but other lessons in the module and other modules will feature a variety of data structures"
+  },
+  {
+    "objectID": "presentations/sedac-open-science-brinks-01_09_24.html#coding-narrative",
+    "href": "presentations/sedac-open-science-brinks-01_09_24.html#coding-narrative",
+    "title": "TOPS-SCHOOL WSIM (GLDAS)",
+    "section": "Coding Narrative",
+    "text": "Coding Narrative\nAre we interested at all in teaching people how to code? Unlikely but then how do you address all the code.\n# generate a vector of dates for subsetting\nkeeps&lt;-seq(lubridate::ymd(\"2000-01-01\"),\n           lubridate::ymd(\"2014-12-01\"), \n           by = \"month\")\n           \n# filter using that vector\nwsim_gldas_anoms &lt;- dplyr::filter(wsim_gldas_anoms, time %in% keeps)\n\n# verify the time dimension was properly subsetted\nprint(wsim_gldas_anoms)\n\n# do a visual check with the first 6 time-steps\nwsim_gldas_anoms |&gt;\n  dplyr::slice(index = 1:6, along = \"time\") |&gt;\n  plot(key.pos = 1)"
+  },
+  {
+    "objectID": "presentations/sedac-open-science-brinks-01_09_24.html#outputs-and-analyses",
+    "href": "presentations/sedac-open-science-brinks-01_09_24.html#outputs-and-analyses",
+    "title": "TOPS-SCHOOL WSIM (GLDAS)",
+    "section": "Outputs and Analyses",
+    "text": "Outputs and Analyses\nWhatever the chosen narrative voice and content, we hope to bring greater understanding for each module through visualizations and analysis. The WSIM-GLDAS water resource modules will achieve this by creating:\n\nNational and regional 12 month integration composite surplus/deficit maps\nTime series illustrations of point locations\nPopulation exposure time series figures and tables"
+  },
+  {
+    "objectID": "presentations/sedac-open-science-brinks-01_09_24.html#composite-surplus-and-deficit-maps",
+    "href": "presentations/sedac-open-science-brinks-01_09_24.html#composite-surplus-and-deficit-maps",
+    "title": "TOPS-SCHOOL WSIM (GLDAS)",
+    "section": "Composite Surplus and Deficit Maps",
+    "text": "Composite Surplus and Deficit Maps\nTwelve month integration maps illustrate the observed drought or flooding of an area relative to a long term baseline period.\n\n\n\n\n\n\n\nLonger term integration plots quickly summarize climate trends for large areas, and help users identify areas of interest."
+  },
+  {
+    "objectID": "presentations/sedac-open-science-brinks-01_09_24.html#location-of-interest",
+    "href": "presentations/sedac-open-science-brinks-01_09_24.html#location-of-interest",
+    "title": "TOPS-SCHOOL WSIM (GLDAS)",
+    "section": "Location of Interest",
+    "text": "Location of Interest\nPoint location time series figures illustrate long term trends for a single location on a month to month basis.\n\n\n\n\n\n\n\nThese plots can really bring the impacts of droughts and floods to a specific point; your home, your school, etc."
+  },
+  {
+    "objectID": "presentations/sedac-open-science-brinks-01_09_24.html#population-exposure",
+    "href": "presentations/sedac-open-science-brinks-01_09_24.html#population-exposure",
+    "title": "TOPS-SCHOOL WSIM (GLDAS)",
+    "section": "Population Exposure",
+    "text": "Population Exposure\nPopulation exposure plots and tables help illustrate the sociological impacts of droughts and floods.\n\n\n\n\n\n\n\nCommonplace to show maps depicting extreme heat or floods in a particular area, but does anyone actually live there?"
+  },
+  {
+    "objectID": "presentations/sedac-open-science-brinks-01_09_24.html#composite-surplus-and-deficit-maps-cont.",
+    "href": "presentations/sedac-open-science-brinks-01_09_24.html#composite-surplus-and-deficit-maps-cont.",
+    "title": "TOPS-SCHOOL WSIM (GLDAS)",
+    "section": "Composite Surplus and Deficit Maps (cont.)",
+    "text": "Composite Surplus and Deficit Maps (cont.)\nNow you can zoom in on an area of interest with a monthly time series."
+  },
+  {
+    "objectID": "presentations/sedac-open-science-brinks-01_09_24.html#current-drafts",
+    "href": "presentations/sedac-open-science-brinks-01_09_24.html#current-drafts",
+    "title": "TOPS-SCHOOL WSIM (GLDAS)",
+    "section": "Current Drafts",
+    "text": "Current Drafts\nAlthough the module and lesson structure is yet to be finalized, we have some rough drafts in place that demonstrate the baseline technical workflow and present a template for dev assistants.\n\nAcquiring and Subsetting WSIM-GLDAS\nVisualizing and Exploring WSIM-GLDAS\nMODIS Near Real Time Flood Data\nThis presentation is also online"
+  },
+  {
+    "objectID": "presentations/sedac-open-science-brinks-01_09_24.html#an-open-process",
+    "href": "presentations/sedac-open-science-brinks-01_09_24.html#an-open-process",
+    "title": "TOPS-SCHOOL WSIM (GLDAS)",
+    "section": "An Open Process",
+    "text": "An Open Process\nThis is an open process reliant on feedback from our:\n\nSubject matter experts\nProject managers\nDevelopment team\nResearch assistants\nUsers and collaborators like you\n\nWe always welcome comments, contributors, and all types of feedback in person, through the TOPS network, and our GitHub repositories."
+  },
+  {
+    "objectID": "presentations/sedac-open-science-brinks-01_09_24.html#acknowledgements-questions",
+    "href": "presentations/sedac-open-science-brinks-01_09_24.html#acknowledgements-questions",
+    "title": "TOPS-SCHOOL WSIM (GLDAS)",
+    "section": "Acknowledgements & Questions",
+    "text": "Acknowledgements & Questions\nThanks to everyone at NASA-TOPS, Columbia, ISciences, and the TOPS-SCHOOL team.\n\n\n\n\n\n\n\n\n\nSEDAC Workshop on Open Science, Palisades NY"
+  },
+  {
+    "objectID": "presentations/sedac-open-science-brinks-01_09_24.html#lesson-goals",
+    "href": "presentations/sedac-open-science-brinks-01_09_24.html#lesson-goals",
+    "title": "TOPS-SCHOOL WSIM (GLDAS)",
+    "section": "Lesson Goals",
+    "text": "Lesson Goals\n\nThe objective of this lesson is to provide content for learning water resource issues through data exploration and analysis.\nWe are introducing 3 datasets for this module\n\nMODIS NRT Flood Data\nNYC Lead Data\nWSIM-GLDAS"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Welcome to TOPS-SCHOOL Module 1",
+    "section": "",
+    "text": "Welcome to the Water Resources Module!\nThe first TOPSTSCHOOL Module on Water consists of three vignettes which cover examples of water use, safety, and anomalies such as droughts and floods. The vignettes use three datasets to walk users through lessons in accessing and analyzing data, and users will be able to adapt the code in all three examples to perform analyses including data cleaning, processing to subset to an area of interest, and creating visualizations to share what they have learned with their communities. Users will understand an Open Science workflow including accessing and citing open data. The three datasets and vignettes cover:\n\nLead in New York State Schools: Exploring lead contamination data and US Census data and lessons in data cleaning and visualization, with a discerning eye towards data limitations.\n\nLesson 1: Interactive Exploration of NYC Lead Data\n\nWSIM-GLDAS: Exploring water anomalies using a historical dataset.\n\nLesson 1: Acquiring and Pre-Processing WSIM-GLDAS\nLesson 2: Advanced Visualizations with WSIM-GLDAS\n\nMODIS Near Real Time flood data: Lessons in data acquisition and analysis of recent water anomalies.\n\nLesson 1: Acquiring and Exploring MODIS NRT Flood Data"
   }
 ]

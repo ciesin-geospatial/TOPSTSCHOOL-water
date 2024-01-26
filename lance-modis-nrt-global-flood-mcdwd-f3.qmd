@@ -39,7 +39,7 @@ MODIS adoption aimed to surpass barriers related to satellite data, including co
 
 **LANCE**
 
-The **Land, Atmosphere Near Real-time Capability for EOS (LANCE)** is a NASA initiative that provides near real-time access to satellite data, including MODIS . It allows users to access the latest data within a few hours of satellite overpass, enabling rapid responses to environmental events such as floods. LANCE is particularly valuable for emergency response teams and researchers who require up-to-date information for monitoring and assessing natural disasters [@LANCE2024].
+The **Land, Atmosphere Near Real-time Capability for EOS (LANCE)** is a NASA initiative that provides near real-time access to satellite data, including MODIS. It allows users to access the latest data within a few hours of satellite overpass, enabling rapid responses to environmental events such as floods. LANCE is particularly valuable for emergency response teams and researchers who require up-to-date information for monitoring and assessing natural disasters [@LANCE2024].
 
 LANCE reduces processing time, allowing for timely computation. Users access the data through platforms like Web Map Service (WMS) and Web Coverage Service (WCS), enabling visualization and analysis for informed decision-making. This NRT approach enhances the speed and accessibility of critical information on vegetation conditions [@zhang2022].
 
