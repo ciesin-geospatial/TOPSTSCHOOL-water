@@ -15,32 +15,33 @@ date: "December, 6 2023"
 
 ## Introduction
 
-  * Raster/vector visualization background?
-    + General
-    + Water resource specific
-  * Package background
-    + Basic plotting with stars/sf
-    + more advanced plotting with ggplot/ggmap
+A raster is a grid of geographic data which has information stored per pixel. Vectors are a collection or a list of numbers. Vectors can be used to store coordinates, which can then be used to extract information from a pixel in the raster for analysis, such as a time series. Rasters can store many types of information, such as precipitation anomaly data, which can show rainfall deficits or surpluses. 
 
-## Setup
+An anomaly is described as a deviation from the long term average over a period and region. Precipitation anomalies can cause drought, which is a prolonged period of little to no rainfall. Droughts have impacts on the environment and humans, at times causing a chain reaction. For example, California had a drought in 2014 that subsequently dried out rivers which hosted populations of the Chinook salmon, affecting the population. That in turn affected Native American tribes food supply.
+
+In this vignette, you will be combining the basic plot() function with sf functions to plot singular attributes, and using more advanced plotting functions such as ggplot() for plotting histograms, multi-panel plots, and a time series. 
 
 
 ## Load Data
 
-We'll start again with the WSIM-GLDAS 12 month integration anomaly file and quickly subset it to the continental United States.
+We'll start again with the WSIM-GLDAS 12 month integration anomaly file from SEDAC and quickly subset it to the continental United States.
 
 ```{r warning=FALSE}
 #| code-fold: true
+# generate a vector of dates for subsetting
 wsim_gldas <- stars::read_stars("composite_anom_12mo.nc", proxy = FALSE)
 keeps<-seq(lubridate::ymd("2000-12-01"),
            lubridate::ymd("2014-12-01"), 
            by = "year")
+
 # filter using that vector
 wsim_gldas <- dplyr::filter(wsim_gldas, time %in% keeps)
+
 # you may want to clear your memory if your system is limited
 gc()
+
+# subset for deficit
 wsim_deficit <- wsim_gldas['deficit']
-# generate a vector of dates for subsetting
 
 usa <- httr::GET("https://www.geoboundaries.org/api/current/gbOpen/USA/ADM1/")
 usa <- httr::content(usa)
@@ -62,7 +63,7 @@ Now we'll verify this with `print()` and `plot()`.
 ```{r}
 print(wsim_deficit_usa)
 ```
-The output shows that we've selected a single attribute ('deficit') and 15 time-steps in the 'time' dimension.
+The output shows that we've selected a single attribute ('deficit') and 15 time-steps in the 'time' dimension. Plot only the 14th time step and show the border color as purple, and a lineweight of 3. 
 
 ```{r warning=FALSE, message=FALSE}
 wsim_deficit_usa |>
@@ -90,12 +91,13 @@ usa1 <-
 
 # extract the values into a data.frame
 usa1<-as.data.frame(as.numeric(wsim_deficit_usa$deficit))
+
 # appropriately name the values (it was lost in the example)
 names(usa1)<-"Deficit"
 ```
 
 
-Check the values
+Check the values.
 
 ```{r}
 ggplot2::ggplot(usa1, ggplot2::aes(Deficit))+
@@ -113,13 +115,13 @@ Extreme values or other items of note might require additional visualization or 
 
 ## Multi-Panel Time Series
 
-Create a multipanel time series of 12 month integration CONUSA; similar to what we used to identify our case studies. Each panel will represent 1 year.**
+Create a multipanel time series of 12 month integration CONUSA; similar to what we used to identify our case studies. Each panel will represent 1 year.
 
 Load in a CONUSA geojson from geoBoundaries. Copy methods from previous vignette.
 
 ```{r warning = TRUE}
 
-#Studying the zoomed in histogram and changing the range from [-10,10] will show that most values in CONUS do not range up to -100 so -100 is possibly an outlier; most values are between -5 to 5 so adjust breaks accordingly to get the most out of the spectrum. Breaks chosen are [-5, -3, -1, 0, 1, 3, 5].
+# the histogram can be studied to properly choose breaks. For example, try plotting the histogram from (-10,10) to determine where values lie between. Breaks chosen are [-5, -3, -1, 0, 1, 3, 5] from studying the histogram.
 
 wsim_deficit_usa |>
   dplyr::slice(index = 1:14, along = "time") |>
@@ -135,16 +137,13 @@ wsim_deficit_usa |>
     # -10 to -5
     '#FFEDA3',
     # -5 to -3
-    '#FFFFFF'), breaks = c(-5, -3, -1, 0, 1, 3, 5))
+    '#FFFFFF'), breaks = c(-5,-3,-1,0,1,3,5))
+```
 
-plot(sf::st_geometry(usa),
-     add = TRUE,
-     lwd = 3,
-     sf_max.plot = 1:14,
-     fill = NA,
-     border = 'black')
 
-#Plotting without breaks produces a similar but different map.
+Plotting without breaks produces a similar but different map.
+
+```{r}
 
 wsim_deficit_usa |>
   dplyr::slice(index = 1:14, along = "time") |>
@@ -161,15 +160,6 @@ wsim_deficit_usa |>
     '#FFEDA3',
     # -5 to -3
     '#FFFFFF'))
-
-plot(sf::st_geometry(usa),
-     add = TRUE,
-     lwd = 3,
-     sf_max.plot = 20,
-     maxnl = 14,
-     fill = NA,
-     border = 'black')
-
 
 ```
 
@@ -181,84 +171,46 @@ Load in the 1 month integration dataset and subset/index the dataset to the regi
 wsim_gldas_1mo <- stars::read_stars("composite_anom_1mo.nc", proxy = FALSE)
 
 print(wsim_gldas_1mo)
-```
 
-```{r}
-#Picking year of 2012 due to negative deficit located in Mid-America
+# subset for USA
 wsim_gldas_1mo<-wsim_gldas_1mo[usa]
-#Subset for deficit
+
+# subset for deficit
 wsim_gldas_1mo <- wsim_gldas_1mo['deficit']
 
-#Create a new sequence of dates, this time monthly
-keeps2<-seq(lubridate::ymd("2000-01-01"),
-           lubridate::ymd("2014-12-01"), 
+# create a new sequence of dates, this time monthly, for the chosen year of 2011
+keeps3<-seq(lubridate::ymd("2011-01-01"),
+           lubridate::ymd("2011-12-01"), 
            by = "month")
-wsim_gldas_1mo <- dplyr::filter(wsim_gldas_1mo, time %in% keeps2)
-
-#Pulling out the months for 2012
-#Since data is in monthly timesteps, one could use some simple algebra to determine the monthly indexes that correspond with the year of 2012.
-#2000 + x/12 = [2012] + 1 where [2012] is the year of interest, gives us 156, which is the last month of 2012. Doing 156-11 gives us 145, which is the first month. So indexes are between 145:156.
-
-wsim_gldas_1mo |>
-  dplyr::slice(index = 145:156, along = "time") |>
-  plot(reset = FALSE,
-       col = leg_colors<-c(
-    '#9B0039',
-    # -50 to -40
-    '#D44135',
-    # -40 to -20
-    '#FF8D43',
-    # -20 to -10
-    '#FFC754',
-    # -10 to -5
-    '#FFEDA3',
-    # -5 to -3
-    '#FFFFFF'))
-
+wsim_gldas_1mo <- dplyr::filter(wsim_gldas_1mo, time %in% keeps3)
 ```
 
-Create a multi-panel figure with each panel representing 1 month to identify the most intense months of drought or flooding. Starting with this one maybe use `ggplot` and a nice palette, legend, and panel headings. Will probably have to use some sort of faceting to make individual panels (might not be possible).
+
+Create a multi-panel figure with each panel representing 1 month to identify the most intense months of drought or flooding. Starting with this one maybe use `ggplot` and a nice palette, legend, and panel headings. Will probably have to use some sort of faceting to make individual panels.
 
 ```{r}
 
-#try redoing the sequence so that its only 2012 for both ggplot attempts
-
-#Create a new sequence of dates, this time monthly
-keeps3<-seq(lubridate::ymd("2012-01-01"),
-           lubridate::ymd("2012-12-01"), 
-           by = "month")
-wsim_gldas_1mo <- dplyr::filter(wsim_gldas_1mo, time %in% keeps3)
-
-#using dataframe
-
+# turn into dataframe
 df_wsim_gldas_1mo <-as.data.frame(wsim_gldas_1mo, xy = TRUE) 
 
-ggplot(data = df_wsim_gldas_1mo) +
-  geom_raster(aes(x = x, y = y, fill = deficit)) +
-  scale_color_gradientn(
+ggplot2::ggplot(data = df_wsim_gldas_1mo) +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = deficit)) +
+  ggplot2::scale_color_gradientn(
   colors = c('darkred', 'red', 'darkorange', 'orange', 'gold', 'yellow', 'white')) + 
-  facet_wrap(time ~ .)
+  ggplot2::facet_wrap(time ~ .)
   
 
 ```
 
-#st_wsim_gldas_1mo <- sf::st_as_sf(wsim_gldas_1mo)
-#ggplot() + stars::geom_stars(data = wsim_gldas_1mo)
-
-#wsim_deficit_usa |>
-#  dplyr::slice(index = 1:14, along = "time") |>
-## Point Location Time Series
 
 ```{r}
-
 
 ggplot2::ggplot() +
   stars::geom_stars(data = wsim_gldas_1mo) +
-  scale_color_gradientn(
+  ggplot2::scale_color_gradientn(
   colors = c('darkred', 'red', 'darkorange', 'orange', 'gold', 'yellow', 'white')) + 
   ggplot2::facet_wrap(time ~ .) 
   
-
 ```
 
 Visualize an individual cell with particular extreme or maybe volatile values. Use Google Maps to identify the latitude/longitude of a place of interest. Maybe an urban center or other important location in the region that suffered from the extreme event.
@@ -266,35 +218,28 @@ Visualize an individual cell with particular extreme or maybe volatile values. U
 Create a vector with the point location.
 
 ```{r}
-#coords <- c(43.965876, -102.193077)
-#coords <- c(-102.193077, 43.965876)
-#Coordinates for Austin Texas
+# coordinates for Austin, Texas
 coords <- c(-97.7431, 30.2672)
 
-#Create a stars object with point coordinates
-#point_stars <- st_as_stars(st_as_sf(st_sfc(st_point(coords), crs = st_crs(wsim_gldas_1mo))))
-
-#point_stars <- st_as_stars(st_sfc(st_point(coords), crs = st_crs(wsim_gldas_1mo)))
-
-#point_stars <- st_sfc(st_point(coords), crs = st_crs(wsim_gldas_1mo))
-#point_stars <- st_set_dimensions(point_stars, values = list(time = seq_len(st_dimensions(wsim_gldas_1mo)$time)))
-
-point_stars <- st_sfc(st_point(coords), crs = st_crs(wsim_gldas_1mo),
-                      dim = names(st_dimensions(wsim_gldas_1mo)))
-
+# create a stars object with point coordinates where
+# st_sfc(), st_points(), st_crs(),st_dimensions() 
+point_stars <- sf::st_sfc(st_point(coords), crs = stars::st_crs(wsim_gldas_1mo),
+                      dim = names(stars::st_dimensions(wsim_gldas_1mo)))
 
 ```
+
 
 Use `stars::extract` to extract raster values in the stack at the point location. 
 
 ```{r}
-extracted_vals <- st_extract(wsim_gldas_1mo, point_stars)
+extracted_vals <- stars::st_extract(wsim_gldas_1mo, point_stars)
 ```
 
 The resulting data frame of time series values should be inspected. It may also need to be converted from wide format to long format so it may be plotted in `ggplot`. Use either pivot wider/longer from `dplyr` or cast/melt from `data.table`.
 
 ```{r}
-extracted_df <- data.frame(extracted_vals)
+# convert to dataframe
+extracted_df <- stars::as.data.frame(extracted_vals)
 print(extracted_df)
 
 ```
@@ -302,19 +247,28 @@ print(extracted_df)
 Once in the proper format, plot using `ggplot`.
 
 ```{r}
-ggplot(extracted_df, aes(x = time, y = deficit)) + geom_line()
+ggplot2::ggplot(extracted_df, aes(x = time, y = deficit)) + ggplo2::geom_line()
 
 ```
+
+Texas, in 2011, 
 
 ## Population Exposure Plot
 
 Use Gridded Population of the World and `exactextractr` to determine the number of people exposed to a given anomaly for each month of the year. 
 
-Background info on GPW would be appropriate. Same with `exactextractr` and zonal statistics.
+*****Background info on GPW would be appropriate. Same with `exactextractr` and zonal statistics.
 
 Load in GPW data and the `exactextractr` package
 
-```r
+```{r}
+
+gpw <- stars::read_stars("gpw_v4_population_count_rev11_15_min.nc", proxy = FALSE)
+print(gpw)
+
+library(exactextractr)
+
+gpw_df <-as.data.frame(gpw)
 
 ```
 
@@ -324,8 +278,19 @@ This might be a bit tricky; been a while for me. Have to look up the proper code
 
 Resulting data.frame will probably need to be transformed to long (just like before), so it can be plotted.
 
-```r
+```{r}
+
+
 
 ```
 
 Now plot the data in ggplot. I have some existing code I can pull to help with the plotting--or at least make it fancy.
+
+```{r}
+
+
+
+```
+
+[conclusion]
+The insights drawn from various data sources, including remote sensing data, contribute to this understanding. Farahmand et al. (2012) employ remote sensing in monitoring drought, while models like the Global Land Data Assimilation System (GLDAS), as discussed by Rodell et al. (2004), utilize satellite and ground-based observations to provide real-time, high-resolution data on land surface states and fluxes, aiding in a more comprehensive understanding of drought and flooding.
