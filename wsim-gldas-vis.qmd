@@ -198,11 +198,11 @@ ggplot2::ggplot(data = df_wsim_gldas_1mo) +
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = deficit)) +
   #ggplot2::scale_color_gradientn(
   #colors = c('darkred', 'red', 'darkorange', 'orange', 'gold', 'yellow', 'white')) +
-  scale_fill_viridis_c() +
-  theme_void() +
-  theme(
+  ggplot2::scale_fill_viridis_c() +
+  ggplot2::theme_void() +
+  ggplot2::theme(
     legend.position = "bottom"
-  )
+  ) +
   ggplot2::facet_wrap(time ~ .)
   
 
@@ -227,8 +227,8 @@ Create a vector with the point location.
 # vector of coordinates for Austin, Texas
 coords <- c(-97.7431, 30.2672)
 
-# create a stars object with point coordinates where 'sf::st_sfc()' is used to create a geometry list column and add a coordinate reference system. 'sf::st_points()' is within that function to turn the coords vector into a point. 'stars:: st_crs()' and 'stars::st_dimensions()'  respectively retrieves the coordinate reference system and the dimensions of wsim_gldas_1mo to ensure that the final values in point_stars is the same reference system and shape. 
-point_stars <- sf::st_sfc(st_point(coords), crs = stars::st_crs(wsim_gldas_1mo),
+# create a stars object with point coordinates where 'sf::st_sfc()' is used to create a geometry list column and add a coordinate reference system. 'sf::st_points()' is within that function to turn the coords vector into a point. 'sf:: st_crs()' and 'stars::st_dimensions()'  respectively retrieves the coordinate reference system and the dimensions of wsim_gldas_1mo to ensure that the final values in point_stars is the same reference system and shape. 
+point_stars <- sf::st_sfc(sf::st_point(coords), crs = sf::st_crs(wsim_gldas_1mo),
                       dim = names(stars::st_dimensions(wsim_gldas_1mo)))
 
 ```
@@ -244,7 +244,7 @@ The resulting data frame of time series values should be inspected. It may also 
 
 ```{r}
 # convert to dataframe
-extracted_df <- stars::as.data.frame(extracted_vals)
+extracted_df <- as.data.frame(extracted_vals)
 print(extracted_df)
 
 ```
@@ -252,7 +252,7 @@ print(extracted_df)
 Once in the proper format, plot using `ggplot`.
 
 ```{r}
-ggplot2::ggplot(extracted_df, aes(x = time, y = deficit)) + ggplo2::geom_line()
+ggplot2::ggplot(extracted_df, ggplot2::aes(x = time, y = deficit)) + ggplot2::geom_line()
 
 ```
 
