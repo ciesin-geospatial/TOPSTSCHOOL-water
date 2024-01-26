@@ -1,0 +1,273 @@
+---
+title: "MODIS NRT Global Flood Product"
+author: "Juan F. Martinez"
+date: "December 14, 2023"
+bibliography: nrt_flood_references.bib
+---
+
+## MODIS Near Real Time (NRT) Global Flood Product
+
+### Introduction
+
+<img src="https://www.earthdata.nasa.gov/sites/default/files/imported/Flood_mekong.png" alt="MODIS NRT FLOOD" width="600"/>[^1]
+
+[^1]: Photo Credit, NASA OESDIS.
+
+The **MODIS/Aqua+Terra Global Flood Product L3 Near Real Time (NRT) 250m Global Flood Product (MCDWD_L3_NRT) (beta)** provides daily maps of flooding globally. The product is provided over 3 compositing periods (1-day, 2-day, and 3-day) to minimize the impact of clouds and more rigorously identify flood water (the best composite will depend on the cloudiness for a particular event) [@lin2019]
+
+#### What are MODIS and LANCE?
+
+***MODIS NRT Global Flood Products:***
+
+[NASA EARTHDATA](https://www.earthdata.nasa.gov/learn/find-data/near-real-time/modis-nrt-global-flood-product)
+
+[CRM SEARCH](https://cmr.earthdata.nasa.gov/search/concepts/C2018599131-LANCEMODIS.html)
+
+**MODIS**
+
+The Moderate Resolution Imaging Spectroradiometer (MODIS) is a NASA Earth Observing System (EOS) satellite-based sensor system that creates data products including land surface temperatures, land surface reflectance, radiances, clouds, aerosols, water vapor, active fire, snow cover, sea ice measurements, and other factor information. The MODIS Near Real-Time (NRT) data includes the Flood product which is a daily \~250 m resolution product showing flood and surface water detected from the twice-daily overpass of the MODIS optical sensors.
+
+The satellite data is readily available shortly after it is acquired by the MODIS instrument on board the Terra and Aqua satellites. This space-based instrument distinguishes 36 spectral bands and groups of wavelengths which helps map the extent of snow and ice caused by winter storms and frigid temperatures. Initially, the water-detecting algorithm is applied to both MODIS observations (Terra and Aqua). Due to cloud and terrain shadows create false positives.
+
+<img src="https://modis.gsfc.nasa.gov/about/images/modisComponents.jpg" alt="MODIS Components"/>[^2]
+
+[^2]: Photo Credit, NASA GSFC.
+
+To minimize errors, the product is generated with three different ***compositing periods (1-day, 2-day, and 3-day)*** to compare results and decide which product has better coverage for the event. Further, they have to differentiate floods from expected surface water through the use of MODIS Land Water Mask (MOD44W), which uses a decision tree classifier trained with MODIS data to produce a global water mask [@carroll2016].
+
+MODIS adoption aimed to surpass barriers related to satellite data, including cost, delivery timelines, limited formats, and the need for technical expertise. The transition to GFIMS establishes an operational system at FAO, ensuring continuity in meeting NASA data-user needs [@lin2019].
+
+**LANCE**
+
+The **Land, Atmosphere Near Real-time Capability for EOS (LANCE)** is a NASA initiative that provides near real-time access to satellite data, including MODIS . It allows users to access the latest data within a few hours of satellite overpass, enabling rapid responses to environmental events such as floods. LANCE is particularly valuable for emergency response teams and researchers who require up-to-date information for monitoring and assessing natural disasters [@LANCE2024].
+
+LANCE reduces processing time, allowing for timely computation. Users access the data through platforms like Web Map Service (WMS) and Web Coverage Service (WCS), enabling visualization and analysis for informed decision-making. This NRT approach enhances the speed and accessibility of critical information on vegetation conditions [@zhang2022].
+
+#### MODIS NRT Flood MCDWD Data Products
+
+The ***MODIS/Terra+Aqua Combined MODIS Water Detection (MCDWD)*** algorithm is tailor-made for detecting water bodies using MODIS data obtained from both the Terra and Aqua satellites. This algorithm employs various bands and spectral information to effectively identify and categorize water bodies. This enhances the accuracy and reliability of the flood product generated [@slayback2023].
+
+The MODIS Near Real-Time (NRT) Flood dataset offers multiple products, each accompanied by corresponding layers. The specific layers depend on the temporal aggregation:
+
+***MCDWD_F1_L3_NRT (1-Day product)*** This product type is the most basic level and provides binary information about water occurrence. Pixels are classified as either containing water or not, offering a simple way to identify flooded areas.
+
+***MCDWD_F1CS_L3_NRT (1-Day CS)***: F1CS has a cloud shadow mask applied on the version of the MCDWD_F1_L3_NRT product
+
+***MCDWD_F2_L3_NRT (2-Day)***: F2 provides additional information by categorizing water occurrences into three categories: no water, low-confidence water, and high-confidence water. This classification allows for a more nuanced understanding of the extent of the flood and its associated confidence levels.
+
+***MCDWD_F3_L3_NRT (3-Day)***: The F3 product, based on the MCDWD (MODIS/Terra+Aqua Combined MODIS Water Detection) is an algorithm that further refines flood mapping by adding additional spectral information. These results create a more accurate representation of water bodies and flooded areas [@slayback2023].
+
+### Reading the Data
+
+For this exercise, we will be using the MCDWD L3 F3 product: [LANCE NRT Flood](https://nrt3.modaps.eosdis.nasa.gov/archive/allData/61/MCDWD_L3_F3_NRT/)
+
+First, install and load the R packages required for this exercise:
+
+```{r}
+packages_to_check <- c("stars", "httr", "jsonlite", "tmap", "basemaps")
+
+# Check and install packages
+for (package_name in packages_to_check) {
+  if (!package_name %in% rownames(installed.packages())) {
+    install.packages(package_name)
+    cat(paste("Package", package_name, "installed.\n"))
+  } else {
+    cat(paste("Package", package_name, "is already installed.\n"))
+  }
+  library(package_name, character.only = TRUE)
+}
+
+#in case tmap does not install
+#remotes::install_github('r-tmap/tmap')
+```
+
+#### Check what days are available for the MCDWD L3 F3 product by going to this link: [LANCE NRT Primary Server](https://nrt3.modaps.eosdis.nasa.gov/archive/allData/61/MCDWD_L3_F3_NRT/) or [Secondary](https://nrt4.modaps.eosdis.nasa.gov/archive/allData/61/MCDWD_L3_F3_NRT).
+
+Based on availability, edit the year_day variable YYYY-DD. Example: '2022-01'
+
+```{r}
+
+#add the year and date you want to search for (YYYY-DD, 2022-01)
+year_day <- '2024-023'
+
+```
+
+#### Determine tiles of interest:
+
+[MODIS NRT Tile Map](https://www.earthdata.nasa.gov/s3fs-public/2023-01/MCDWD_GlobalTileMapHoriz_Website_865x2250.jpg?VersionId=lOQ_j47U8T.j7UUqibD7SM63FVHjM_V5)
+
+<img src="https://www.earthdata.nasa.gov/s3fs-public/2023-01/MCDWD_GlobalTileMapHoriz_Website_865x2250.jpg?VersionId=lOQ_j47U8T.j7UUqibD7SM63FVHjM_V5" alt="A hand in water" width="100%"/>
+
+Based on availability, edit the tile_code variable:
+
+```{r}
+#add tile code from the map above (written as h00v00)
+tile_code <- 'h05v05'
+```
+
+This is the NRT Flood F3 (MCDWD_L3_F3) API URL:
+
+```{r}
+#API_URL <- paste0('https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/details?products=MCDWD_L3_F3_NRT&archiveSets=61&temporalRanges=')
+
+# if the primary server is down, the secondary server may be available:
+API_URL <- paste0('https://nrt4.modaps.eosdis.nasa.gov/api/v2/content/details?products=MCDWD_L3_F3_NRT&archiveSets=61&temporalRanges=')
+```
+
+We can combine the API URL above with the year_day provided and print the available datasets:
+
+```{r}
+#pasting together URL and year_day
+url <- paste0(API_URL, year_day)
+print(url)
+```
+
+### Load Data
+
+Access the NASA Earthdata with the GET function:
+
+```{r}
+
+
+# Make the GET request
+response <- httr::GET(url)
+```
+
+Check response status from the GET function:
+
+```{r}
+response
+
+```
+
+Out of the response from the server, well check if the response was a success with `if (http_status(response)$category == "Success")`. If this statement is true, then the content will be assigned to the variable `data` in JSON format, which is then parsed to a data frame using `data_parsed <- jsonlite::fromJSON(data)`. The data frame contains `data_parsed$content`, a column with content. We filter the content by tile code using the command `content_items <- data_parsed$content[grepl(tile_code, data_parsed$content$name, ignore.case = TRUE), ]` and add the results to a data frame.
+
+```{r}
+# Check the response status
+if (http_status(response)$category == "Success") {
+  # Parse the response JSON
+  data <- content(response, as = "text", encoding = "UTF-8")
+  data_parsed <- jsonlite::fromJSON(data)
+  #filter for the tile code
+  content_items <- data_parsed$content[grepl(tile_code, data_parsed$content$name, ignore.case = TRUE), ]
+} else {
+  print("Request failed with status code", http_status(response)$status_code)
+}
+
+print(content_items)
+```
+
+Select the URL from the 'downloadsLink' column in the content_items data frame:
+
+```{r}
+download_link <- content_items$downloadsLink
+print(download_link)
+```
+
+Use the "read_stars()" function from the "stars" R Library to read the geoTiff raster.<br> The raster is assigned to the "raster_df" variable:
+
+```{r}
+raster_df <- stars::read_stars(download_link)
+```
+
+Set the Coordinate Refence System (CRS) to a new raster "my_raster" to plot it in a map. For example, Web Mercator EPSG:3857. Use the st_transform() function:
+
+```{r}
+raster_df <- st_transform(raster_df, 3857)
+```
+
+Now the raster data should be stored as a variable "my_raster" with the CRS set to Web Mercator EPSG:3857
+
+### Visualizing NRT Flood Data
+
+Plot the raster to quickly view it:
+
+```{r}
+plot(raster_df, axes = TRUE)
+```
+
+#### Create NRT Flood Plot with Classification
+
+Refer to the [MODIS NRT Global Flood Product User Guide](https://www.earthdata.nasa.gov/s3fs-public/2023-01/MCDWD_UserGuide_RevC.pdf) for more information.
+
+NRT Flood data has 5 classifications:
+
+| Code | Definition          |
+|:----:|:--------------------|
+|  0   | No Water            |
+|  1   | Surface Water       |
+|  2   | Recurring flood[^3] |
+|  3   | Flood (unusual)     |
+| 255  | Insufficient data   |
+
+[^3]: Value 2 (Recurring flood) is not populated in the beta release.
+
+To view the data in this classification, we'll need to create a classified legend; however, the NRT Flood data is stored in decimal numbers (aka floating-point). Create class breaks dividing the data by the folloing breaks, and corresponding colors and labels:
+
+```{r}
+class_breaks <- c(-Inf, 0.1, 1.1, 2.1, 3.1)
+colors <- c( "gray", "blue", "yellow","red")
+
+labels = c("0: No Water", "1: Surface Water", "2: Recurring flood", "3: Flood (unusual)")
+
+```
+
+Add a title for the plot that includes the year, day of year, and tile code:
+
+```{r}
+title = paste("Near Real-Time Flood F3", year_day, tile_code)
+```
+
+#### Generate a basemap from Esri Imagery
+
+To generate a basemap that shows the location of our raster, we must first create a bounding box to match `raster_df`.
+
+```{r}
+bbox <-  st_bbox(raster_df)
+```
+
+The `basemap_stars()` function from the `stars` library allows us to access Esri imagery layers. We choose "world_imagery" as our background and assign it to the object `bm_m`.
+
+```{r}
+bm_m <- basemap_stars(bbox, map_service = "esri", map_type = "world_imagery")
+```
+
+The `st_rgb` function lets us turn the RGB stars item into a single image
+
+```{r}
+bm_m <- st_rgb(bm_m)
+```
+
+#### Plot basemap and NRT Flood data
+
+Generate a plot from the tmap library using the `tm_shape()` function. We will plot the basemap and the raster_df items.
+
+```{r}
+## tmap mode set to "plot"
+tmap_mode("plot")
+
+## tmap mode can also be set to "view"
+#tmap_mode("view")
+
+#create an object the plots the basemap and the NRT flood raster
+#with the tmap library, call the tm_shape() function for the basemap
+tm_plot <- tm_shape(bm_m)+
+  tm_raster()+
+  #create a new tmap shape for the NRT flood raster with style as "cat," meaning categorical.
+  tm_shape(raster_df, style="cat")+
+  #add the classification styling to the raster
+  tm_raster( palette = c(colors),
+  title = title, 
+  breaks = class_breaks,
+  labels = labels )+
+  #style the plot
+  tm_layout(legend.outside = TRUE) +
+  tm_graticules(lines=FALSE)
+ 
+```
+
+View the plot:
+
+```{r}
+tm_plot
+```
