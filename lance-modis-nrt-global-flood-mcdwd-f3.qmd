@@ -2,7 +2,7 @@
 title: "MODIS NRT Global Flood Product"
 author: "Juan F. Martinez"
 date: "December 14, 2023"
-bibliography: nrt_flood_references.bib
+bibliography: nrt-flood-references.bib
 ---
 
 ## MODIS Near Real Time (NRT) Global Flood Product
