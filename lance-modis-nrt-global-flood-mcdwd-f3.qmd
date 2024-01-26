@@ -96,7 +96,7 @@ year_day <- '2024-023'
 
 [MODIS NRT Tile Map](https://www.earthdata.nasa.gov/s3fs-public/2023-01/MCDWD_GlobalTileMapHoriz_Website_865x2250.jpg?VersionId=lOQ_j47U8T.j7UUqibD7SM63FVHjM_V5)
 
-<img src="https://www.earthdata.nasa.gov/s3fs-public/2023-01/MCDWD_GlobalTileMapHoriz_Website_865x2250.jpg?VersionId=lOQ_j47U8T.j7UUqibD7SM63FVHjM_V5" alt="A hand in water" width="100%"/>
+<img src="https://www.earthdata.nasa.gov/s3fs-public/2023-01/MCDWD_GlobalTileMapHoriz_Website_865x2250.jpg?VersionId=lOQ_j47U8T.j7UUqibD7SM63FVHjM_V5" alt="A global map with labeled tiles" width="100%"/>
 
 Based on availability, edit the tile_code variable:
 
