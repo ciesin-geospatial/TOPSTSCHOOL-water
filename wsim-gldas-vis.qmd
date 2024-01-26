@@ -167,6 +167,8 @@ Once hot spots are easily identified pick a region of interest to zoom in on usi
 Load in the 1 month integration dataset and subset/index the dataset to the region of interest (copy code from previous vignette). Use `dplyr::slice` or other method to pull out just the 12 months from the year of interest. Code demonstrating these techniques in previous vignette.
 
 ```{r}
+
+gc()
 wsim_gldas_1mo <- stars::read_stars("composite_anom_1mo.nc", proxy = FALSE)
 
 print(wsim_gldas_1mo)
@@ -250,13 +252,15 @@ ggplot2::ggplot(extracted_df, aes(x = time, y = deficit)) + ggplo2::geom_line()
 
 ```
 
-Texas, in 2011, experienced a severe drought which caused rivers to dry up and lakes to reach historic low levels. The drought cost farmers and ranchers an estimated $8 billion in losses. Furthermore, the dry conditions fueled a series of wildfires across the state in early September. Which months had the most severe drought?
+Texas, in 2011, experienced a severe drought which caused rivers to dry up and lakes to reach historic low levels. The drought cost farmers and ranchers an estimated $8 billion in losses. Furthermore, the dry conditions fueled a series of wildfires across the state in early September. Which months experienced the most severe drought?
 
 ## Population Exposure Plot
 
 Use Gridded Population of the World and `exactextractr` to determine the number of people exposed to a given anomaly for each month of the year. 
 
-*****Background info on GPW would be appropriate. Same with `exactextractr` and zonal statistics.
+Gridded Population of the World is a dataset group in SEDAC which models the distribution of the global human population through counts and densities on a raster. These estimates are available for the years of 2000, 2005, 2015 and 2020. The Population Count dataset will be used for this example, and can be found here. [https://sedac.ciesin.columbia.edu/data/collection/gpw-v4]
+
+'exactextractr' is an R package that summarizes raster values over groupings, or zones, also known as zonal statistics. Zonal statistics help in assessing the statistical characteristics of a certain region. The package can be used to sum all the cells in a polygon, i.e. a region; other functions include computing the mean, median, and other types of statistics. More information on the package can be found here [https://github.com/isciences/exactextractr]. 
 
 Load in GPW data and the `exactextractr` package
 
