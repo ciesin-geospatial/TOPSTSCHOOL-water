@@ -79,7 +79,7 @@ For this exercise, we will be using the MCDWD L3 F3 product: [LANCE NRT Flood](h
 
 First, install and load the R packages required for this exercise:
 
-```{r}
+```{r eval=FALSE}
 packages_to_check <- c("stars", "httr", "jsonlite", "tmap", "basemaps")
 
 # Check and install packages
@@ -160,14 +160,14 @@ Out of the response from the server, we'll check if the response was a success w
 
 ```{r}
 # Check the response status
-if (http_status(response)$category == "Success") {
+if (httr::http_status(response)$category == "Success") {
   # Parse the response JSON
-  data <- content(response, as = "text", encoding = "UTF-8")
+  data <- httr::content(response, as = "text", encoding = "UTF-8")
   data_parsed <- jsonlite::fromJSON(data)
   #filter for the tile code
   content_items <- data_parsed$content[grepl(tile_code, data_parsed$content$name, ignore.case = TRUE), ]
 } else {
-  print("Request failed with status code", http_status(response)$status_code)
+  print("Request failed with status code", httr::http_status(response)$status_code)
 }
 
 print(content_items)
@@ -189,7 +189,7 @@ raster_df <- stars::read_stars(download_link)
 Set the Coordinate Reference System (CRS) to a new raster "my_raster" to plot it in a map. For example, Web Mercator EPSG:3857. Use the st_transform() function:
 
 ```{r}
-raster_df <- st_transform(raster_df, 3857)
+raster_df <- sf::st_transform(raster_df, 3857)
 ```
 
 Now the raster data should be stored as a variable "my_raster" with the CRS set to Web Mercator EPSG:3857
@@ -239,19 +239,19 @@ title = paste("Near Real-Time Flood F3", year_day, tile_code)
 To generate a basemap that shows the location of our raster, we must first create a bounding box to match `raster_df`.
 
 ```{r}
-bbox <-  st_bbox(raster_df)
+bbox <-  sf::st_bbox(raster_df)
 ```
 
 The `basemap_stars()` function from the `stars` library allows us to access Esri imagery layers. We choose "world_imagery" as our background and assign it to the object `bm_m`.
 
 ```{r}
-bm_m <- basemap_stars(bbox, map_service = "esri", map_type = "world_imagery")
+bm_m <- basemaps::basemap_stars(bbox, map_service = "esri", map_type = "world_imagery")
 ```
 
 The `st_rgb` function lets us turn the RGB stars item into a single image
 
 ```{r}
-bm_m <- st_rgb(bm_m)
+bm_m <- stars::st_rgb(bm_m)
 ```
 
 ### Plot basemap and NRT Flood data
@@ -260,25 +260,25 @@ Generate a plot from the tmap library using the `tm_shape()` function. We will p
 
 ```{r}
 ## tmap mode set to "plot"
-tmap_mode("plot")
+tmap::tmap_mode("plot")
 
 ## tmap mode can also be set to "view"
 #tmap_mode("view")
 
 #create an object the plots the basemap and the NRT flood raster
 #with the tmap library, call the tm_shape() function for the basemap
-tm_plot <- tm_shape(bm_m)+
-  tm_raster()+
+tm_plot <- tmap::tm_shape(bm_m)+
+  tmap::tm_raster()+
   #create a new tmap shape for the NRT flood raster with style as "cat," meaning categorical.
-  tm_shape(raster_df, style="cat")+
+  tmap::tm_shape(raster_df, style="cat")+
   #add the classification styling to the raster
-  tm_raster( palette = c(colors),
+  tmap::tm_raster( palette = c(colors),
   title = title, 
   breaks = class_breaks,
   labels = labels )+
   #style the plot
-  tm_layout(legend.outside = TRUE) +
-  tm_graticules(lines=FALSE)
+  tmap::tm_layout(legend.outside = TRUE) +
+  tmap::tm_graticules(lines=FALSE)
  
 ```
 

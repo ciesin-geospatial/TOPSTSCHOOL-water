@@ -1,6 +1,8 @@
 ---
 title: "WSIM-GLDAS Dataset Exploration and Visualizations"
-author: "Joshua Brinks & Elaine Famutimi"
+author: 
+  - "Joshua Brinks"
+  - "Elaine Famutimi"
 date: "December, 6 2023"
 ---
 
@@ -63,6 +65,7 @@ Now we'll verify this with `print()` and `plot()`.
 ```{r}
 print(wsim_deficit_usa)
 ```
+
 The output shows that we've selected a single attribute ('deficit') and 15 time-steps in the 'time' dimension. Plot only the 14th time step and show the border color as purple, and a lineweight of 3. 
 
 ```{r warning=FALSE, message=FALSE}
@@ -247,10 +250,8 @@ Gridded Population of the World is a dataset group in SEDAC which models the dis
 Load in GPW data and the `exactextractr` package
 
 ```{r}
-gpw <- stars::read_stars("gpw_v4_population_count_rev11_15_min.nc", proxy = FALSE)
+gpw <- stars::read_stars("gpw_v4_population_count_rev11_2020_30_sec.tif", proxy = FALSE)
 print(gpw)
-
-library(exactextractr)
 
 gpw_df <-as.data.frame(gpw)
 ```

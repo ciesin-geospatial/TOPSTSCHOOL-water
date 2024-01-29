@@ -2,7 +2,7 @@
 title: "Welcome to TOPS-SCHOOL Module 1: Water Resources"
 ---
 
-<img src='https://raw.githubusercontent.com/ciesin-geospatial/TOPSTSCHOOL/main/images/TOPTSCHOOL-logo02.hi-res.png' align="right" height="175" style="padding-left: 25px; padding-bottom: 25px;"/>
+<img src='https://raw.githubusercontent.com/ciesin-geospatial/TOPSTSCHOOL/main/images/TOPTSCHOOL-logo02.hi-res.png' align="right" height="200" style="padding-left: 15px; padding-bottom: 15px;"/>
 
 The first TOPSTSCHOOL Module on Water Resources consists of three vignettes which cover examples of water use, safety, and anomalies such as droughts and floods. The vignettes use three datasets to walk users through lessons in accessing and analyzing data, and users will be able to adapt the code in all three examples to perform analyses including data cleaning, processing to subset to an area of interest, and creating visualizations to share what they have learned with their communities. Users will understand an Open Science workflow including accessing and citing open data. The three datasets and vignettes cover:
 
