@@ -250,10 +250,23 @@ Gridded Population of the World is a dataset group in SEDAC which models the dis
 Load in GPW data and the `exactextractr` package
 
 ```{r}
-gpw <- stars::read_stars("gpw_v4_population_count_rev11_2020_30_sec.tif", proxy = FALSE)
-print(gpw)
+#gpw <- stars::read_stars("gpw_v4_population_count_rev11_2020_15_min.tif", proxy = FALSE)
+#print(gpw)
 
-gpw_df <-as.data.frame(gpw)
+#gpw_sf <- sf::st_as_sf(gpw)
+#print(gpw_sf)
+
+#gpw_df <-as.data.frame(gpw)
+#print(gpw_df)
+
+```
+```{r}
+gpw1 <- terra::rast("gpw_v4_population_count_rev11_2020_15_min.tif")
+print(gpw1)
+
+#gpw_df1 <-as.data.frame(gpw1)
+#plot(gpw1)
+#print(gpw_df1)
 ```
 
 Perform the time series zonal summary.
@@ -263,7 +276,9 @@ This might be a bit tricky; been a while for me. Have to look up the proper code
 Resulting data.frame will probably need to be transformed to long (just like before), so it can be plotted.
 
 ```{r}
-
+library(exactextractr)
+extracted_sum <- exact_extract(gpw1, usa, 'sum', weights = 'area')
+print(extracted_sum)
 
 
 ```
@@ -272,7 +287,20 @@ Now plot the data in ggplot. I have some existing code I can pull to help with t
 
 ```{r}
 
+extracted_sum_df <- as.data.frame(extracted_sum)
+print(extracted_sum_df)
+#ggplot2::ggplot(data = extracted_sum_df)
+#ggplot2::geom_line(data = extracted_sum_df)
+#ggplot2::ggplot(data = extracted_sum_df) + ggplot2::geom_line()
 
+```
+```{r}
+tp <- terra::extract(gpw1, usa, sum, na.rm = FALSE)
+print(tp)
+#ggplot2::ggplot(extracted_df, ggplot2::aes(x = time, y = deficit)) + ggplot2::geom_line()
+ggplot2::ggplot(data = tp)
+#ggplot2::geom_line(data = tp)
+ggplot2::ggplot(data = tp, ggplot2::aes(x = ID, y = gpw_v4_population_count_rev11_2020_15_min)) + ggplot2::geom_line()
 
 ```
 
