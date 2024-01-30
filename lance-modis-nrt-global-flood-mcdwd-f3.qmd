@@ -1,19 +1,26 @@
 ---
 title: "MODIS NRT Global Flood Product"
-author: "Juan F. Martinez"
-date: "December 14, 2023"
+author: "Juan F. Martinez, Iris Cano"
+date: "January 30, 2024"
 bibliography: nrt-flood-references.bib
 ---
 
 # LANCE MODIS Near Real Time (NRT) Global Flood Product
 
-<img src="https://www.earthdata.nasa.gov/sites/default/files/imported/Flood_mekong.png" alt="MODIS NRT FLOOD" width="600"/>[^1]
+<img src="https://www.earthdata.nasa.gov/sites/default/files/imported/Flood_mekong.png" alt="MODIS NRT FLOOD"/>[^1]
 
 [^1]: Photo Credit, NASA OESDIS.
 
 ## Overview
 
-In this lesson, you will take a closer look at the data from the LANCE MODIS Near Real Time (NRT) Global Flood Product, including learning about what are LANCE and MODIS, and the NRT Flood products available. You will then learn to select, download, and visualize one of the NRT Flood layers.
+In this lesson, you will use R to take a closer look at the data from the LANCE MODIS Near Real Time (NRT) Global Flood Product, including learning about what are LANCE and MODIS, and the NRT Flood products available. You will then learn to select, download, and visualize one of the NRT Flood layers.
+
+::: {.column-margin}
+::: {.callout-tip style="color: #5a7a2b;"}
+## Coding Review
+This lesson uses the [R](https://www.r-project.org/about.html) language and environment. R is a popular language used for statistical computing and graphics.
+:::
+:::
 
 ## Learning Objectives
 
@@ -57,9 +64,18 @@ LANCE reduces processing time, allowing for timely computation. Users access the
 
 ### MODIS NRT Flood MCDWD Data Products
 
+::: {.column-margin}
+::: {.callout-tip style="color: #5a7a2b;"}
+## Data Information 
+The main landing pages for the MODIS NRT Global Flood Product:
+
 [NASA EARTHDATA](https://www.earthdata.nasa.gov/learn/find-data/near-real-time/modis-nrt-global-flood-product)
 
-[CRM SEARCH](https://cmr.earthdata.nasa.gov/search/concepts/C2018599131-LANCEMODIS.html)
+[NASA CRM SEARCH](https://cmr.earthdata.nasa.gov/search/concepts/C2018599131-LANCEMODIS.html)
+
+[MODIS NRT Global Flood Product User Guide](https://www.earthdata.nasa.gov/s3fs-public/2023-01/MCDWD_UserGuide_RevC.pdf)
+:::
+:::
 
 The ***MODIS/Terra+Aqua Combined MODIS Water Detection (MCDWD)*** algorithm is tailor-made for detecting water bodies using MODIS data obtained from both the Terra and Aqua satellites. This algorithm employs various bands and spectral information to effectively identify and categorize water bodies. This enhances the accuracy and reliability of the flood product generated [@slayback2023].
 
@@ -96,6 +112,13 @@ for (package_name in packages_to_check) {
 #in case tmap does not install
 #remotes::install_github('r-tmap/tmap')
 ```
+::: {.column-margin}
+::: {.callout-tip style="color: #5a7a2b;"}
+## Coding Review
+
+This lesson uses the [stars](https://r-spatial.github.io/stars/), [httr](https://httr.r-lib.org/), [jsonlite](https://cran.r-project.org/package=jsonlite), [tmap](https://cran.r-project.org/package=tmap), and [basemaps](https://cran.r-project.org/package=basemaps) packages. If you’d like to learn more about the functions used in this lesson you can use the help guides on their package websites.
+:::
+:::
 
 #### Check what days are available for the MCDWD L3 F3 product by going to this link: [LANCE NRT Primary Server](https://nrt3.modaps.eosdis.nasa.gov/archive/allData/61/MCDWD_L3_F3_NRT/) or [Secondary](https://nrt4.modaps.eosdis.nasa.gov/archive/allData/61/MCDWD_L3_F3_NRT).
 
@@ -124,6 +147,7 @@ tile_code <- 'h05v05'
 This is the NRT Flood F3 (MCDWD_L3_F3) API URL:
 
 ```{r}
+# Primary Server
 #API_URL <- paste0('https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/details?products=MCDWD_L3_F3_NRT&archiveSets=61&temporalRanges=')
 
 # if the primary server is down, the secondary server may be available:
