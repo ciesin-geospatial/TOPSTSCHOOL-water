@@ -264,6 +264,7 @@ Load in GPW data and the `exactextractr` package
 gpw1 <- terra::rast("gpw_v4_population_count_rev11_2020_15_min.tif")
 print(gpw1)
 
+library(exactextractr)
 #gpw_df1 <-as.data.frame(gpw1)
 #plot(gpw1)
 #print(gpw_df1)
@@ -276,22 +277,23 @@ This might be a bit tricky; been a while for me. Have to look up the proper code
 Resulting data.frame will probably need to be transformed to long (just like before), so it can be plotted.
 
 ```{r}
-library(exactextractr)
+
 extracted_sum <- exact_extract(gpw1, usa, 'sum', weights = 'area')
 print(extracted_sum)
 
+extracted_sum_df <- as.data.frame(extracted_sum)
+print(extracted_sum_df)
 
+extracted_sum_df <- dplyr::mutate(extracted_sum_df, ID = dplyr::row_number())
+print(extracted_sum_df)
 ```
 
 Now plot the data in ggplot. I have some existing code I can pull to help with the plotting--or at least make it fancy.
 
 ```{r}
 
-extracted_sum_df <- as.data.frame(extracted_sum)
-print(extracted_sum_df)
-#ggplot2::ggplot(data = extracted_sum_df)
-#ggplot2::geom_line(data = extracted_sum_df)
-#ggplot2::ggplot(data = extracted_sum_df) + ggplot2::geom_line()
+ggplot2::ggplot(data = extracted_sum_df, ggplot2::aes(x = ID, y = extracted_sum)) + ggplot2::geom_line()
+
 
 ```
 ```{r}
