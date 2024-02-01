@@ -7,3 +7,7 @@ composite_anom_1mo.nc
 modis_nrt_flood.nc
 wsim_gldas_tex.nc
 TOPSTSCHOOL-module-1-water.Rproj
+/docs/presentations/*.png
+/presentations/*.png
+/docs/presentations/*.jpg
+/presentations/*.jpg
