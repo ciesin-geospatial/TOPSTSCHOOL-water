@@ -25,8 +25,9 @@ The Module 1: Water datasets and vignettes cover:
       + [Lesson 4: NYC School Water Quality: Exposure to Lead Data](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/exposure_to_lead_in_schools_nys.html)
       + [Lesson 5: NYC School Lead Exposure Interactive Explorer](https://jbrinks.shinyapps.io/nyc_lead/)
 
-* **Conclusion:** Module wrap up and knowledge check.
+  * **Conclusion:** Module wrap up and knowledge check.
       + [Lesson 6: Conclusion]()
+     
     
 
 
