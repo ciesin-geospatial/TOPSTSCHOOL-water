@@ -132,9 +132,9 @@ theme<-theme(axis.text=element_text(size=12, face="bold"),
 
 ## Objective
 
--   This document helps to analyse school lead datasets collected from 2016,2017,2018 and 2019 and compare it with population characteristic at county level in NYS.
+-   This document helps to analyze school lead datasets collected from 2016, 2017, 2018 and 2019 and compare it with population characteristics at county level in NYS.
 
-#### By compliting this module, you are expected to learn following points
+#### By completing this module, you are expected to learn following points
 
 -   Possible health outcomes of consuming water with lead level above 15pbb and importance of water quality
 -   Rea into R and analyze the data set
