@@ -23,12 +23,10 @@ WSIM-GLDAS can be download from [SEDAC](https://sedac.ciesin.columbia.edu/data/s
 
 ## Reading the Data
 
-::: {.column-margin}
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Coding Review
 
 This lesson uses the [`stars`](https://r-spatial.github.io/stars/), [`sf`](https://r-spatial.github.io/sf/), [`dplyr`](https://dplyr.tidyverse.org/), and [`lubridate`](https://lubridate.tidyverse.org/) packages. If you'd like to learn more about the functions used in this lesson you can use the help guides on their package websites.
-:::
 :::
 
 Once you've completed the download and placed the .nc into your working directory read in the file with the `stars::read_stars()` function.
@@ -38,7 +36,7 @@ Once you've completed the download and placed the .nc into your working director
 # proxy = TRUE will limit memory useage but does 
 # not always work with certain downstream processing functions
 
-wsim_gldas_anoms <- stars::read_stars("composite_anom_12mo.nc", proxy = FALSE)
+wsim_gldas_anoms <- stars::read_stars("composite_12mo.nc", proxy = FALSE)
 
 print(wsim_gldas_anoms)
 ```

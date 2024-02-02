@@ -1,11 +1,11 @@
 ---
-title: "School water quality: Exposure to lead"
-format: html
-editor: visual
-server: shiny
+title: "NYC School Water Quality: Exposure to Lead"
+author: "Hasim Engin"
+date: "February 2, 2024"
 execute:
   echo: true
   warning: false
+  eval: false
 ---
 
 ```{r, context="setup", include=FALSE}
