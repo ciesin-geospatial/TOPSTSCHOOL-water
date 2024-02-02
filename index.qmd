@@ -6,9 +6,9 @@ title: "Welcome SCHOOL Module 1: Water"
 
 Welcome to the first module of the TOPSTSCHOOL curriculum! 
 
-The Science Core Heuristics for Open Science Outcomes in Learning (SCHOOL) is part of the NASA Transform to Open Science (TOPS) Training (TOPST) initiative, designed to generate an inclusive culture of open science. You can learn more about the SCHOOL Project and other modules on the [SCHOOL Project home page.](ciesin-geospatial.github.io/TOPSTSCHOOL/)
+The Science Core Heuristics for Open Science Outcomes in Learning (SCHOOL) is part of the NASA Transform to Open Science (TOPS) Training (TOPST) initiative, designed to generate an inclusive culture of open science. You can learn more about the SCHOOL Project and other modules on the [SCHOOL Project home page.](https://ciesin-geospatial.github.io/TOPSTSCHOOL/)
 
-The first SCHOOL Module: Water explores how humans impact the water cycle and are affected by the changes they cause. The module consists of three vignettes which cover examples of water use, safety, and anomalies such as droughts and floods. Each vignette uses a unique dataset to walk users through lessons in accessing and analyzing data, and further adapting the code to perform their own analyses including data cleaning, processing to subset to an area of interest, and creating visualizations to share what they have learned with their communities.
+The first SCHOOL Module: Water explores how humans impact the water cycle and are affected by the changes they cause. The module consists of three vignettes that cover examples of water use, safety, and anomalies such as droughts and floods. Each vignette uses a unique dataset to walk users through lessons in accessing and analyzing data, and further adapting the code to perform their analyses including data cleaning, processing to subset to an area of interest, and creating visualizations to share what they have learned with their communities.
 
 The SCHOOL Modules do not intend to teach all-encompassing earth science lessons nor provide learners with total coding expertise. Instead, the SCHOOL Project aims to provide users with the skills to adapt the SCHOOL lessons to the users’ own Open Science workflow.
 
@@ -25,7 +25,7 @@ The Module 1: Water datasets and vignettes cover:
       + [Lesson 4: NYC School Water Quality: Exposure to Lead Data](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/exposure_to_lead_in_schools_nys.html)
       + [Lesson 5: NYC School Lead Exposure Interactive Explorer](https://jbrinks.shinyapps.io/nyc_lead/)
 
-  * **Conclusion:** Module wrap up and knowledge check.
+  * **Conclusion:** Module wrap-up and knowledge check.
       + [Lesson 6: Conclusion]()
      
     
