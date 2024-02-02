@@ -22,7 +22,7 @@ The Module 1: Water datasets and vignettes cover:
       + [Lesson 3: Acquiring and Exploring MODIS NRT Flood Data](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/lance-modis-nrt-global-flood-mcdwd-f3.html)
 
   * **Lead in New York State Schools:** Exploring lead contamination data and US Census data and lessons in data cleaning and visualization, with a discerning eye towards data limitations.
-      + [Lesson 4: NYC School Water Quality: Exposure to Lead Data](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/exposure_to_lead_in_schools_nys.qmd)
+      + [Lesson 4: NYC School Water Quality: Exposure to Lead Data](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/exposure_to_lead_in_schools_nys.html)
       + [Lesson 5: NYC School Lead Exposure Interactive Explorer](https://jbrinks.shinyapps.io/nyc_lead/)
 
 * **Conclusion:** Module wrap up and knowledge check.
