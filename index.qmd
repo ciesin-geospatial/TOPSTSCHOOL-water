@@ -26,7 +26,8 @@ The Module 1: Water datasets and vignettes cover:
       + [Lesson 5: NYC School Lead Exposure Interactive Explorer](https://jbrinks.shinyapps.io/nyc_lead/)
 
 * **Conclusion:** Module wrap up and knowledge check.
-      + [Lesson 5: Conclusion]()
+      + [Lesson 6: Conclusion]()
+    
 
 
 This course was made possible thanks to the work of our NASA Transform to Open Science (TOPS) team, our SCHOOL Open Science team, open science Subject Matter Experts (SMEs), and the SCHOOL Development team! 
