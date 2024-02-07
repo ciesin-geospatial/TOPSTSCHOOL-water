@@ -31,7 +31,7 @@ We'll start again with the WSIM-GLDAS 12 month integration anomaly file from SED
 ```{r warning=FALSE}
 #| code-fold: true
 # generate a vector of dates for subsetting
-wsim_gldas <- stars::read_stars("composite_anom_12mo.nc", proxy = FALSE)
+wsim_gldas <- stars::read_stars("composite_12mo.nc", proxy = FALSE)
 keeps<-seq(lubridate::ymd("2000-12-01"),
            lubridate::ymd("2014-12-01"), 
            by = "year")
@@ -111,7 +111,7 @@ There are some bad outliers, we can just zoom into the majority of values by set
 ```{r}
 ggplot2::ggplot(usa1, ggplot2::aes(Deficit))+
   ggplot2::geom_histogram(na.rm = TRUE)+
-  ggplot2::xlim(c(-10,0))
+  ggplot2::xlim(c(-60,50))
 ```
 
 Extreme values or other items of note might require additional visualization or other data exploration.
@@ -123,7 +123,7 @@ Create a multipanel time series of 12 month integration CONUSA; similar to what 
 Load in a CONUSA geojson from geoBoundaries. Copy methods from previous vignette.
 
 ```{r warning = TRUE}
-# the histogram can be studied to properly choose breaks. For example, try plotting the histogram from (-10,10) to determine where values lie between. Breaks chosen are [-5, -3, -1, 0, 1, 3, 5] from studying the histogram.
+# the histogram can be studied to properly choose breaks. Breaks chosen are [-60, -40, -20, 0, 20, 40, 50] from studying the histogram.
 
 wsim_deficit_usa |>
   dplyr::slice(index = 1:14, along = "time") |>
@@ -139,7 +139,7 @@ wsim_deficit_usa |>
     # -10 to -5
     '#FFEDA3',
     # -5 to -3
-    '#FFFFFF'), breaks = c(-5,-3,-1,0,1,3,5))
+    '#FFFFFF'), breaks = c(-60, -40, -20, 0, 20, 40, 50))
 ```
 
 Plotting without breaks produces a similar but different map.
@@ -168,7 +168,7 @@ Load in the 1 month integration dataset and subset/index the dataset to the regi
 
 ```{r}
 gc()
-wsim_gldas_1mo <- stars::read_stars("composite_anom_1mo.nc", proxy = FALSE)
+wsim_gldas_1mo <- stars::read_stars("composite_1mo.nc", proxy = FALSE)
 
 print(wsim_gldas_1mo)
 
