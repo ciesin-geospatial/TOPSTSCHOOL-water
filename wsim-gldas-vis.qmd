@@ -301,19 +301,25 @@ Now plot the data in ggplot. I have some existing code I can pull to help with t
 
 ```{r}
 
-ggplot2::ggplot(data = joined_var_df, ggplot2::aes(x = shapeName, y = extracted_mean, group = 1)) + ggplot2::geom_line()
+ggplot2::ggplot(data = joined_var_df, ggplot2::aes(x = shapeName, y = extracted_mean, group = 1)) + ggplot2::geom_line() +
+  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1)) +
+  ggplot2::theme(plot.title =  ggplot2::element_text(hjust = 0.5)) +
+  ggplot2::ggtitle("Population Mean per State") + 
+  ggplot2::xlab("State") + 
+  ggplot2::ylab("Mean")
+  
 
 
 #plot(joined_var_df)
 
 ```
 ```{r}
-tp <- terra::extract(gpw1, usa, sum, na.rm = FALSE)
-print(tp)
+#tp <- terra::extract(gpw1, usa, mean, na.rm = FALSE)
+#print(tp)
 #ggplot2::ggplot(extracted_df, ggplot2::aes(x = time, y = deficit)) + ggplot2::geom_line()
-ggplot2::ggplot(data = tp)
+#ggplot2::ggplot(data = tp)
 #ggplot2::geom_line(data = tp)
-ggplot2::ggplot(data = tp, ggplot2::aes(x = ID, y = gpw_v4_population_count_rev11_2020_15_min)) + ggplot2::geom_line()
+#ggplot2::ggplot(data = tp, ggplot2::aes(x = ID, y = gpw_v4_population_count_rev11_2020_15_min)) + ggplot2::geom_line()
 
 ```
 
