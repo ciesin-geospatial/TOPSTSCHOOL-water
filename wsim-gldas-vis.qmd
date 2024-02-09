@@ -17,9 +17,11 @@ date: "December, 6 2023"
 
 ## Introduction
 
-A raster is a grid of geographic data which has information stored per pixel. Vectors are a collection or a list of numbers. Vectors can be used to store coordinates, which can then be used to extract information from a pixel in the raster for analysis, such as a time series. Rasters can store many types of information, such as precipitation anomaly data, which can show rainfall deficits or surpluses. 
+A raster is a grid of geographic data which has information stored per pixel. Vectors are a collection or a list of numbers. Vectors can be used to store coordinates, which can then be used to extract information from a pixel in the raster for analysis, such as a time series. Rasters can store many types of information as attributes, and they usually have dimensions such as latitude, longitude, and time.
 
-An anomaly is described as a deviation from the long term average over a period and region. Precipitation anomalies can cause drought, which is a prolonged period of little to no rainfall. Droughts have impacts on the environment and humans, at times causing a chain reaction. For example, California had a drought in 2014 that subsequently dried out rivers which hosted populations of the Chinook salmon, affecting the population. That in turn affected Native American tribes food supply.
+The water cycle is the constant process of circulation of water on, above, and under the Earth's surface. Human interventions such as greenhouse gas emissions, land use changes, dam and reservoir development, and groundwater overexploitation have all drastically affected the natural water cycle in recent decades. Human interventions in the water cycle have consequential impacts on oceanic, groundwater, and land processes, influencing phenomena such as droughts and floods.
+
+Precipitation deficits can also cause drought, which is a prolonged period of little to no rainfall. Droughts have impacts on the environment and humans, at times causing a chain reaction. For example, California had a drought from 2012 to 2014. While it isn't uncommon for California to have periods of low precipitation, that with a combination of sustained record high temperatures created severe water shortages. The drought subsequently dried out rivers which hosted populations of the Chinook salmon, affecting the population. That in turn affected Native American tribes food supply.
 
 In this vignette, you will be combining the basic plot() function with sf functions to plot singular attributes, and using more advanced plotting functions such as ggplot() for plotting histograms, multi-panel plots, and a time series. 
 
@@ -179,8 +181,8 @@ wsim_gldas_1mo<-wsim_gldas_1mo[usa]
 wsim_gldas_1mo <- wsim_gldas_1mo['deficit']
 
 # create a new sequence of dates, this time monthly, for the chosen year of 2011
-keeps3<-seq(lubridate::ymd("2011-01-01"),
-           lubridate::ymd("2011-12-01"), 
+keeps3<-seq(lubridate::ymd("2012-01-01"),
+           lubridate::ymd("2012-12-01"), 
            by = "month")
 
 wsim_gldas_1mo <- dplyr::filter(wsim_gldas_1mo, time %in% keeps3)
@@ -198,7 +200,9 @@ ggplot2::ggplot(data = df_wsim_gldas_1mo) +
   ggplot2::scale_fill_viridis_c(limits = c(-60, 60), option = "magma") +
   ggplot2::theme_void() +
   ggplot2::theme(legend.position = "bottom") +
+  ggplot2::geom_sf(data = usa, fill = NA, color = "black") +
   ggplot2::facet_wrap(time ~ .)
+
 ```
 
 Visualize an individual cell with particular extreme or maybe volatile values. Use Google Maps to identify the latitude/longitude of a place of interest. Maybe an urban center or other important location in the region that suffered from the extreme event.
