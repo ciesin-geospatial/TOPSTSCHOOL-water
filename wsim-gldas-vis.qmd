@@ -139,7 +139,7 @@ wsim_deficit_usa |>
     # -10 to -5
     '#FFEDA3',
     # -5 to -3
-    '#FFFFFF'), breaks = c(-60, -40, -20, 0, 20, 40, 50))
+    '#FFFFFF'), breaks = c(-60, -40, -20, 0, 20, 40, 60))
 ```
 
 Plotting without breaks produces a similar but different map.
@@ -195,7 +195,7 @@ df_wsim_gldas_1mo <-as.data.frame(wsim_gldas_1mo, xy = TRUE)
 
 ggplot2::ggplot(data = df_wsim_gldas_1mo) +
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = deficit)) +
-  ggplot2::scale_fill_viridis_c(limits = c(-5, 5), option = "magma") +
+  ggplot2::scale_fill_viridis_c(limits = c(-60, 60), option = "magma") +
   ggplot2::theme_void() +
   ggplot2::theme(legend.position = "bottom") +
   ggplot2::facet_wrap(time ~ .)
@@ -278,22 +278,33 @@ Resulting data.frame will probably need to be transformed to long (just like bef
 
 ```{r}
 
-extracted_sum <- exact_extract(gpw1, usa, 'sum', weights = 'area')
-print(extracted_sum)
+extracted_mean <- exact_extract(gpw1, usa, 'mean')
+print(extracted_mean)
 
-extracted_sum_df <- as.data.frame(extracted_sum)
-print(extracted_sum_df)
+extracted_mean_df <- as.data.frame(extracted_mean)
+print(extracted_mean_df)
 
-extracted_sum_df <- dplyr::mutate(extracted_sum_df, ID = dplyr::row_number())
-print(extracted_sum_df)
+#extracted_mean_df <- dplyr::mutate(extracted_mean_df, ID = dplyr::row_number())
+#print(extracted_mean_df)
 ```
+```{r}
+joined_var = cbind(usa, extracted_mean)
+print(joined_var)
+
+joined_var_df = as.data.frame(joined_var)
+print(joined_var_df)
+
+```
+
 
 Now plot the data in ggplot. I have some existing code I can pull to help with the plotting--or at least make it fancy.
 
 ```{r}
 
-ggplot2::ggplot(data = extracted_sum_df, ggplot2::aes(x = ID, y = extracted_sum)) + ggplot2::geom_line()
+ggplot2::ggplot(data = joined_var_df, ggplot2::aes(x = shapeName, y = extracted_mean, group = 1)) + ggplot2::geom_line()
 
+
+#plot(joined_var_df)
 
 ```
 ```{r}
