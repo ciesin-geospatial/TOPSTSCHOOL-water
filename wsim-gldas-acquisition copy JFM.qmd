@@ -1,6 +1,6 @@
 ---
 title: "Acquiring and Pre-Processing the WSIM-GLDAS Dataset"
-author: "Josh Brinks, Elaine Famutimi"
+author: "Josh Brinks"
 date: "December, 6 2023"
 bibliography: wsim-gldas-references.bib
 ---
@@ -28,13 +28,17 @@ After completing this lesson, you should be able to: - Determine what...
 
 ## Introduction
 
-The **Water Security (WSIM-GLDAS) Monthly Grids, v1 (1948 -- 2014)** dataset can be download from the NASA [SEDAC](https://sedac.ciesin.columbia.edu/data/set/water-wsim-gldas-v1) website [@isciences2022]. Downloads are organized by combination of variable (composite surplus/deficit, temperature, PETmE, runoff, soil moisture, precipitation) and integration period (1, 3, 6, 12 months). Each variable-integration combination consists of a NetCDF raster file with a time dimension that contains a raster layer for each of the 804 months between January, 1948 and December, 2014. Some variables also contain multiple attributes each with their own time dimension of 804 rasters. Hence, this is a large file that takes upwards of 2 hours to download and may cause memory issues on certain systems. We will work with the composite anomolies integrated over 1 month periods.
+The **Water Security (WSIM-GLDAS) Monthly Grids, v1 (1948 -- 2014)** dataset can be download from the NASA [SEDAC](https://sedac.ciesin.columbia.edu/data/set/water-wsim-gldas-v1) website [@isciences2022].
 
-A raster is a grid of geographic data which has information stored per pixel. Vectors are a collection or a list of numbers. Vectors can be used to store coordinates, which can then be used to extract information from a pixel in the raster for analysis, such as a time series. Rasters can store many types of information as attributes, and they usually have dimensions such as latitude, longitude, and time.
+The SEDAC WSIM-GLDAS data downloads are organized by combination of variable (composite surplus/deficit, temperature, PETmE, runoff, soil moisture, precipitation) and integration period (1, 3, 6, 12 months). Each variable-integration combination consists of a NetCDF raster file with a time dimension that contains a raster layer for each of the 804 months between January, 1948 and December, 2014. Some variables also contain multiple attributes each with their own time dimension of 804 rasters. Hence, this is a large file that takes upwards of 2 hours to download and may cause memory issues on certain systems.
 
-The water cycle is the constant process of circulation of water on, above, and under the Earth's surface. Human interventions such as greenhouse gas emissions, land use changes, dam and reservoir development, and groundwater overexploitation have all drastically affected the natural water cycle in recent decades. Human interventions in the water cycle have consequential impacts on oceanic, groundwater, and land processes, influencing phenomena such as droughts and floods.
+For this lesson, We will work with the one Zip file of "[Composite Anomaly One-Month Return Period](https://sedac.ciesin.columbia.edu/downloads/data/water/water-wsim-gldas-v1/water-wsim-gldas-v1-composite-anom-one-month-netcdf.zip)". This zip file will contain three NetCDF files:
 
-Precipitation deficits can also cause drought, which is a prolonged period of little to no rainfall. Droughts have impacts on the environment and humans, at times causing a chain reaction. For example, California had a drought from 2012 to 2014. While it isn't uncommon for California to have periods of low precipitation, that with a combination of sustained record high temperatures created severe water shortages. The drought subsequently dried out rivers which hosted populations of the Chinook salmon, affecting the population. That in turn affected Native American tribes food supply.
+-   composite_anom_1mo.nc
+
+-   composite_anom_deficit_1mo.nc
+
+-   composite_anom\_\_surplus_1mo.nc
 
 ## Reading the Data
 
@@ -45,6 +49,7 @@ Precipitation deficits can also cause drought, which is a prolonged period of li
 This lesson uses the [`stars`](https://r-spatial.github.io/stars/), [`sf`](https://r-spatial.github.io/sf/), [`dplyr`](https://dplyr.tidyverse.org/), and [`lubridate`](https://lubridate.tidyverse.org/) packages. If you'd like to learn more about the functions used in this lesson you can use the help guides on their package websites.
 :::
 :::
+
 First, install and load the R packages required for this exercise:
 
 ```{r eval=FALSE}
@@ -77,7 +82,7 @@ print(wsim_gldas_anoms)
 
 The print command gives some basic information. The outputs tells us we have 5 attributes (deficit, deficit_cause, surplus, surplus_cause, both) and 3 dimensions. The first 2 dimensions are the spatial extents (x/y--longitude/latitude) and time is the 3rd dimension.
 
-This means the total number of individual raster layers in this NetCDF is 4020 (5 attributes x 804 time steps/months).
+This means the total number of individual raster layers in this NetCDF is 4020 (5 attributes x 804 time steps/months) [@CIESIN2018].
 
 ## Attribute Selection
 
@@ -86,30 +91,41 @@ We can start paring this down by subsetting for just deficits (drought).
 ```{r}
 names(wsim_gldas_anoms)
 
-wsim_gldas_anoms <- wsim_gldas_anoms['deficit']
+wsim_gldas_anoms_def <- wsim_gldas_anoms['deficit']
+print(wsim_gldas_anoms_def)
 ```
 
 ## Time Selection
 
 Specifying a temporal range of interest will free up more space. We'll grab every year for 2000-2014. This can be accomplished by generating a sequence for every year between December 2000 and December 2014, and then passing that vector of dates to `filter`.
 
+::: column-margin
+::: {.callout-tip style="color: #5a7a2b;"}
+## Coding Review
+
+This snippet uses the `cubelyr` package. Please install it first.
+:::
+:::
+
 ```{r}
 # generate a vector of dates for subsetting
+
 keeps<-seq(lubridate::ymd("2000-12-01"),
            lubridate::ymd("2014-12-01"), 
            by = "year")
 #change data type to POSIXct
 keeps <- as.POSIXct(keeps)
 # filter using that vector
-wsim_gldas_anoms <- dplyr::filter(wsim_gldas_anoms, time %in% keeps)
+wsim_gldas_anoms_6yrs <- dplyr::filter(wsim_gldas_anoms_def, time %in% keeps)
 
-print(wsim_gldas_anoms)
+print(wsim_gldas_anoms_6yrs)
+
 ```
 
-Now we're down to a single attribute ("both") with 15 time-steps. We can take a look at the first 6 years by passing the object through `slice` and then into `plot`.
+Now we're down to a single attribute ("deficit") with 15 time-steps. We can take a look at the first 6 years by passing the object through `slice` and then into `plot`.
 
 ```{r warning=FALSE}
-wsim_gldas_anoms |>
+wsim_gldas_anoms_6yrs |>
   dplyr::slice(index = 1:6, along = "time") |>
   plot(key.pos = 1, breaks = c(0, -5, -10, -20, -30, -50), key.lab = "Deficit")
 ```
@@ -120,7 +136,7 @@ Although we've pared it down to a single attribute with a restricted time period
 
 We can spatially crop the raster stack with a few different methods. Options include using a bounding box (xmin, ymin, xmax, ymax), another raster object, or a vectorized boundary like a shapefile or geojson.
 
-Using a vector boundary is one of the more common geoprocessing tasks. In this example we'll pull a geojson of the United States from the geoBoundaries API. You can also download vectorized boundaries directly from [ ](www.geoboundaries.org).
+Using a vector boundary is one of the more common geoprocessing tasks. In this example we'll pull a geojson of the United States from the geoBoundaries API. You can also download vectorized boundaries directly from .
 
 The call to geoBoundaries' API is pretty simple:
 
@@ -151,8 +167,7 @@ plot(sf::st_geometry(usa))
 This looks good, but it includes all United States territories. For simplicity, we can get it down to only the contiguous United States.
 
 ```{r}
-drops<-
-  c("Alaska", "Hawaii", 
+drops<- c("Alaska", "Hawaii", 
     "American Samoa",
     "Puerto Rico",
     "Commonwealth of the Northern Mariana Islands", 
@@ -172,12 +187,10 @@ texas <- usa[usa$shapeName == "Texas",]
 plot(sf::st_geometry(texas))
 ```
 
-From here we can crop the WSIM GLDAS raster stack by indexing it with the stored boundary of Texas.
-
-**Texas, in 2011, experienced a severe drought which caused rivers to dry up and lakes to reach historic low levels. The drought cost farmers and ranchers an estimated $8 billion in losses. Furthermore, the dry conditions fueled a series of wildfires across the state in early September.
+From here we can crop the WSIM GLDAS raster stack by indexing it with the stored boundary of Texas
 
 ```{r}
-wsim_gldas_anoms_tex <- wsim_gldas_anoms[texas]
+wsim_gldas_anoms_tex <- wsim_gldas_anoms_6yrs[texas]
 ```
 
 For a final visual check we'll take the last time-step in the WSIM-GLDAS dataset (15/December, 2014) and plot it with an overlay of the Texas boundary.
@@ -212,4 +225,4 @@ Congratulations! Now you should be able to:
 
 In the next lesson we will create more advanced visualizations and extract data of interest.
 
-[Lesson 2: WSIM-GLDAS Visualizations and Data Extraction](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/wsim-gldas-vis.html){.btn .btn-primary .btn role="button"} 
+[Lesson 2: WSIM-GLDAS Visualizations and Data Extraction](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/wsim-gldas-vis.html){.btn .btn-primary .btn role="button"}
