@@ -14,14 +14,23 @@ date: "December, 6 2023"
     + Mimic our process?
       * 12 month integration panels of the CON USA from 2000-2014 to identify areas of interest.
       * Zoom in to locations of interest and switch to 1-month integration for the years identified in the previous step.
+      
+## Overview
+
+In this lesson, you will acquire water security data (WSIM-GLDAS) from the NASA SEDAC website. You will work with 1-month and 12-month precipitation anomaly datasets to extract and visualize precipitation deficit data through different plotting methods, and identify states that experienced drought. You will also work with population data to perform zonal statistics. 
+
+## Learning Objectives
+
+After completing this lesson, you should be able to:
+●	Subset data for a region of interest and time period. 
+●	Perform data exploration such as making histograms and a time series.
+●	Plot geospatial data to determine precipitation deficit patterns.
+  ○	Use different plotting functions to make these maps.
+●	Integrate geoBoundaries and WSIM-GLDAS data for simple analysis.
+●	Integrate across geoBoundaries, WSIM-GLDAS, and Gridded Population of the World to perform more complex analyses.
+
 
 ## Introduction
-
-A raster is a grid of geographic data which has information stored per pixel. Vectors are a collection or a list of numbers. Vectors can be used to store coordinates, which can then be used to extract information from a pixel in the raster for analysis, such as a time series. Rasters can store many types of information as attributes, and they usually have dimensions such as latitude, longitude, and time.
-
-The water cycle is the constant process of circulation of water on, above, and under the Earth's surface. Human interventions such as greenhouse gas emissions, land use changes, dam and reservoir development, and groundwater overexploitation have all drastically affected the natural water cycle in recent decades. Human interventions in the water cycle have consequential impacts on oceanic, groundwater, and land processes, influencing phenomena such as droughts and floods.
-
-Precipitation deficits can also cause drought, which is a prolonged period of little to no rainfall. Droughts have impacts on the environment and humans, at times causing a chain reaction. For example, California had a drought from 2012 to 2014. While it isn't uncommon for California to have periods of low precipitation, that with a combination of sustained record high temperatures created severe water shortages. The drought subsequently dried out rivers which hosted populations of the Chinook salmon, affecting the population. That in turn affected Native American tribes food supply.
 
 In this vignette, you will be combining the basic plot() function with sf functions to plot singular attributes, and using more advanced plotting functions such as ggplot() for plotting histograms, multi-panel plots, and a time series. 
 
@@ -210,8 +219,8 @@ Visualize an individual cell with particular extreme or maybe volatile values. U
 Create a vector with the point location.
 
 ```{r}
-# vector of coordinates for Austin, Texas
-coords <- c(-97.7431, 30.2672)
+# vector of coordinates Missouri River Basin
+coords <- c(-95.833471, 40.721001)
 
 # create a stars object with point coordinates where 'sf::st_sfc()' is used to create a geometry list column and add a coordinate reference system. 'sf::st_points()' is within that function to turn the coords vector into a point. 'sf:: st_crs()' and 'stars::st_dimensions()'  respectively retrieves the coordinate reference system and the dimensions of wsim_gldas_1mo to ensure that the final values in point_stars is the same reference system and shape. 
 
@@ -241,8 +250,7 @@ Once in the proper format, plot using `ggplot`.
 ggplot2::ggplot(extracted_df, ggplot2::aes(x = time, y = deficit)) + ggplot2::geom_line()
 ```
 
-Texas, in 2011, experienced a severe drought which caused rivers to dry up and lakes to reach historic low levels. The drought cost farmers and ranchers an estimated $8 billion in losses. Furthermore, the dry conditions fueled a series of wildfires across the state in early September. Which months experienced the most severe drought?
-
+**Missouri, in 
 ## Population Exposure Plot
 
 Use Gridded Population of the World and `exactextractr` to determine the number of people exposed to a given anomaly for each month of the year. 
@@ -326,6 +334,15 @@ ggplot2::ggplot(data = joined_var_df, ggplot2::aes(x = shapeName, y = extracted_
 #ggplot2::ggplot(data = tp, ggplot2::aes(x = ID, y = gpw_v4_population_count_rev11_2020_15_min)) + ggplot2::geom_line()
 
 ```
+
+## In this Lesson, You Learned...
+
+Congratulations! Now you should be able to:
+
+●	Download geoboundaries data using the httr::GET() method.
+●	Identify hotspots of precipitation data and select these hotspots for further analysis by subsetting.
+●	Extract data from a pixel by using the extract function from the Stars library.
+●	Perform zonal statistics of population data using the extractexactr library.
 
 ## Conlusion
 
