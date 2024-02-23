@@ -249,13 +249,19 @@ Once in the proper format, plot using `ggplot`.
 ggplot2::ggplot(extracted_df, ggplot2::aes(x = time, y = deficit)) + ggplot2::geom_line()
 ```
 
-\*\*Creating a time series similar to this can be useful in water resources management Missouri, in
+\*\*Creating a time series similar to this can be useful in water resources management, which is the process of planning and managing water resources across all water uses. One can use time series analysis in models to predict droughts and flooding. It helps water resource managers determine who is able to use the available water.
+
+However, sometimes there can be issues in water resources management, especially across separate divisions. In 2012, Missouri experienced a severe drought that was the worst in more than 50 years, which negatively impacted the Missouri River Basin. A river basin is described as a total area of land that is drained by a river and it's tributaries, while tributaries are rivers or streams that flow into a larger river.
+
+The Army Corps of Engineers reduced the flow from Gavins Point Dam, a Missouri River reservoir, to protect the upper Missouri River basin in November 2012. That caused tension between water demand in the basin and transport demand on the Mississippi River, since the Missouri River flows into the Mississippi River. Additionally, Mississippi was also experiencing a drought.
+
+The Missouri River Basin functions for drinking water, irrigation and industrial purposes, and power production, while the Mississippi River benefits industries that rely on the river for trade and transport, which is important for the region's economy. Since both rivers are managed by difference offices, it was hard to determine a water resources solution that wouldn't impact both rivers.
 
 ## Population Exposure Plot
 
 Use Gridded Population of the World and `exactextractr` to determine the number of people exposed to a given anomaly for each month of the year.
 
-Gridded Population of the World is a dataset group in SEDAC which models the distribution of the global human population through counts and densities on a raster. These estimates are available for the years of 2000, 2005, 2015 and 2020. The Population Count dataset will be used for this example, and can be found here. \[https://sedac.ciesin.columbia.edu/data/collection/gpw-v4\]
+Gridded Population of the World is a dataset group in SEDAC which models the distribution of the global human population through counts and densities on a raster. These estimates are available for the years of 2000, 2005, 2015 and 2020. The Population Count dataset will be used for this example, and can be found here. \[https://sedac.ciesin.columbia.edu/data/collection/gpw-v4\] For this upcoming example, you will need to download the .tif file for the year of 2020, at the 15 minute resolution.
 
 'exactextractr' is an R package that summarizes raster values over groupings, or zones, also known as zonal statistics. Zonal statistics help in assessing the statistical characteristics of a certain region. The package can be used to sum all the cells in a polygon, i.e. a region; other functions include computing the mean, median, and other types of statistics. More information on the package can be found here \[https://github.com/isciences/exactextractr\].
 
