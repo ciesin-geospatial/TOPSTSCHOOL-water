@@ -19,14 +19,6 @@ date: "December, 6 2023"
 
 In this lesson, you will acquire water security data (WSIM-GLDAS) from the NASA SEDAC website. You will work with 1-month and 12-month precipitation composite datasets to extract and visualize precipitation deficit data through different plotting methods, and identify states that experienced drought. You will also work with population data to perform zonal statistics.
 
-::: column-margin
-::: {.callout-tip style="color: #5a7a2b;"}
-## Coding Review
-
-This lesson uses the [`ggplot`](https://ggplot2.tidyverse.org/) and [`terra`](https://rspatial.org/pkg/) packages. If you'd like to learn more about the functions used in this lesson you can use the help guides on their package websites.
-:::
-:::
-
 ## Learning Objectives
 
 After completing this lesson, you should be able to:
@@ -44,6 +36,14 @@ After completing this lesson, you should be able to:
 ## Introduction
 
 In this vignette, you will be combining the basic plot() function with sf functions to plot singular attributes, and using more advanced plotting functions such as ggplot() for plotting histograms, multi-panel plots, and a time series.
+
+::: column-margin
+::: {.callout-tip style="color: #5a7a2b;"}
+## Coding Review
+
+This lesson uses the [`ggplot`](https://ggplot2.tidyverse.org/) and [`terra`](https://rspatial.org/pkg/) packages. If you'd like to learn more about the functions used in this lesson you can use the help guides on their package websites.
+:::
+:::
 
 ## Load Data
 
@@ -310,8 +310,7 @@ joined_var_df = as.data.frame(joined_var)
 print(joined_var_df)
 ```
 
-Now plot the data in ggplot. Add a title and label the axis.
-I have some existing code I can pull to help with the plotting--or at least make it fancy.
+Now plot the data in ggplot. Add a title and label the axis. I have some existing code I can pull to help with the plotting--or at least make it fancy.
 
 ```{r}
 ggplot2::ggplot(data = joined_var_df, ggplot2::aes(x = shapeName, y = extracted_mean, group = 1)) + ggplot2::geom_line() +
