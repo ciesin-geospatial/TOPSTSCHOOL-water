@@ -17,7 +17,15 @@ date: "December, 6 2023"
 
 ## Overview
 
-In this lesson, you will acquire water security data (WSIM-GLDAS) from the NASA SEDAC website. You will work with 1-month and 12-month precipitation anomaly datasets to extract and visualize precipitation deficit data through different plotting methods, and identify states that experienced drought. You will also work with population data to perform zonal statistics.
+In this lesson, you will acquire water security data (WSIM-GLDAS) from the NASA SEDAC website. You will work with 1-month and 12-month precipitation composite datasets to extract and visualize precipitation deficit data through different plotting methods, and identify states that experienced drought. You will also work with population data to perform zonal statistics.
+
+::: column-margin
+::: {.callout-tip style="color: #5a7a2b;"}
+## Coding Review
+
+This lesson uses the [`ggplot`](https://ggplot2.tidyverse.org/) and [`terra`](https://rspatial.org/pkg/) packages. If you'd like to learn more about the functions used in this lesson you can use the help guides on their package websites.
+:::
+:::
 
 ## Learning Objectives
 
@@ -261,13 +269,15 @@ The Missouri River Basin functions for drinking water, irrigation and industrial
 
 Use Gridded Population of the World and `exactextractr` to determine the number of people exposed to a given anomaly for each month of the year.
 
-Gridded Population of the World is a dataset group in SEDAC which models the distribution of the global human population through counts and densities on a raster. These estimates are available for the years of 2000, 2005, 2015 and 2020. The Population Count dataset will be used for this example, and can be found here. \[https://sedac.ciesin.columbia.edu/data/collection/gpw-v4\] For this upcoming example, you will need to download the .tif file for the year of 2020, at the 15 minute resolution.
+**Gridded Population of the World** is a dataset group in SEDAC which models the distribution of the global human population through counts and densities on a raster. It displays the global distribution of the human population on a continuous surface. There are other versions of Gridded Population of the World, and the one used in this tutorial is the fourth version. Past versions like the third one, has been used for disaster impacts and environmental change.
 
-'exactextractr' is an R package that summarizes raster values over groupings, or zones, also known as zonal statistics. Zonal statistics help in assessing the statistical characteristics of a certain region. The package can be used to sum all the cells in a polygon, i.e. a region; other functions include computing the mean, median, and other types of statistics. More information on the package can be found here \[https://github.com/isciences/exactextractr\].
+This version has been updated using 2010 census data and is built from the previous versions. The accuracy of Gridded Population of the World version 4 was improved due to improvements in technology that allowed the Census bureaus to effortlessly distribute their results to the public using electronic and online formats.
 
-Terra is
+These estimates are available for the years of 2000, 2005, 2015 and 2020. The Population Count dataset will be used for this example, and can be downloaded from the NASA [SEDAC](https://sedac.ciesin.columbia.edu/data/collection/gpw-v4) website [@CIESIN2018]. For this upcoming example, you will need to download the .tif file for the year of 2020, at the 15 minute resolution.
 
-Load in GPW data using terra and the `exactextractr` package
+[exactextractr](https://github.com/isciences/exactextractr) [@isciences2022] is an R package that summarizes raster values over groupings, or zones, also known as zonal statistics. Zonal statistics help in assessing the statistical characteristics of a certain region. The package can be used to sum all the cells in a polygon, i.e. a region; other functions include computing the mean, median, and other types of statistics.
+
+Load in GPW data using `terra` and the `exactextractr` package
 
 ```{r}
 library(exactextractr)
@@ -300,7 +310,8 @@ joined_var_df = as.data.frame(joined_var)
 print(joined_var_df)
 ```
 
-Now plot the data in ggplot. Add a title and label the axis. I have some existing code I can pull to help with the plotting--or at least make it fancy.
+Now plot the data in ggplot. Add a title and label the axis.
+I have some existing code I can pull to help with the plotting--or at least make it fancy.
 
 ```{r}
 ggplot2::ggplot(data = joined_var_df, ggplot2::aes(x = shapeName, y = extracted_mean, group = 1)) + ggplot2::geom_line() +
@@ -317,12 +328,12 @@ Congratulations! Now you should be able to:
 
 -   Download geoboundaries data using the httr::GET() method.
 
--   Identify hotspots of precipitation data and select these hotspots for further analysis by subsetting.
+-   Identify hot spots of precipitation data and select these hotspots for further analysis by subsetting.
 
 -   Extract data from a pixel by using the extract function from the Stars library.
 
 -   Perform zonal statistics of population data using the extractexactr library.
 
-## Conlusion
+## Conclusion
 
 The insights drawn from various data sources, including remote sensing data, contribute to the understanding of water availability. Models like the Global Land Data Assimilation System (GLDAS) utilize satellite and ground-based observations to provide real-time, high-resolution data on land surface states and fluxes, aiding in a more comprehensive understanding of drought and flooding.
