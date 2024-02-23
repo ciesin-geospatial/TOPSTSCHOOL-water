@@ -20,11 +20,15 @@ bibliography: wsim-gldas-references.bib
 
 ## Overview
 
-In this lesson, you will use...
+In this lesson, you will acquire water security data (WSIM-GLDAS) from the NASA SEDAC website and will also retrieve geoBoundaries data directly from an API. You will learn how to subset data for a region of interest and save subsetted data as a new file. 
 
 ## Learning Objectives
 
-After completing this lesson, you should be able to: - Determine what...
+After completing this lesson, you should be able to:
+●	Retrieve WSIM-GLDAS data from SEDAC.
+●	Retrieve geoBoundaries data directly from the API.
+●	Subset data for a region of interest and time period.
+●	Plot geospatial data to visualize precipitation deficit patterns.
 
 ## Introduction
 
@@ -206,7 +210,9 @@ The size of the pre-processed dataset is 1.6 MB compared to the original dataset
 
 Congratulations! Now you should be able to:
 
--   Navigate the...
+●	Use libraries such as dplyr and lubridate for temporal subsetting.
+●	Crop a raster stack with a spatial boundary.
+●	Write a subsetted dataset to disk. 
 
 ## Lesson 2
 
