@@ -336,4 +336,4 @@ Congratulations! Now you should be able to:
 
 ## Conclusion
 
-The insights drawn from various data sources, including remote sensing data, contribute to the understanding of water availability. Models like the Global Land Data Assimilation System (GLDAS) utilize satellite and ground-based observations to provide real-time, high-resolution data on land surface states and fluxes, aiding in a more comprehensive understanding of drought and flooding.
+The insights drawn from various data sources, including remote sensing data, contribute to the understanding of water availability. Models like the Global Land Data Assimilation System (GLDAS) utilize satellite and ground-based observations to provide real-time, high-resolution data on land surface states and fluxes, aiding in a more comprehensive understanding of drought and flooding. [@Rodell2004] 
