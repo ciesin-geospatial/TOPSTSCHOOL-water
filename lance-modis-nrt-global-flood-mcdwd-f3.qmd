@@ -13,7 +13,7 @@ bibliography: nrt-flood-references.bib
 
 ## Overview
 
-In this lesson, you will use R to take a closer look at the data from the LANCE MODIS Near Real Time (NRT) Global Flood Product, including learning about what are LANCE and MODIS, and the NRT Flood products available. You will then learn to select, download, and visualize one of the NRT Flood layers.
+In this lesson, you will use R to take a closer look at the data from the LANCE MODIS Near Real Time (NRT) Global Flood Product, including learning about what are LANCE and MODIS, and the NRT Flood products available. You will then learn to select, download, and visualize one of the NRT Flood layers...
 
 ::: {.column-margin}
 ::: {.callout-tip style="color: #5a7a2b;"}
