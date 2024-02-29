@@ -220,7 +220,7 @@ The drought was further exacerbated by high temperatures related to climate chan
 
 \*\*The drought cost farmers and ranchers an estimated \$8 billion in losses.
 Furthermore, the dry conditions fueled a series of wildfires across the state in early September of 2011.
-The most devastating wildfire occurred in Bastrop County, in which 34,000 acres and 1,300 homes were destroyed.
+The most devastating wildfire occurred in Bastrop County, in which 34,000 acres and 1,300 homes were destroyed.[@StormSignals2011]
 
 ```{r}
 wsim_gldas_anoms_tex <- wsim_gldas_anoms[texas]
