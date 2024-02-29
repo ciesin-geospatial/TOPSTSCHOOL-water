@@ -216,7 +216,7 @@ From here we can crop the WSIM GLDAS raster stack by indexing it with the stored
 Climate experts discovered that the drought was produced by "La Niña", a weather pattern that causes the surface temperature of the Pacific Ocean to be cooler than normal.
 This in turn creates drier and warmer weather in the southern United States.
 La Niña can occur for a year or more, and returns once every few years.
-The drought was further exacerbated by high temperatures related to climate change in February of 2013.
+The drought was further exacerbated by high temperatures related to climate change in February of 2013.[@StateImpact]
 
 \*\*The drought cost farmers and ranchers an estimated \$8 billion in losses.
 Furthermore, the dry conditions fueled a series of wildfires across the state in early September of 2011.
