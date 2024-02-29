@@ -59,7 +59,7 @@ Droughts have impacts on the environment and humans, at times causing a chain re
 For example, California had a drought from 2012 to 2014.
 While it isn't uncommon for California to have periods of low precipitation, that with a combination of sustained record high temperatures created severe water shortages.
 The drought subsequently dried out rivers which hosted populations of the Chinook salmon, affecting the population.
-That in turn affected Native American tribes food supply.
+That in turn affected Native American tribes food supply. [@NationalPublicRadio2014]
 
 ## Reading the Data
 
