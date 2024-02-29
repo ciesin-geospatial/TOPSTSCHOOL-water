@@ -12,6 +12,8 @@ library(DT)
 library(datasets)
 library(shinyWidgets)
 
+library(shinythemes)
+
 # this changes prepairing all the datasets for following sections
 # quarto require all inputs in shiny application to be in the same chink and 
 # the chunk should be context="data"
@@ -22,7 +24,8 @@ library(shinyWidgets)
 ##setwd("D:/Grid3/school_lead_data")
 #school_lead_data<-"Lead_Testing_in_School_Drinking_Water_Sampling_and_Results_Compliance_Year_2016.csv"
 get_data<-"https://raw.githubusercontent.com/ciesin-geospatial/TOPSTSCHOOL-module-1-water/main/Lead_Testing_in_School_Drinking_Water_Sampling_and_Results_Compliance_Year_2016.csv"
-school_lead_df<-readr::read_csv(url(get_data))
+get_data<-"D:/Grid3/school_lead_data/Lead_Testing_in_School_Drinking_Water_Sampling_and_Results_Compliance_Year_2016.csv"
+school_lead_df<-readr::read_csv(get_data)
 
 # extract xy coordinates
 school_lead_df<-school_lead_df |> mutate(location_temp=str_extract(Location,"(?<=\\().*(?=\\))")) |> 
@@ -88,7 +91,7 @@ lead_data_all_fields<-names(school_lead_df ) |> unique()
 
 select_state<-column(3, selectInput("state", label = "Select a state",
                                     choices = state_list, selected = "NY"))
-select_county<-column(3, selectInput("county", label = "Select a county",
+select_county<-column(3,offset=1, selectInput("county", label = "Select a county",
                                      choices = list_of_counties, selected = "Bronx"))
 select_fields1<-column(3, selectInput("field1", label = "Select a field for map (left)",
                                       choices = field_list, selected = "total_white"))
@@ -98,7 +101,7 @@ select_classification_method<-column(3, selectInput("classification", label = "C
                                                     choices = classification_methods, selected = "jenks"))
 select_fields3<-column(3, selectInput("field3", label = "Select a field",
                                       choices = lead_field_list, selected = "school_count"))
-select_fields4<-  column(4, selectInput("fields", label = "Select fields",
+select_fields4<-  column(4,offset=1, selectInput("field4", label = "Select fields",
                                         choices = lead_data_all_fields, selected = "County",multiple = TRUE))
 
 theme<-theme(axis.text=element_text(size=12, face="bold"),
