@@ -261,7 +261,7 @@ ggplot2::ggplot(extracted_df, ggplot2::aes(x = time, y = deficit)) + ggplot2::ge
 
 However, sometimes there can be issues in water resources management, especially across separate divisions. In 2012, Missouri experienced a severe drought that was the worst in more than 50 years, which negatively impacted the Missouri River Basin. A river basin is described as a total area of land that is drained by a river and it's tributaries, while tributaries are rivers or streams that flow into a larger river.
 
-The Army Corps of Engineers reduced the flow from Gavins Point Dam, a Missouri River reservoir, to protect the upper Missouri River basin in November 2012. That caused tension between water demand in the basin and transport demand on the Mississippi River, since the Missouri River flows into the Mississippi River. Additionally, Mississippi was also experiencing a drought.
+The Army Corps of Engineers reduced the flow from Gavins Point Dam, a Missouri River reservoir, to protect the upper Missouri River basin in November 2012. That caused tension between water demand in the basin and transport demand on the Mississippi River, since the Missouri River flows into the Mississippi River. Additionally, Mississippi was also experiencing a drought.[@USAToday2012]
 
 The Missouri River Basin functions for drinking water, irrigation and industrial purposes, and power production, while the Mississippi River benefits industries that rely on the river for trade and transport, which is important for the region's economy. Since both rivers are managed by difference offices, it was hard to determine a water resources solution that wouldn't impact both rivers.
 
