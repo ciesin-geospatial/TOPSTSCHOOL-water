@@ -23,7 +23,7 @@ library(shinythemes)
 
 ##setwd("D:/Grid3/school_lead_data")
 #school_lead_data<-"Lead_Testing_in_School_Drinking_Water_Sampling_and_Results_Compliance_Year_2016.csv"
-get_data<-"https://raw.githubusercontent.com/ciesin-geospatial/TOPSTSCHOOL-module-1-water/main/Lead_Testing_in_School_Drinking_Water_Sampling_and_Results_Compliance_Year_2016.csv"
+get_data<-"https://raw.githubusercontent.com/ciesin-geospatial/TOPSTSCHOOL-module-1-water/main/nyc-lead/Lead_Testing_in_School_Drinking_Water_Sampling_and_Results_Compliance_Year_2016.csv"
 get_data<-"Lead_Testing_in_School_Drinking_Water_Sampling_and_Results_Compliance_Year_2016.csv"
 school_lead_df<-readr::read_csv(get_data)
 

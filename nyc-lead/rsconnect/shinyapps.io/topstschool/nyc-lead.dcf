@@ -5,6 +5,6 @@ account: topstschool
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 11409553
-bundleId: 8335607
-url: https://topstschool.shinyapps.io/nyc_lead/
+bundleId: 8335754
+url: https://topstschool.shinyapps.io/nyc-lead/
 version: 1
