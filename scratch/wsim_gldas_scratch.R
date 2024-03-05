@@ -19,9 +19,12 @@ texas_counties <- sf::st_read(texas_counties$gjDownloadURL)
 texas_counties<-sf::st_intersection(texas_counties, texas)
 
 wsim_gldas<-terra::sds("composite_1mo.nc")
-wsim_gldas<-wsim_gldas["deficit"]
+# wsim_gldas<-wsim_gldas["deficit"]
 keeps<-seq(lubridate::ymd("2011-01-01"), lubridate::ymd("2011-12-01"), by = "month")
+layers<-names(wsim_gldas)
+
 wsim_gldas<-wsim_gldas[[terra::time(wsim_gldas) %in% keeps]]
+class(wsim_gldas)
 names(wsim_gldas) <- keeps
 wsim_gldas <- terra::clamp(wsim_gldas, lower = -50, upper = 0)
 terra::plot(wsim_gldas)
