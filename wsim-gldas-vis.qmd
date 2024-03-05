@@ -4,25 +4,47 @@ author:
   - "Joshua Brinks"
   - "Elaine Famutimi"
 date: "December, 6 2023"
+bibliography: wsim-gldas-references.bib
 ---
 
 ## TO DO
 
-  * Write the actual code and narrative.
-  * Determine the region and time period of focus to draw in our use cases/human focused stories.
-  * Determine the method of exploration.
-    + Mimic our process?
-      * 12 month integration panels of the CON USA from 2000-2014 to identify areas of interest.
-      * Zoom in to locations of interest and switch to 1-month integration for the years identified in the previous step.
+-   Write the actual code and narrative.
+-   Determine the region and time period of focus to draw in our use cases/human focused stories.
+-   Determine the method of exploration.
+    -   Mimic our process?
+        -   12 month integration panels of the CON USA from 2000-2014 to identify areas of interest.
+        -   Zoom in to locations of interest and switch to 1-month integration for the years identified in the previous step.
+
+## Overview
+
+In this lesson, you will acquire water security data (WSIM-GLDAS) from the NASA SEDAC website. You will work with 1-month and 12-month precipitation composite datasets to extract and visualize precipitation deficit data through different plotting methods, and identify states that experienced drought. You will also work with population data to perform zonal statistics.
+
+## Learning Objectives
+
+After completing this lesson, you should be able to:
+
+-   Subset data for a region of interest and time period.
+
+-   Perform data exploration such as making histograms and a time series.
+
+-   Plot geospatial data to determine precipitation deficit patterns.
+
+    -   Use different plotting functions to make these maps.
+
+-   Integrate across geoBoundaries, WSIM-GLDAS, and Gridded Population of the World to perform more complex analyses.
 
 ## Introduction
 
-A raster is a grid of geographic data which has information stored per pixel. Vectors are a collection or a list of numbers. Vectors can be used to store coordinates, which can then be used to extract information from a pixel in the raster for analysis, such as a time series. Rasters can store many types of information, such as precipitation anomaly data, which can show rainfall deficits or surpluses. 
+In this vignette, you will be combining the basic plot() function with sf functions to plot singular attributes, and using more advanced plotting functions such as ggplot() for plotting histograms, multi-panel plots, and a time series.
 
-An anomaly is described as a deviation from the long term average over a period and region. Precipitation anomalies can cause drought, which is a prolonged period of little to no rainfall. Droughts have impacts on the environment and humans, at times causing a chain reaction. For example, California had a drought in 2014 that subsequently dried out rivers which hosted populations of the Chinook salmon, affecting the population. That in turn affected Native American tribes food supply.
+::: column-margin
+::: {.callout-tip style="color: #5a7a2b;"}
+## Coding Review
 
-In this vignette, you will be combining the basic plot() function with sf functions to plot singular attributes, and using more advanced plotting functions such as ggplot() for plotting histograms, multi-panel plots, and a time series. 
-
+This lesson uses the [`ggplot`](https://ggplot2.tidyverse.org/) and [`terra`](https://rspatial.org/pkg/) packages. If you'd like to learn more about the functions used in this lesson you can use the help guides on their package websites.
+:::
+:::
 
 ## Load Data
 
@@ -66,7 +88,7 @@ Now we'll verify this with `print()` and `plot()`.
 print(wsim_deficit_usa)
 ```
 
-The output shows that we've selected a single attribute ('deficit') and 15 time-steps in the 'time' dimension. Plot only the 14th time step and show the border color as purple, and a lineweight of 3. 
+The output shows that we've selected a single attribute ('deficit') and 15 time-steps in the 'time' dimension. Plot only the 14th time step and show the border color as purple, and a lineweight of 3.
 
 ```{r warning=FALSE, message=FALSE}
 wsim_deficit_usa |>
@@ -79,7 +101,6 @@ plot(sf::st_geometry(usa),
      fill = NA,
      border = 'purple')
 ```
-
 
 ## Exploratory Histogram
 
@@ -99,13 +120,13 @@ usa1<-as.data.frame(as.numeric(wsim_deficit_usa$deficit))
 names(usa1)<-"Deficit"
 ```
 
-
 Check the values.
 
 ```{r}
 ggplot2::ggplot(usa1, ggplot2::aes(Deficit))+
   ggplot2::geom_histogram(na.rm = TRUE)
 ```
+
 There are some bad outliers, we can just zoom into the majority of values by setting x-axis limits.
 
 ```{r}
@@ -139,7 +160,7 @@ wsim_deficit_usa |>
     # -10 to -5
     '#FFEDA3',
     # -5 to -3
-    '#FFFFFF'), breaks = c(-60, -40, -20, 0, 20, 40, 50))
+    '#FFFFFF'), breaks = c(-60, -40, -20, 0, 20, 40, 60))
 ```
 
 Plotting without breaks produces a similar but different map.
@@ -179,13 +200,12 @@ wsim_gldas_1mo<-wsim_gldas_1mo[usa]
 wsim_gldas_1mo <- wsim_gldas_1mo['deficit']
 
 # create a new sequence of dates, this time monthly, for the chosen year of 2011
-keeps3<-seq(lubridate::ymd("2011-01-01"),
-           lubridate::ymd("2011-12-01"), 
+keeps3<-seq(lubridate::ymd("2012-01-01"),
+           lubridate::ymd("2012-12-01"), 
            by = "month")
 
 wsim_gldas_1mo <- dplyr::filter(wsim_gldas_1mo, time %in% keeps3)
 ```
-
 
 Create a multi-panel figure with each panel representing 1 month to identify the most intense months of drought or flooding. Starting with this one maybe use `ggplot` and a nice palette, legend, and panel headings. Will probably have to use some sort of faceting to make individual panels.
 
@@ -195,10 +215,12 @@ df_wsim_gldas_1mo <-as.data.frame(wsim_gldas_1mo, xy = TRUE)
 
 ggplot2::ggplot(data = df_wsim_gldas_1mo) +
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = deficit)) +
-  ggplot2::scale_fill_viridis_c(limits = c(-5, 5), option = "magma") +
+  ggplot2::scale_fill_viridis_c(limits = c(-60, 60), option = "magma") +
   ggplot2::theme_void() +
   ggplot2::theme(legend.position = "bottom") +
+  ggplot2::geom_sf(data = usa, fill = NA, color = "black") +
   ggplot2::facet_wrap(time ~ .)
+
 ```
 
 Visualize an individual cell with particular extreme or maybe volatile values. Use Google Maps to identify the latitude/longitude of a place of interest. Maybe an urban center or other important location in the region that suffered from the extreme event.
@@ -206,8 +228,8 @@ Visualize an individual cell with particular extreme or maybe volatile values. U
 Create a vector with the point location.
 
 ```{r}
-# vector of coordinates for Austin, Texas
-coords <- c(-97.7431, 30.2672)
+# vector of coordinates Missouri River Basin
+coords <- c(-95.833471, 40.721001)
 
 # create a stars object with point coordinates where 'sf::st_sfc()' is used to create a geometry list column and add a coordinate reference system. 'sf::st_points()' is within that function to turn the coords vector into a point. 'sf:: st_crs()' and 'stars::st_dimensions()'  respectively retrieves the coordinate reference system and the dimensions of wsim_gldas_1mo to ensure that the final values in point_stars is the same reference system and shape. 
 
@@ -215,8 +237,7 @@ point_stars <- sf::st_sfc(sf::st_point(coords), crs = sf::st_crs(wsim_gldas_1mo)
                       dim = names(stars::st_dimensions(wsim_gldas_1mo)))
 ```
 
-
-Use `stars::extract` to extract raster values in the stack at the point location. 
+Use `stars::extract` to extract raster values in the stack at the point location.
 
 ```{r}
 extracted_vals <- stars::st_extract(wsim_gldas_1mo, point_stars)
@@ -237,37 +258,33 @@ Once in the proper format, plot using `ggplot`.
 ggplot2::ggplot(extracted_df, ggplot2::aes(x = time, y = deficit)) + ggplot2::geom_line()
 ```
 
-Texas, in 2011, experienced a severe drought which caused rivers to dry up and lakes to reach historic low levels. The drought cost farmers and ranchers an estimated $8 billion in losses. Furthermore, the dry conditions fueled a series of wildfires across the state in early September. Which months experienced the most severe drought?
+\*\*Creating a time series similar to this can be useful in water resources management, which is the process of planning and managing water resources across all water uses. One can use time series analysis in models to predict droughts and flooding. It helps water resource managers determine who is able to use the available water.
+
+However, sometimes there can be issues in water resources management, especially across separate divisions. In 2012, Missouri experienced a severe drought that was the worst in more than 50 years, which negatively impacted the Missouri River Basin. A river basin is described as a total area of land that is drained by a river and it's tributaries, while tributaries are rivers or streams that flow into a larger river.
+
+The Army Corps of Engineers reduced the flow from Gavins Point Dam, a Missouri River reservoir, to protect the upper Missouri River basin in November 2012. That caused tension between water demand in the basin and transport demand on the Mississippi River, since the Missouri River flows into the Mississippi River. Additionally, Mississippi was also experiencing a drought.[@USAToday2012]
+
+The Missouri River Basin functions for drinking water, irrigation and industrial purposes, and power production, while the Mississippi River benefits industries that rely on the river for trade and transport, which is important for the region's economy. Since both rivers are managed by difference offices, it was hard to determine a water resources solution that wouldn't impact both rivers.[@WorldView2012] 
 
 ## Population Exposure Plot
 
-Use Gridded Population of the World and `exactextractr` to determine the number of people exposed to a given anomaly for each month of the year. 
+Use Gridded Population of the World and `exactextractr` to determine the number of people exposed to a given anomaly for each month of the year.
 
-Gridded Population of the World is a dataset group in SEDAC which models the distribution of the global human population through counts and densities on a raster. These estimates are available for the years of 2000, 2005, 2015 and 2020. The Population Count dataset will be used for this example, and can be found here. [https://sedac.ciesin.columbia.edu/data/collection/gpw-v4]
+**Gridded Population of the World** is a dataset group in SEDAC which models the distribution of the global human population through counts and densities on a raster. It displays the global distribution of the human population on a continuous surface. There are other versions of Gridded Population of the World, and the one used in this tutorial is the fourth version. Past versions like the third one, has been used for disaster impacts and environmental change.
 
-'exactextractr' is an R package that summarizes raster values over groupings, or zones, also known as zonal statistics. Zonal statistics help in assessing the statistical characteristics of a certain region. The package can be used to sum all the cells in a polygon, i.e. a region; other functions include computing the mean, median, and other types of statistics. More information on the package can be found here [https://github.com/isciences/exactextractr]. 
+This version has been updated using 2010 census data and is built from the previous versions. The accuracy of Gridded Population of the World version 4 was improved due to improvements in technology that allowed the Census bureaus to effortlessly distribute their results to the public using electronic and online formats.
 
-Load in GPW data and the `exactextractr` package
+These estimates are available for the years of 2000, 2005, 2015 and 2020. The Population Count dataset will be used for this example, and can be downloaded from the NASA [SEDAC](https://sedac.ciesin.columbia.edu/data/collection/gpw-v4) website [@CIESIN2018]. For this upcoming example, you will need to download the .tif file for the year of 2020, at the 15 minute resolution.
+
+[exactextractr](https://github.com/isciences/exactextractr) [@isciences2022] is an R package that summarizes raster values over groupings, or zones, also known as zonal statistics. Zonal statistics help in assessing the statistical characteristics of a certain region. The package can be used to sum all the cells in a polygon, i.e. a region; other functions include computing the mean, median, and other types of statistics.
+
+Load in GPW data using `terra` and the `exactextractr` package
 
 ```{r}
-#gpw <- stars::read_stars("gpw_v4_population_count_rev11_2020_15_min.tif", proxy = FALSE)
-#print(gpw)
+library(exactextractr)
 
-#gpw_sf <- sf::st_as_sf(gpw)
-#print(gpw_sf)
-
-#gpw_df <-as.data.frame(gpw)
-#print(gpw_df)
-
-```
-```{r}
 gpw1 <- terra::rast("gpw_v4_population_count_rev11_2020_15_min.tif")
 print(gpw1)
-
-library(exactextractr)
-#gpw_df1 <-as.data.frame(gpw1)
-#plot(gpw1)
-#print(gpw_df1)
 ```
 
 Perform the time series zonal summary.
@@ -277,35 +294,46 @@ This might be a bit tricky; been a while for me. Have to look up the proper code
 Resulting data.frame will probably need to be transformed to long (just like before), so it can be plotted.
 
 ```{r}
+extracted_mean <- exact_extract(gpw1, usa, 'mean')
+print(extracted_mean)
 
-extracted_sum <- exact_extract(gpw1, usa, 'sum', weights = 'area')
-print(extracted_sum)
-
-extracted_sum_df <- as.data.frame(extracted_sum)
-print(extracted_sum_df)
-
-extracted_sum_df <- dplyr::mutate(extracted_sum_df, ID = dplyr::row_number())
-print(extracted_sum_df)
+extracted_mean_df <- as.data.frame(extracted_mean)
+print(extracted_mean_df)
 ```
 
-Now plot the data in ggplot. I have some existing code I can pull to help with the plotting--or at least make it fancy.
+You will have to use the function "cbind" to bind together the extracted mean of each state along with the states in the USA boundary.
 
 ```{r}
+joined_var = cbind(usa, extracted_mean)
+print(joined_var)
 
-ggplot2::ggplot(data = extracted_sum_df, ggplot2::aes(x = ID, y = extracted_sum)) + ggplot2::geom_line()
-
-
+joined_var_df = as.data.frame(joined_var)
+print(joined_var_df)
 ```
+
+Now plot the data in ggplot. Add a title and label the axis. I have some existing code I can pull to help with the plotting--or at least make it fancy.
+
 ```{r}
-tp <- terra::extract(gpw1, usa, sum, na.rm = FALSE)
-print(tp)
-#ggplot2::ggplot(extracted_df, ggplot2::aes(x = time, y = deficit)) + ggplot2::geom_line()
-ggplot2::ggplot(data = tp)
-#ggplot2::geom_line(data = tp)
-ggplot2::ggplot(data = tp, ggplot2::aes(x = ID, y = gpw_v4_population_count_rev11_2020_15_min)) + ggplot2::geom_line()
-
+ggplot2::ggplot(data = joined_var_df, ggplot2::aes(x = shapeName, y = extracted_mean, group = 1)) + ggplot2::geom_line() +
+  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1)) +
+  ggplot2::theme(plot.title =  ggplot2::element_text(hjust = 0.5)) +
+  ggplot2::ggtitle("Population Mean per State") + 
+  ggplot2::xlab("State") + 
+  ggplot2::ylab("Mean")
 ```
 
-## Conlusion
+## In this Lesson, You Learned...
 
-The insights drawn from various data sources, including remote sensing data, contribute to the understanding of water availability. Models like the Global Land Data Assimilation System (GLDAS) utilize satellite and ground-based observations to provide real-time, high-resolution data on land surface states and fluxes, aiding in a more comprehensive understanding of drought and flooding.
+Congratulations! Now you should be able to:
+
+-   Download geoboundaries data using the httr::GET() method.
+
+-   Identify hot spots of precipitation data and select these hotspots for further analysis by subsetting.
+
+-   Extract data from a pixel by using the extract function from the Stars library.
+
+-   Perform zonal statistics of population data using the extractexactr library.
+
+## Conclusion
+
+The insights drawn from various data sources, including remote sensing data, contribute to the understanding of water availability. Models like the Global Land Data Assimilation System (GLDAS) utilize satellite and ground-based observations to provide real-time, high-resolution data on land surface states and fluxes, aiding in a more comprehensive understanding of drought and flooding. [@Rodell2004] 

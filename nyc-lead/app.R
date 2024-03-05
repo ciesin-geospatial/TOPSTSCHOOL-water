@@ -1,4 +1,4 @@
-source("nyc_lead_prep.R", local = TRUE)
+source("nyc-lead-prep.R", local = TRUE)
 
 library(shiny)
 
@@ -88,7 +88,7 @@ ui <- navbarPage(strong("School water quality: Exposure to lead"),theme = shinyt
               In the code snip below, we are reading the datasets that hosted on a github reposotory.
               Then we use read_csv fundtion to read dataset.The most important part when read a datatset is the format of 
               the dataset.The format the dataset determines what method to use."),br(),
-            code("data_url<-https://raw.githubusercontent.com/ciesin-geospatial/TOPSTSCHOOL-module-1-water/main"),br(),
+            code("data_url<-https://raw.githubusercontent.com/ciesin-geospatial/TOPSTSCHOOL-module-1-water/main/nyc-lead/"),br(),
             code("dataset_name<-Lead_Testing_in_School_Drinking_Water_Sampling_and_Results_Compliance_Year_2016.csv"),br(),
             code("data_path=paste0(data_url,\\,data_url"),br(),
             code("school_lead_df<-readr::read_csv(url(get_data))"),
