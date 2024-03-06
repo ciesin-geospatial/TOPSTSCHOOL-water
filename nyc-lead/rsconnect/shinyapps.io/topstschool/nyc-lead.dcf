@@ -1,0 +1,12 @@
+name: nyc-lead
+title: nyc-lead
+username: topstschool
+account: topstschool
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 11410269
+bundleId: 8337044
+url: https://topstschool.shinyapps.io/nyc-lead/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
