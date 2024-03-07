@@ -7,7 +7,7 @@ bibliography: nrt-flood-references.bib
 
 # LANCE MODIS Near Real Time (NRT) Global Flood Product
 
-<img src="https://www.earthdata.nasa.gov/sites/default/files/imported/Flood_mekong.png" alt="MODIS NRT FLOOD"/>[^1]
+![MODIS NRT FLOOD](https://www.earthdata.nasa.gov/sites/default/files/imported/Flood_mekong.png)[^1]
 
 [^1]: Photo Credit, NASA OESDIS.
 
