@@ -54,7 +54,7 @@ Some variables also contain multiple attributes each with their own time dimensi
 Hence, this is a large file that takes upwards of 2 hours to download and may cause memory issues on certain systems.
 We will work with the [**Composite Anomaly One-Month Return Period**](https://sedac.ciesin.columbia.edu/downloads/data/water/water-wsim-gldas-v1/water-wsim-gldas-v1-composite-anom-one-month-netcdf.zip) NetCDF file.
 
-<img src="https://www.noaa.gov/sites/default/files/styles/landscape_width_1275/public/2021-05/watercycle_rc.png" alt="NOAA Water Cycle"/>[^1]
+<img src="https://www.noaa.gov/sites/default/files/styles/landscape_width_1275/public/2021-05/watercycle_rc.png" alt="NOAA Water Cycle">[^1]
 
 [^1]: Photo Credit, Dennis Cain/NWS.
 
