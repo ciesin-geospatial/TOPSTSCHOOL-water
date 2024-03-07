@@ -19,11 +19,9 @@ editor:
 -   Decide on which wsim-gldas version to use.
     -   Switch out the current for a 12-month integration anomaly.
 -   Write out the smaller pre-processed file to disk for potential use in binder workshop or subsequent lesson in the module.
--   Introduce automated data acquisition with some [NASA SEDAC] or NASA earthdata package??
+-   Introduce automated data acquisition with some \[NASA SEDAC\] or NASA earthdata package??
 
 ## Overview
-
-
 
 In this lesson, you will acquire **Water Security Indicator Model - Global Land Data Assimilation System (WSIM-GLDAS)** from the [NASA Socioeconomic Data and Applications Center (SEDAC)](https://sedac.ciesin.columbia.edu/) website and will also retrieve [geoBoundaries](https://www.geoboundaries.org/api.html) data directly from an API.
 You will learn how to subset data for a region of interest and save the subsetted data as a new file.
@@ -44,8 +42,8 @@ After completing this lesson, you should be able to:
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Data Science Review
 
-A [raster](https://docs.qgis.org/2.18/en/docs/gentle_gis_introduction/raster_data.html) is a grid of geographic data which has information stored per pixel. Rasters can store many types of information as attributes, and they usually have dimensions such as latitude, longitude, and time.
-
+A [raster](https://docs.qgis.org/2.18/en/docs/gentle_gis_introduction/raster_data.html) is a grid of geographic data which has information stored per pixel.
+Rasters can store many types of information as attributes, and they usually have dimensions such as latitude, longitude, and time.
 :::
 :::
 
@@ -54,7 +52,7 @@ Downloads are organized by combination of variable (composite surplus/deficit, t
 Each variable-integration combination consists of a NetCDF **raster** file with a time dimension that contains a raster layer for each of the 804 months between January, 1948 and December, 2014.
 Some variables also contain multiple attributes each with their own time dimension of 804 rasters.
 Hence, this is a large file that takes upwards of 2 hours to download and may cause memory issues on certain systems.
-We will work with the **Composite Anomaly One-Month Return Period](https://sedac.ciesin.columbia.edu/downloads/data/water/water-wsim-gldas-v1/water-wsim-gldas-v1-composite-anom-one-month-netcdf.zip)** NetCDF file.
+We will work with the **Composite Anomaly One-Month Return Period** NetCDF file (https://sedac.ciesin.columbia.edu/downloads/data/water/water-wsim-gldas-v1/water-wsim-gldas-v1-composite-anom-one-month-netcdf.zip).
 
 <img src="https://www.noaa.gov/sites/default/files/styles/landscape_width_1275/public/2021-05/watercycle_rc.png" alt="NOAA Water Cycle"/>[^1]
 
@@ -67,7 +65,9 @@ Human interventions in the water cycle have consequential impacts on oceanic, gr
 Precipitation deficits can also cause drought, which is a prolonged period of little to no rainfall.
 Droughts have impacts on the environment and humans, at times causing a chain reaction.
 For example, California had a drought from 2012 to 2014.
-While it isn't uncommon for California to have periods of low precipitation, that with a combination of sustained record high temperatures created severe water shortages. The drought subsequently dried out rivers which depleted populations of the [Chinook salmon](https://www.fisheries.noaa.gov/species/chinook-salmon) disrupting Native American tribes' food supply. [@NationalPublicRadio2014]
+While it isn't uncommon for California to have periods of low precipitation, that with a combination of sustained record high temperatures created severe water shortages.
+The drought subsequently dried out rivers which depleted populations of the [Chinook salmon](https://www.fisheries.noaa.gov/species/chinook-salmon) disrupting Native American tribes' food supply.
+[@NationalPublicRadio2014]
 
 ## Reading the Data
 
@@ -76,64 +76,48 @@ While it isn't uncommon for California to have periods of low precipitation, tha
 ## Data Science Review
 
 This lesson uses the [`stars`](https://r-spatial.github.io/stars/), [`sf`](https://r-spatial.github.io/sf/), [`dplyr`](https://dplyr.tidyverse.org/), and [`lubridate`](https://lubridate.tidyverse.org/) packages.
+Make sure they are installed before you begin working with the code in this document.
 If you'd like to learn more about the functions used in this lesson you can use the help guides on their package websites.
 :::
 :::
-
-First, install and load the R packages required for this exercise:
-
-```{r eval=FALSE}
-packages_to_check <- c("stars", "sf", "lubridate", "cubelyr", "lubridate")
-
-# Check and install packages
-for (package_name in packages_to_check) {
-  if (!package_name %in% rownames(installed.packages())) {
-    install.packages(package_name)
-    cat(paste("Package", package_name, "installed.\n"))
-  } else {
-    cat(paste("Package", package_name, "is already installed.\n"))
-  }
-  library(package_name, character.only = TRUE)
-}
-
-```
 
 Once you've completed the download and placed the .nc file into your working directory read in the file with the `stars::read_stars()` function.
 
 ```{r}
 
-# proxy = TRUE will limit memory useage but does 
-# not always work with certain downstream processing functions
-
-wsim_gldas_anoms <- stars::read_stars("composite_12mo.nc", proxy = FALSE)
+wsim_gldas_anoms <- stars::read_stars("composite_12mo.nc", proxy = TRUE)
 
 print(wsim_gldas_anoms)
 ```
 
-The print command gives some basic information.
-The outputs tells us we have 5 attributes (deficit, deficit_cause, surplus, surplus_cause, both) and 3 dimensions.
+Reading in the file with the argument `proxy = TRUE` allows you to inspect basic elements of the file without reading the whole file into memory.
+Multidimensional raster datasets can be extremely large and bring your computing environment to a halt if you have memory limitations.
+
+Now we can use the print command to view basic information.
+The output tells us we have 5 attributes (deficit, deficit_cause, surplus, surplus_cause, both) and 3 dimensions.
 The first 2 dimensions are the spatial extents (x/y--longitude/latitude) and time is the 3rd dimension.
 
 This means the total number of individual raster layers in this NetCDF is 4020 (5 attributes x 804 time steps/months).
 
 ## Attribute Selection
 
-The WSIM data is quite large with many variables available. We can manage this large data by first subsetting the data by a single variable "deficits" (drought).
+The WSIM data is quite large with many variables available.
+We can manage this large data by subsetting the data for a single variable; in this case "deficit" (drought).
+We can read the data back in; this time with `proxy = FALSE` and only selecting the deficit layer.
 
 ```{r}
-names(wsim_gldas_anoms)
-
 #subtetting the variable 'deficit'
-wsim_gldas_anoms <- wsim_gldas_anoms['deficit']
+wsim_gldas_anoms <- stars::read_stars("composite_12mo.nc", sub = 'deficit', proxy = FALSE)
 ```
 
 ## Time Selection
+
 ::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Data Science Review
 
-[Vectors](https://docs.qgis.org/2.18/en/docs/gentle_gis_introduction/vector_data.html) are a collection or a list of numbers. Vectors can be used to store coordinates, which can then be used to extract information from a pixel in the raster for analysis, such as a time series.
-
+[Vectors](https://docs.qgis.org/2.18/en/docs/gentle_gis_introduction/vector_data.html) are a collection or a list of numbers.
+Vectors can be used to store coordinates, which can then be used to extract information from a pixel in the raster for analysis, such as a time series.
 :::
 :::
 
@@ -154,7 +138,7 @@ wsim_gldas_anoms <- dplyr::filter(wsim_gldas_anoms, time %in% keeps)
 print(wsim_gldas_anoms)
 ```
 
-Now we're down to a single attribute ("both") with 15 time-steps.
+Now we're down to a single attribute ("deficit") with 15 time-steps.
 We can take a look at the first 6 years by passing the object through `slice` and then into `plot`.
 
 ```{r warning=FALSE}
@@ -174,8 +158,8 @@ Options include using a bounding box (xmin, ymin, xmax, ymax), another raster ob
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Data Science Review
 
-Built by the community and [William & Mary geoLab](https://github.com/wmgeolab/geoBoundaries), the geoBoundaries Global Database of Political Administrative Boundaries Database is an online, open license (CC BY 4.0 / ODbL) resource of information on administrative boundaries (i.e., state, county) for every country in the world. Since 2016, we have tracked approximately 1 million boundaries within over 200 entities, including all UN member states.
-
+Built by the community and [William & Mary geoLab](https://github.com/wmgeolab/geoBoundaries), the geoBoundaries Global Database of Political Administrative Boundaries Database is an online, open license (CC BY 4.0 / ODbL) resource of information on administrative boundaries (i.e., state, county) for every country in the world.
+Since 2016, we have tracked approximately 1 million boundaries within over 200 entities, including all UN member states.
 :::
 :::
 
