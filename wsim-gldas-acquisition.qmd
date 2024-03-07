@@ -32,9 +32,9 @@ A [raster](https://docs.qgis.org/2.18/en/docs/gentle_gis_introduction/raster_dat
 
 The **Water Security (WSIM-GLDAS) Monthly Grids, v1 (1948 -- 2014)** dataset can be download from the [NASA SEDAC](https://sedac.ciesin.columbia.edu/data/set/water-wsim-gldas-v1) website [@isciences2022]. Downloads are organized by combination of variable (composite surplus/deficit, temperature, PETmE, runoff, soil moisture, precipitation) and integration period (1, 3, 6, 12 months). Each variable-integration combination consists of a NetCDF **raster** file with a time dimension that contains a raster layer for each of the 804 months between January, 1948 and December, 2014. Some variables also contain multiple attributes each with their own time dimension of 804 rasters. Hence, this is a large file that takes upwards of 2 hours to download and may cause memory issues on certain systems.
 
-We will work with the **[Composite Anomaly One-Month Return Period](https://sedac.ciesin.columbia.edu/downloads/data/water/water-wsim-gldas-v1/water-wsim-gldas-v1-composite-anom-one-month-netcdf.zip)** NetCDF file .
+We will work with the [**Composite Anomaly One-Month Return Period**](https://sedac.ciesin.columbia.edu/downloads/data/water/water-wsim-gldas-v1/water-wsim-gldas-v1-composite-anom-one-month-netcdf.zip) NetCDF file .
 
-![](https://www.noaa.gov/sites/default/files/styles/landscape_width_1275/public/2021-05/watercycle_rc.png){fig-alt="NOAA Water Cycle"}[^1]
+![](images/watercycle_rc.png)[^1]
 
 [^1]: Photo Credit, Dennis Cain/NWS.
 
@@ -234,3 +234,5 @@ Congratulations! Now you should be able to:
 In the next lesson we will create more advanced visualizations and extract data of interest.
 
 [Lesson 2: WSIM-GLDAS Visualizations and Data Extraction](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/wsim-gldas-vis.html){.btn .btn-primary .btn role="button"}
+
+# References
