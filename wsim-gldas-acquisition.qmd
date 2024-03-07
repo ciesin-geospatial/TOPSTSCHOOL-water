@@ -68,7 +68,7 @@ For example, California had a drought from 2012 to 2014.
 While it isn't uncommon for California to have periods of low precipitation, that with a combination of sustained record high temperatures created severe water shortages.
 The drought subsequently dried out rivers which depleted populations of the [Chinook salmon](https://www.fisheries.noaa.gov/species/chinook-salmon) disrupting Native American tribes' food supply.
 [@NationalPublicRadio2014]
-
+ 
 ## Reading the Data
 
 ::: column-margin
