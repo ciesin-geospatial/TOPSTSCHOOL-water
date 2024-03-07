@@ -31,9 +31,9 @@ A [raster](https://docs.qgis.org/2.18/en/docs/gentle_gis_introduction/raster_dat
 
 The **Water Security (WSIM-GLDAS) Monthly Grids, v1 (1948 -- 2014)** dataset can be download from the [NASA SEDAC](https://sedac.ciesin.columbia.edu/data/set/water-wsim-gldas-v1) website [@isciences2022]. Downloads are organized by combination of variable (composite surplus/deficit, temperature, PETmE, runoff, soil moisture, precipitation) and integration period (1, 3, 6, 12 months). Each variable-integration combination consists of a NetCDF **raster** file with a time dimension that contains a raster layer for each of the 804 months between January, 1948 and December, 2014. Some variables also contain multiple attributes each with their own time dimension of 804 rasters. Hence, this is a large file that takes upwards of 2 hours to download and may cause memory issues on certain systems.
 
-We will work with the **Composite Anomaly One-Month Return Period** NetCDF file (<https://sedac.ciesin.columbia.edu/downloads/data/water/water-wsim-gldas-v1/water-wsim-gldas-v1-composite-anom-one-month-netcdf.zip>).
+We will work with the **[Composite Anomaly One-Month Return Period](https://sedac.ciesin.columbia.edu/downloads/data/water/water-wsim-gldas-v1/water-wsim-gldas-v1-composite-anom-one-month-netcdf.zip)** NetCDF file .
 
-![NOAA Water Cycle](https://www.noaa.gov/sites/default/files/styles/landscape_width_1275/public/2021-05/watercycle_rc.png?itok=ZTIq0z3x)[^1]
+![](https://www.noaa.gov/sites/default/files/styles/landscape_width_1275/public/2021-05/watercycle_rc.png){fig-alt="NOAA Water Cycle"}[^1]
 
 [^1]: Photo Credit, Dennis Cain/NWS.
 
@@ -50,6 +50,24 @@ Precipitation deficits can also cause drought, which is a prolonged period of li
 This lesson uses the [`stars`](https://r-spatial.github.io/stars/), [`sf`](https://r-spatial.github.io/sf/), [`dplyr`](https://dplyr.tidyverse.org/), and [`lubridate`](https://lubridate.tidyverse.org/) packages. Make sure they are installed before you begin working with the code in this document. If you'd like to learn more about the functions used in this lesson you can use the help guides on their package websites.
 :::
 :::
+
+First, install and load the R packages required for this exercise:
+
+```{r eval=FALSE}
+packages_to_check <- c("stars", "sf", "lubridate", "cubelyr", "lubridate")
+
+# Check and install packages
+for (package_name in packages_to_check) {
+  if (!package_name %in% rownames(installed.packages())) {
+    install.packages(package_name)
+    cat(paste("Package", package_name, "installed.\n"))
+  } else {
+    cat(paste("Package", package_name, "is already installed.\n"))
+  }
+  library(package_name, character.only = TRUE)
+}
+
+```
 
 Once you've completed the download and placed the .nc file into your working directory read in the file with the `stars::read_stars()` function.
 
