@@ -29,6 +29,7 @@ The Module 1: Water datasets and vignettes cover:
       + [Lesson 6: Conclusion]()
      
     
+Updated March 7, 2024.
 
 
 This course was made possible thanks to the work of our NASA Transform to Open Science (TOPS) team, our SCHOOL Open Science team, open science Subject Matter Experts (SMEs), and the SCHOOL Development team! 
