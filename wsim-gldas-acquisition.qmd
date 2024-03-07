@@ -19,12 +19,14 @@ editor:
 -   Decide on which wsim-gldas version to use.
     -   Switch out the current for a 12-month integration anomaly.
 -   Write out the smaller pre-processed file to disk for potential use in binder workshop or subsequent lesson in the module.
--   Introduce automated data acquisition with some sedac or earthdata package??
+-   Introduce automated data acquisition with some [NASA SEDAC] or NASA earthdata package??
 
 ## Overview
 
-In this lesson, you will acquire water security data (WSIM-GLDAS) from the NASA SEDAC website and will also retrieve geoBoundaries data directly from an API.
-You will learn how to subset data for a region of interest and save subsetted data as a new file.
+
+
+In this lesson, you will acquire **Water Security Indicator Model - Global Land Data Assimilation System (WSIM-GLDAS)** from the [NASA Socioeconomic Data and Applications Center (SEDAC)](https://sedac.ciesin.columbia.edu/) website and will also retrieve [geoBoundaries](https://www.geoboundaries.org/api.html) data directly from an API.
+You will learn how to subset data for a region of interest and save the subsetted data as a new file.
 
 ## Learning Objectives
 
@@ -38,17 +40,25 @@ After completing this lesson, you should be able to:
 
 ## Introduction
 
+::: column-margin
+::: {.callout-tip style="color: #5a7a2b;"}
+## Data Science Review
+
+A [raster](https://docs.qgis.org/2.18/en/docs/gentle_gis_introduction/raster_data.html) is a grid of geographic data which has information stored per pixel. Rasters can store many types of information as attributes, and they usually have dimensions such as latitude, longitude, and time.
+
+:::
+:::
+
 The **Water Security (WSIM-GLDAS) Monthly Grids, v1 (1948 -- 2014)** dataset can be download from the NASA [SEDAC](https://sedac.ciesin.columbia.edu/data/set/water-wsim-gldas-v1) website [@isciences2022].
 Downloads are organized by combination of variable (composite surplus/deficit, temperature, PETmE, runoff, soil moisture, precipitation) and integration period (1, 3, 6, 12 months).
-Each variable-integration combination consists of a NetCDF raster file with a time dimension that contains a raster layer for each of the 804 months between January, 1948 and December, 2014.
+Each variable-integration combination consists of a NetCDF **raster** file with a time dimension that contains a raster layer for each of the 804 months between January, 1948 and December, 2014.
 Some variables also contain multiple attributes each with their own time dimension of 804 rasters.
 Hence, this is a large file that takes upwards of 2 hours to download and may cause memory issues on certain systems.
-We will work with the composite anomolies integrated over 1 month periods.
+We will work with the **Composite Anomaly One-Month Return Period](https://sedac.ciesin.columbia.edu/downloads/data/water/water-wsim-gldas-v1/water-wsim-gldas-v1-composite-anom-one-month-netcdf.zip)** NetCDF file.
 
-A raster is a grid of geographic data which has information stored per pixel.
-Vectors are a collection or a list of numbers.
-Vectors can be used to store coordinates, which can then be used to extract information from a pixel in the raster for analysis, such as a time series.
-Rasters can store many types of information as attributes, and they usually have dimensions such as latitude, longitude, and time.
+<img src="https://www.noaa.gov/sites/default/files/styles/landscape_width_1275/public/2021-05/watercycle_rc.png" alt="NOAA Water Cycle"/>[^1]
+
+[^1]: Photo Credit, Dennis Cain/NWS.
 
 The water cycle is the constant process of circulation of water on, above, and under the Earth's surface.
 Human interventions such as greenhouse gas emissions, land use changes, dam and reservoir development, and groundwater overexploitation have all drastically affected the natural water cycle in recent decades.
@@ -57,15 +67,13 @@ Human interventions in the water cycle have consequential impacts on oceanic, gr
 Precipitation deficits can also cause drought, which is a prolonged period of little to no rainfall.
 Droughts have impacts on the environment and humans, at times causing a chain reaction.
 For example, California had a drought from 2012 to 2014.
-While it isn't uncommon for California to have periods of low precipitation, that with a combination of sustained record high temperatures created severe water shortages.
-The drought subsequently dried out rivers which hosted populations of the Chinook salmon, affecting the population.
-That in turn affected Native American tribes food supply. [@NationalPublicRadio2014]
+While it isn't uncommon for California to have periods of low precipitation, that with a combination of sustained record high temperatures created severe water shortages. The drought subsequently dried out rivers which depleted populations of the [Chinook salmon](https://www.fisheries.noaa.gov/species/chinook-salmon) disrupting Native American tribes' food supply. [@NationalPublicRadio2014]
 
 ## Reading the Data
 
 ::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
-## Coding Review
+## Data Science Review
 
 This lesson uses the [`stars`](https://r-spatial.github.io/stars/), [`sf`](https://r-spatial.github.io/sf/), [`dplyr`](https://dplyr.tidyverse.org/), and [`lubridate`](https://lubridate.tidyverse.org/) packages.
 If you'd like to learn more about the functions used in this lesson you can use the help guides on their package websites.
@@ -90,7 +98,7 @@ for (package_name in packages_to_check) {
 
 ```
 
-Once you've completed the download and placed the .nc into your working directory read in the file with the `stars::read_stars()` function.
+Once you've completed the download and placed the .nc file into your working directory read in the file with the `stars::read_stars()` function.
 
 ```{r}
 
@@ -110,19 +118,28 @@ This means the total number of individual raster layers in this NetCDF is 4020 (
 
 ## Attribute Selection
 
-We can start paring this down by subsetting for just deficits (drought).
+The WSIM data is quite large with many variables available. We can manage this large data by first subsetting the data by a single variable "deficits" (drought).
 
 ```{r}
 names(wsim_gldas_anoms)
 
+#subtetting the variable 'deficit'
 wsim_gldas_anoms <- wsim_gldas_anoms['deficit']
 ```
 
 ## Time Selection
+::: column-margin
+::: {.callout-tip style="color: #5a7a2b;"}
+## Data Science Review
+
+[Vectors](https://docs.qgis.org/2.18/en/docs/gentle_gis_introduction/vector_data.html) are a collection or a list of numbers. Vectors can be used to store coordinates, which can then be used to extract information from a pixel in the raster for analysis, such as a time series.
+
+:::
+:::
 
 Specifying a temporal range of interest will free up more space.
 We'll grab every year for 2000-2014.
-This can be accomplished by generating a sequence for every year between December 2000 and December 2014, and then passing that vector of dates to `filter`.
+This can be accomplished by generating a sequence for every year between December 2000 and December 2014, and then passing that **vector** of dates to `filter`.
 
 ```{r}
 # generate a vector of dates for subsetting
@@ -153,11 +170,20 @@ Although we've pared it down to a single attribute with a restricted time period
 We can spatially crop the raster stack with a few different methods.
 Options include using a bounding box (xmin, ymin, xmax, ymax), another raster object, or a vectorized boundary like a shapefile or geojson.
 
+::: column-margin
+::: {.callout-tip style="color: #5a7a2b;"}
+## Data Science Review
+
+Built by the community and [William & Mary geoLab](https://github.com/wmgeolab/geoBoundaries), the geoBoundaries Global Database of Political Administrative Boundaries Database is an online, open license (CC BY 4.0 / ODbL) resource of information on administrative boundaries (i.e., state, county) for every country in the world. Since 2016, we have tracked approximately 1 million boundaries within over 200 entities, including all UN member states.
+
+:::
+:::
+
 Using a vector boundary is one of the more common geoprocessing tasks.
 In this example we'll pull a geojson of the United States from the geoBoundaries API.
-You can also download vectorized boundaries directly from [ ](www.geoboundaries.org).
+You can also download vectorized boundaries directly from [www.geoboundaries.org](www.geoboundaries.org).
 
-The call to geoBoundaries' API is pretty simple:
+The call to geoBoundaries' API is as such:
 
 "https://www.geoboundaries.org/api/current/gbOpen/*ISO3C*/*LEVEL*/"
 
@@ -254,7 +280,7 @@ This is much more manageable in cloud environments, workshops, and git platforms
 Congratulations!
 Now you should be able to:
 
--   Use libraries such as dplyr and lubridate for temporal subsetting.
+-   Use R packages such as dplyr and lubridate for temporal subsetting.
 -   Crop a raster stack with a spatial boundary.
 -   Write a subsetted dataset to disk.
 
