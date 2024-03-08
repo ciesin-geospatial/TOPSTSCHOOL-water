@@ -179,9 +179,7 @@ print(url)
 
 NASA earthdata access requires a nasa username and token. [How to generate User Token](https://wiki.earthdata.nasa.gov/display/EL/How+to+Generate+a+User+Token).
 
-
-Access the NASA Earthdata with the GET function.
-Replace `USER_TOKEN` with the token you generated:
+Access the NASA Earthdata with the GET function. Replace `USER_TOKEN` with the token you generated:
 
 ```{r, eval=FALSE}
 
@@ -195,6 +193,7 @@ headers <- c(
 response <- httr::GET(url, httr::add_headers(.headers=headers))
 ```
 
+````{=html}
 <!---
 ```{r, echo=FALSE}
 
@@ -208,6 +207,8 @@ headers <- c(
 response <- httr::GET(url, httr::add_headers(.headers=headers))
 ```
 --->
+````
+
 Check the response status from the GET function:
 
 ```{r}
@@ -229,6 +230,7 @@ names(df)
 ```
 
 Search the Data Frame and subset the rows that contain `tile_code` in the `downloadsLink` column.
+
 ```{r}
 # Subset rows where the downloadsLink column contains the tile code
 subset_df <- df[grepl(tile_code, df$downloadsLink), ]
@@ -237,12 +239,15 @@ subset_df
 ```
 
 If there is only 1 row, select the string 'downloadsLink' column:
+
 ```{r}
 
 download_link <- subset_df$downloadsLink
 print(download_link)
 ```
+
 ## Read the Data
+
 Use the "read_stars()" function from the "stars" R Library to read the geoTiff raster.<br> The raster is assigned to the "raster_df" variable:
 
 ```{r}
@@ -351,9 +356,10 @@ View the plot:
 tm_plot
 ```
 
-To observe a location closer, we can create a new bounding box using latitude and longitude values, clip the data and replot on a map. 
+To observe a location closer, we can create a new bounding box using latitude and longitude values, clip the data and replot on a map.
 
-Select from the map four corners in degrees including North/South, East/West information. We use these coordinates to create a matrix of points that represent four corners: 
+Select from the map four corners in degrees including North/South, East/West information. We use these coordinates to create a matrix of points that represent four corners:
+
 ```{r}
 # Define the NWES coordinates
 north <- 40 #negative values are used for South
@@ -364,12 +370,16 @@ east <- -120 #negative numbers are used for West
 # Create a matrix with the corner coordinates
 corners <- matrix(c(west, south, east, south, east, north, west, north), ncol = 2, byrow = TRUE)
 ```
+
 We can create a bounding box from these corners. The corners are first placed in a Geographic Coordinate System (GCS) WGS84:
+
 ```{r}
 # Create a SpatialPolygons object representing a bounding box
 bbox_subset <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(corners)), ID = "bbox")), proj4string = sp::CRS("+proj=longlat +datum=WGS84"))
 ```
-Finally, these points are projected to a Projected Coordinate System (PCS) 3857 to match our raster: 
+
+Finally, these points are projected to a Projected Coordinate System (PCS) 3857 to match our raster:
+
 ```{r}
 
 # Transform to projected coordinate system (e.g., EPSG:3857)
@@ -379,6 +389,7 @@ bbox_subset <- sf::st_bbox(bbox_subset)
 ```
 
 We redo the same process as above to plot the data with a basemap but with a different bounding box:
+
 ```{r}
 
 #generate a new basemap
@@ -410,7 +421,6 @@ tm_plot <- tmap::tm_shape(bm_m)+
 #View the plot:
 tm_plot
 ```
-
 
 ## In this Lesson, You Learned...
 
