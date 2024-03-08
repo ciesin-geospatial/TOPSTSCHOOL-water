@@ -1,7 +1,9 @@
 ---
 title: "MODIS NRT Global Flood Product"
-author: "Juan F. Martinez, Iris Cano"
-date: "January 30, 2024"
+author: 
+  - "Juan F. Martinez"
+  - "Iris Cano"
+date: "February 2, 2024"
 bibliography: nrt-flood-references.bib
 ---
 
