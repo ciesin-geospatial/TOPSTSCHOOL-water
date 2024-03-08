@@ -106,7 +106,7 @@ For this exercise, we will be using the MCDWD L3 F3 product: [LANCE NRT Flood](h
 First, install and load the R packages required for this exercise:
 
 ```{r eval=FALSE}
-packages_to_check <- c("stars", "httr", "jsonlite", "tmap", "basemaps")
+packages_to_check <- c("stars", "httr", "jsonlite", "tmap", "basemaps", "sp", "sf")
 
 # Check and install packages
 for (package_name in packages_to_check) {
@@ -349,45 +349,40 @@ View the plot:
 tm_plot
 ```
 
-To observe a location closer, we can clip the data and replot.We can find vector boundaries of of any country in [geoboundaries](https://www.geoboundaries.org) API, in this case the USA. 
-We will use the same method as was used in the previous case studies, **[Acquiring and Pre-Processing the WSIM-GLDAS Dataset](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/wsim-gldas-acquisition.html)** and **[WSIM-GLDAS Dataset Exploration and Visualizations](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/wsim-gldas-vis.html)**
+To observe a location closer, we can create a new bounding box using latitude and longitude values, clip the data and replot on a map. 
 
+Select from the map four corners in degrees including North/South, East/West information. We use these coordinates to create a matrix of points that represent four corners: 
 ```{r}
-area_bound <- httr::GET("https://www.geoboundaries.org/api/current/gbOpen/USA/ADM1/")
+# Define the NWES coordinates
+north <- 40 #negative values are used for South
+south <- 36 #negative values are used for south
+west <- -124 #negative numbers are used for West
+east <- -120 #negative numbers are used for West
 
-#After the `GET` call, we have to translate the `content`.
-area_bound <- httr::content(area_bound)
-
-area_bound <- sf::st_read(area_bound$gjDownloadURL)
-
-#For simplicity, we can get it down to only California.
-drops<- c("California")
-
-area_bound<-area_bound[(area_bound$shapeName %in% drops),]
-
-plot(sf::st_geometry(area_bound))
+# Create a matrix with the corner coordinates
+corners <- matrix(c(west, south, east, south, east, north, west, north), ncol = 2, byrow = TRUE)
 ```
-We need to provide the same Coordinate Reference System (CRS)
+We can create a bounding box from these corners. The corners are first placed in a Geographic Coordinate System (GCS) WGS84:
 ```{r}
-area_bound <- sf::st_transform(area_bound, 3857)
+# Create a SpatialPolygons object representing a bounding box
+bbox_subset <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(corners)), ID = "bbox")), proj4string = sp::CRS("+proj=longlat +datum=WGS84"))
+```
+Finally, these points are projected to a Projected Coordinate System (PCS) 3857 to match our raster: 
+```{r}
+
+# Transform to projected coordinate system (e.g., EPSG:3857)
+bbox_subset <- sp::spTransform(bbox_subset, sp::CRS("+init=epsg:3857"))
+bbox_subset <- sf::st_bbox(bbox_subset)
+
 ```
 
-We can subset the `raster_df` raster with the `area_bound` vector:
+We redo the same process as above to plot the data with a basemap but with a different bounding box:
 ```{r}
-raster_subset <- raster_df[area_bound]
-```
 
-We redo the same process as above to plot the data with a basemap:
-```{r}
-#generate bonding box
-bbox <-  sf::st_bbox(raster_subset)
-
-#generate basemap
-bm_m <- basemaps::basemap_stars(bbox, map_service = "esri", map_type = "world_imagery")
+#generate a new basemap
+bm_m <- basemaps::basemap_stars(bbox_subset, map_service = "esri", map_type = "world_imagery")
 #combine RGB bands of the bsemap
 bm_m <- stars::st_rgb(bm_m)
-
-# Plot basemap and the subset NRT Flood data
 
 ## tmap mode set to "plot"
 tmap::tmap_mode("plot")
@@ -400,7 +395,7 @@ tmap::tmap_mode("plot")
 tm_plot <- tmap::tm_shape(bm_m)+
   tmap::tm_raster()+
   #create a new tmap shape for the NRT flood raster with style as "cat," meaning categorical.
-  tmap::tm_shape(raster_subset, style="cat")+
+  tmap::tm_shape(raster_df, style="cat")+
   #add the classification styling to the raster
   tmap::tm_raster( palette = c(colors),
   title = title, 
@@ -413,6 +408,8 @@ tm_plot <- tmap::tm_shape(bm_m)+
 #View the plot:
 tm_plot
 ```
+
+
 ## In this Lesson, You Learned...
 
 Congratulations! Now you should be able to:
