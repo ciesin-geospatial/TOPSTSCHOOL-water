@@ -360,8 +360,6 @@ area_bound <- httr::content(area_bound)
 
 area_bound <- sf::st_read(area_bound$gjDownloadURL)
 
-plot(sf::st_geometry(area_bound))
-
 #For simplicity, we can get it down to only California.
 drops<- c("California")
 
@@ -374,13 +372,23 @@ We need to provide the same Coordinate Reference System (CRS)
 area_bound <- sf::st_transform(area_bound, 3857)
 ```
 
-We can subset our basemap `bm_m` with the `area_bound` vector:
+We can subset the `raster_df` raster with the `area_bound` vector:
 ```{r}
-bm_subset <- bm_m[area_bound]
+raster_subset <- raster_df[area_bound]
 ```
 
-
+We redo the same process as above to plot the data with a basemap:
 ```{r}
+#generate bonding box
+bbox <-  sf::st_bbox(raster_subset)
+
+#generate basemap
+bm_m <- basemaps::basemap_stars(bbox, map_service = "esri", map_type = "world_imagery")
+#combine RGB bands of the bsemap
+bm_m <- stars::st_rgb(bm_m)
+
+# Plot basemap and the subset NRT Flood data
+
 ## tmap mode set to "plot"
 tmap::tmap_mode("plot")
 
@@ -389,10 +397,10 @@ tmap::tmap_mode("plot")
 
 #create an object the plots the basemap and the NRT flood raster
 #with the tmap library, call the tm_shape() function for the basemap
-tm_plot <- tmap::tm_shape(bm_subset)+
+tm_plot <- tmap::tm_shape(bm_m)+
   tmap::tm_raster()+
   #create a new tmap shape for the NRT flood raster with style as "cat," meaning categorical.
-  tmap::tm_shape(raster_df, style="cat")+
+  tmap::tm_shape(raster_subset, style="cat")+
   #add the classification styling to the raster
   tmap::tm_raster( palette = c(colors),
   title = title, 
@@ -402,13 +410,9 @@ tm_plot <- tmap::tm_shape(bm_subset)+
   tmap::tm_layout(legend.outside = TRUE) +
   tmap::tm_graticules(lines=FALSE)
  
-
-```
-View the updated plot:
-```{r}
+#View the plot:
 tm_plot
 ```
-
 ## In this Lesson, You Learned...
 
 Congratulations! Now you should be able to:
