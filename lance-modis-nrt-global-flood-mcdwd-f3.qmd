@@ -15,9 +15,10 @@ bibliography: nrt-flood-references.bib
 
 In this lesson, you will use R to take a closer look at the data from the LANCE MODIS Near Real Time (NRT) Global Flood Product, including learning about what are LANCE and MODIS, and the NRT Flood products available. You will then learn to select, download, and visualize one of the NRT Flood layers...
 
-::: {.column-margin}
+::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Coding Review
+
 This lesson uses the [R](https://www.r-project.org/about.html) language and environment. R is a popular language used for statistical computing and graphics.
 :::
 :::
@@ -38,6 +39,14 @@ After completing this lesson, you should be able to:
 
 ## Introduction
 
+Atmospheric circulation, water evaporation, and their interactions with land surfaces can impact a region's rainfall variability. For example, California's winter is correlated to ocean evaporation near the west coast and eastern North Pacific, and ocean evaporation is a strong factor in increased flooding in the region [@wei2016]. Additionally, drought in the region is associated to high pressure systems off the U.S. west coast, with studies finding that the high pressure system is linked to the Pacific sea surface temperature anomalies, and exacerbated by high evaporation over land due to high temperatures.
+
+It is critical to understand the water cycle and how flooding events develop, particularly as climate change intensifies extreme weather events, because the impacts of flooding can be a risk to human life, and can disrupt infrastructure, agriculture, and natural habitats.
+
+![](https://raw.githubusercontent.com/ciesin-geospatial/TOPSTSCHOOL-module-1-water/main/images/FL_Flood_Aerials-8641.jpg)[^2]
+
+[^2]: Photo Credit, California Department of Water Resources.
+
 The **MODIS/Aqua+Terra Global Flood Product L3 Near Real Time (NRT) 250m Global Flood Product (MCDWD_L3_NRT) (beta)** provides daily maps of flooding globally. The product is provided over 3 compositing periods (1-day, 2-day, and 3-day) to minimize the impact of clouds and more rigorously identify flood water (the best composite will depend on the cloudiness for a particular event) [@lin2019]
 
 ## What are MODIS and LANCE?
@@ -48,9 +57,9 @@ The Moderate Resolution Imaging Spectroradiometer (MODIS) is a NASA Earth Observ
 
 The satellite data is readily available shortly after it is acquired by the MODIS instrument on board the Terra and Aqua satellites. This space-based instrument distinguishes 36 spectral bands and groups of wavelengths which helps map the extent of snow and ice caused by winter storms and frigid temperatures. Initially, the water-detecting algorithm is applied to both MODIS observations (Terra and Aqua). Due to cloud and terrain shadows create false positives.
 
-<img src="https://modis.gsfc.nasa.gov/about/images/modisComponents.jpg" alt="MODIS Components"/>[^2]
+<img src="https://modis.gsfc.nasa.gov/about/images/modisComponents.jpg" alt="MODIS Components"/>[^3]
 
-[^2]: Photo Credit, NASA GSFC.
+[^3]: Photo Credit, NASA GSFC.
 
 To minimize errors, the product is generated with three different ***compositing periods (1-day, 2-day, and 3-day)*** to compare results and decide which product has better coverage for the event. Further, they have to differentiate floods from expected surface water through the use of MODIS Land Water Mask (MOD44W), which uses a decision tree classifier trained with MODIS data to produce a global water mask [@carroll2016].
 
@@ -64,9 +73,10 @@ LANCE reduces processing time, allowing for timely computation. Users access the
 
 ### MODIS NRT Flood MCDWD Data Products
 
-::: {.column-margin}
+::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
-## Data Information 
+## Data Information
+
 The main landing pages for the MODIS NRT Global Flood Product:
 
 [NASA EARTHDATA](https://www.earthdata.nasa.gov/learn/find-data/near-real-time/modis-nrt-global-flood-product)
@@ -89,7 +99,7 @@ The MODIS Near Real-Time (NRT) Flood dataset offers multiple products, each acco
 
 ***MCDWD_F3_L3_NRT (3-Day)***: The F3 product, based on the MCDWD (MODIS/Terra+Aqua Combined MODIS Water Detection) is an algorithm that further refines flood mapping by adding additional spectral information. These results create a more accurate representation of water bodies and flooded areas [@slayback2023].
 
-## Reading the Data
+## Exploring the Data
 
 For this exercise, we will be using the MCDWD L3 F3 product: [LANCE NRT Flood](https://nrt3.modaps.eosdis.nasa.gov/archive/allData/61/MCDWD_L3_F3_NRT/)
 
@@ -112,22 +122,23 @@ for (package_name in packages_to_check) {
 #in case tmap does not install
 #remotes::install_github('r-tmap/tmap')
 ```
-::: {.column-margin}
+
+::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Coding Review
 
-This lesson uses the [stars](https://r-spatial.github.io/stars/), [httr](https://httr.r-lib.org/), [jsonlite](https://cran.r-project.org/package=jsonlite), [tmap](https://cran.r-project.org/package=tmap), and [basemaps](https://cran.r-project.org/package=basemaps) packages. If you’d like to learn more about the functions used in this lesson you can use the help guides on their package websites.
+This lesson uses the [stars](https://r-spatial.github.io/stars/), [httr](https://httr.r-lib.org/), [jsonlite](https://cran.r-project.org/package=jsonlite), [tmap](https://cran.r-project.org/package=tmap), and [basemaps](https://cran.r-project.org/package=basemaps) packages. If you'd like to learn more about the functions used in this lesson you can use the help guides on their package websites.
 :::
 :::
 
-#### Check what days are available for the MCDWD L3 F3 product by going to this link: [LANCE NRT Primary Server](https://nrt3.modaps.eosdis.nasa.gov/archive/allData/61/MCDWD_L3_F3_NRT/) or [Secondary](https://nrt4.modaps.eosdis.nasa.gov/archive/allData/61/MCDWD_L3_F3_NRT).
+#### Check what days are available for the MCDWD L3 F3 product by going to this link: [LANCE NRT Primary Server](https://nrt3.modaps.eosdis.nasa.gov/archive/allData/61/MCDWD_L3_F3_NRT) or [Secondary](https://nrt4.modaps.eosdis.nasa.gov/archive/allData/61/MCDWD_L3_F3_NRT).
 
 Based on availability, edit the year_day variable YYYY-DD. Example: '2022-01'
 
 ```{r}
 
 #add the year and date you want to search for (YYYY-DD, 2022-01)
-year_day <- '2024-023'
+year_day <- '2024-067'
 
 ```
 
@@ -148,10 +159,10 @@ This is the NRT Flood F3 (MCDWD_L3_F3) API URL:
 
 ```{r}
 # Primary Server
-#API_URL <- paste0('https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/details?products=MCDWD_L3_F3_NRT&archiveSets=61&temporalRanges=')
+API_URL <- paste0('https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/details?products=MCDWD_L3_F3_NRT&archiveSets=61&temporalRanges=')
 
 # if the primary server is down, the secondary server may be available:
-API_URL <- paste0('https://nrt4.modaps.eosdis.nasa.gov/api/v2/content/details?products=MCDWD_L3_F3_NRT&archiveSets=61&temporalRanges=')
+#API_URL <- paste0('https://nrt4.modaps.eosdis.nasa.gov/api/v2/content/details?products=MCDWD_L3_F3_NRT&archiveSets=61&temporalRanges=')
 ```
 
 We can combine the API URL above with the year_day provided and print the available datasets:
@@ -164,15 +175,37 @@ print(url)
 
 ## Loading the Data
 
-Access the NASA Earthdata with the GET function:
+NASA earthdata access requires a nasa username and token. [How to generate User Token](https://wiki.earthdata.nasa.gov/display/EL/How+to+Generate+a+User+Token).
 
+
+Access the NASA Earthdata with the GET function.
+Replace `USER_TOKEN` with the token you generated:
+
+```{r, eval=FALSE}
+
+
+# Define headers (include your token)
+headers <- c(
+  Authorization = "Bearer USER_TOKEN"
+)
+
+# Make GET request
+response <- httr::GET(url, httr::add_headers(.headers=headers))
+```
+
+<!---
 ```{r}
 
 
-# Make the GET request
-response <- httr::GET(url)
-```
+# Define headers (include your token)
+headers <- c(
+  Authorization = "Bearer eyJ0eXAiOiJKV1QiLCJvcmlnaW4iOiJFYXJ0aGRhdGEgTG9naW4iLCJzaWciOiJlZGxqd3RwdWJrZXlfb3BzIiwiYWxnIjoiUlMyNTYifQ.eyJ0eXBlIjoiVXNlciIsInVpZCI6ImpmbWFydGluZXo0IiwiZXhwIjoxNzE1MDQyODk0LCJpYXQiOjE3MDk4NTg4OTQsImlzcyI6IkVhcnRoZGF0YSBMb2dpbiJ9.m6PocigD0iUjHkN__I6E4TLPfYpLRvOpQUPwMlCvOakZzNp4sriVVHKrkT1ibAx5E5TRTHmE8I_Szpr2V8TIpYGVyNzzFVZ2Xl_9JtAmjOoQF55zuaBM5tO74DFrbKo2i9VfIwm6iwHVk2pdccc9LSXrv4JiGqn6SOrKbXOnFc-wlAT5mh3hgXShcUDRxNWUB-6rhdtMKEJoOjzLi4fwBgadw8vY_kxpgKF7WGNpa9A24XVspurIaZvSedkKgbXvPmK0c4-IZEFN3oMZLdUIqUzFjAxYNzyAEoUcbIyYDMueTmBp9-6pUvhUT1Q5VDmChkYoPUQB96ZP3q-9BO-MeQ"
+)
 
+# Make GET request
+response <- httr::GET(url, httr::add_headers(.headers=headers))
+```
+--->
 Check the response status from the GET function:
 
 ```{r}
@@ -183,27 +216,30 @@ response
 Out of the response from the server, we'll check if the response was a success with `if (http_status(response)$category == "Success")`. If this statement is true, then the content will be assigned to the variable `data` in JSON format, which is then parsed to a data frame using `data_parsed <- jsonlite::fromJSON(data)`. The data frame contains `data_parsed$content`, a column with content. We filter the content by tile code using the command `content_items <- data_parsed$content[grepl(tile_code, data_parsed$content$name, ignore.case = TRUE), ]` and add the results to a data frame.
 
 ```{r}
-# Check the response status
 if (httr::http_status(response)$category == "Success") {
-  # Parse the response JSON
-  data <- httr::content(response, as = "text", encoding = "UTF-8")
-  data_parsed <- jsonlite::fromJSON(data)
-  #filter for the tile code
-  content_items <- data_parsed$content[grepl(tile_code, data_parsed$content$name, ignore.case = TRUE), ]
+  # Read the JSON content into a data frame
+  df <- httr::content(response, as = "parsed", simplifyVector = TRUE)
+  df <- df$content
 } else {
   print("Request failed with status code", httr::http_status(response)$status_code)
 }
+df
+```
+Search the Data Frame and subset the rows that contain `tile_code` in the `downloadsLink` column.
+```{r}
+# Subset rows where the downloadsLink column contains the tile code
+subset_df <- df[grepl(tile_code, df$downloadsLink), ]
 
-print(content_items)
+subset_df
 ```
 
-Select the URL from the 'downloadsLink' column in the content_items data frame:
-
+If there is only 1 row, select the string 'downloadsLink' column:
 ```{r}
-download_link <- content_items$downloadsLink
+
+download_link <- subset_df$downloadsLink
 print(download_link)
 ```
-
+## Read the Data
 Use the "read_stars()" function from the "stars" R Library to read the geoTiff raster.<br> The raster is assigned to the "raster_df" variable:
 
 ```{r}
@@ -236,11 +272,11 @@ NRT Flood data has 5 classifications:
 |:----:|:--------------------|
 |  0   | No Water            |
 |  1   | Surface Water       |
-|  2   | Recurring flood[^3] |
+|  2   | Recurring flood[^4] |
 |  3   | Flood (unusual)     |
 | 255  | Insufficient data   |
 
-[^3]: Value 2 (Recurring flood) is not populated in the beta release.
+[^4]: Value 2 (Recurring flood) is not populated in the beta release.
 
 To view the data in this classification, we'll need to create a classified legend; however, the NRT Flood data is stored in decimal numbers (aka floating-point). Create class breaks dividing the data by the following breaks, and corresponding colors and labels:
 
@@ -308,6 +344,77 @@ tm_plot <- tmap::tm_shape(bm_m)+
 
 View the plot:
 
+```{r}
+tm_plot
+```
+To observe a location closer, we can use the geoboundaries of any country, in this Case the USA.
+
+```{r}
+usa <- httr::GET("https://www.geoboundaries.org/api/current/gbOpen/USA/ADM1/")
+```
+
+After the `GET` call, we have to translate the `content`.
+
+```{r}
+usa <- httr::content(usa)
+
+names(usa)
+```
+
+The parsed content object contains 32 components. Item 29 is a direct link to the geojson file (gjDownloadURL). Read that in and check the visuals.
+
+```{r}
+usa <- sf::st_read(usa$gjDownloadURL)
+
+plot(sf::st_geometry(usa))
+```
+
+This looks good, but it includes all United States territories. For simplicity, we can get it down to only California.
+
+```{r}
+drops<-
+  c("California")
+
+usa<-usa[(usa$shapeName %in% drops),]
+
+plot(sf::st_geometry(usa))
+```
+We need to provide the same Coordinate Reference System (CRS)
+```{r}
+usa <- sf::st_transform(usa, 3857)
+```
+
+We can subset our RGB image with the California vector:
+```{r}
+raster_cali <- bm_m[usa]
+```
+
+
+```{r}
+## tmap mode set to "plot"
+tmap::tmap_mode("plot")
+
+## tmap mode can also be set to "view"
+#tmap_mode("view")
+
+#create an object the plots the basemap and the NRT flood raster
+#with the tmap library, call the tm_shape() function for the basemap
+tm_plot <- tmap::tm_shape(raster_cali)+
+  tmap::tm_raster()+
+  #create a new tmap shape for the NRT flood raster with style as "cat," meaning categorical.
+  tmap::tm_shape(raster_df, style="cat")+
+  #add the classification styling to the raster
+  tmap::tm_raster( palette = c(colors),
+  title = title, 
+  breaks = class_breaks,
+  labels = labels )+
+  #style the plot
+  tmap::tm_layout(legend.outside = TRUE) +
+  tmap::tm_graticules(lines=FALSE)
+ 
+
+```
+View the updated plot:
 ```{r}
 tm_plot
 ```
