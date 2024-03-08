@@ -194,12 +194,12 @@ response <- httr::GET(url, httr::add_headers(.headers=headers))
 ```
 
 <!---
-```{r}
+```{r, echo=FALSE}
 
 
 # Define headers (include your token)
 headers <- c(
-  Authorization = "Bearer eyJ0eXAiOiJKV1QiLCJvcmlnaW4iOiJFYXJ0aGRhdGEgTG9naW4iLCJzaWciOiJlZGxqd3RwdWJrZXlfb3BzIiwiYWxnIjoiUlMyNTYifQ.eyJ0eXBlIjoiVXNlciIsInVpZCI6ImpmbWFydGluZXo0IiwiZXhwIjoxNzE1MDQyODk0LCJpYXQiOjE3MDk4NTg4OTQsImlzcyI6IkVhcnRoZGF0YSBMb2dpbiJ9.m6PocigD0iUjHkN__I6E4TLPfYpLRvOpQUPwMlCvOakZzNp4sriVVHKrkT1ibAx5E5TRTHmE8I_Szpr2V8TIpYGVyNzzFVZ2Xl_9JtAmjOoQF55zuaBM5tO74DFrbKo2i9VfIwm6iwHVk2pdccc9LSXrv4JiGqn6SOrKbXOnFc-wlAT5mh3hgXShcUDRxNWUB-6rhdtMKEJoOjzLi4fwBgadw8vY_kxpgKF7WGNpa9A24XVspurIaZvSedkKgbXvPmK0c4-IZEFN3oMZLdUIqUzFjAxYNzyAEoUcbIyYDMueTmBp9-6pUvhUT1Q5VDmChkYoPUQB96ZP3q-9BO-MeQ"
+  Authorization = "Bearer eyJ0eXAiOiJKV1QiLCJvcmlnaW4iOiJFYXJ0aGRhdGEgTG9naW4iLCJzaWciOiJlZGxqd3RwdWJrZXlfb3BzIiwiYWxnIjoiUlMyNTYifQ.eyJ0eXBlIjoiVXNlciIsInVpZCI6ImpmbWFydGluZXo0IiwiZXhwIjoxNzE1MDU0NTk3LCJpYXQiOjE3MDk4NzA1OTcsImlzcyI6IkVhcnRoZGF0YSBMb2dpbiJ9.QX03RDGdNrHYUzIS-DXrcKQDEC0OwbsEkJPLGFHEh1sQQc-nnx4EvZEGEe7bjJB5alZqfPvpOce7ixXYHaAK0bGRVlnhpEpc_KMiL_aIEcwnF9SDaDa73e7Y5-M80cagi-gpX65clwhkJec5kmCgowHHC98aAQxzqjrqwdTy9qBPlUfhlCjwMlAMZQYrO5ScHStlJJG3-IHNBTralHnDxqi43SjGZUZ6ne-9X9SqGtdEVeRq9sqL0T4-F2iHENpFdcJyJe5C6IgoV0Jdmoi9YYum5LfWW6VtnueAQRpgWoCmCK7yqYRfYKQe_dkGFtHCGZA1jhboxLGO3LswBX3KXQ"
 )
 
 # Make GET request
@@ -223,8 +223,9 @@ if (httr::http_status(response)$category == "Success") {
 } else {
   print("Request failed with status code", httr::http_status(response)$status_code)
 }
-df
+names(df)
 ```
+
 Search the Data Frame and subset the rows that contain `tile_code` in the `downloadsLink` column.
 ```{r}
 # Subset rows where the downloadsLink column contains the tile code
@@ -347,46 +348,35 @@ View the plot:
 ```{r}
 tm_plot
 ```
-To observe a location closer, we can use the geoboundaries of any country, in this Case the USA.
+
+To observe a location closer, we can clip the data and replot.We can find vector boundaries of of any country in [geoboundaries](https://www.geoboundaries.org) API, in this case the USA. 
+We will use the same method as was used in the previous case studies, **[Acquiring and Pre-Processing the WSIM-GLDAS Dataset](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/wsim-gldas-acquisition.html)** and **[WSIM-GLDAS Dataset Exploration and Visualizations](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/wsim-gldas-vis.html)**
 
 ```{r}
-usa <- httr::GET("https://www.geoboundaries.org/api/current/gbOpen/USA/ADM1/")
-```
+area_bound <- httr::GET("https://www.geoboundaries.org/api/current/gbOpen/USA/ADM1/")
 
-After the `GET` call, we have to translate the `content`.
+#After the `GET` call, we have to translate the `content`.
+area_bound <- httr::content(area_bound)
 
-```{r}
-usa <- httr::content(usa)
+area_bound <- sf::st_read(area_bound$gjDownloadURL)
 
-names(usa)
-```
+plot(sf::st_geometry(area_bound))
 
-The parsed content object contains 32 components. Item 29 is a direct link to the geojson file (gjDownloadURL). Read that in and check the visuals.
+#For simplicity, we can get it down to only California.
+drops<- c("California")
 
-```{r}
-usa <- sf::st_read(usa$gjDownloadURL)
+area_bound<-area_bound[(area_bound$shapeName %in% drops),]
 
-plot(sf::st_geometry(usa))
-```
-
-This looks good, but it includes all United States territories. For simplicity, we can get it down to only California.
-
-```{r}
-drops<-
-  c("California")
-
-usa<-usa[(usa$shapeName %in% drops),]
-
-plot(sf::st_geometry(usa))
+plot(sf::st_geometry(area_bound))
 ```
 We need to provide the same Coordinate Reference System (CRS)
 ```{r}
-usa <- sf::st_transform(usa, 3857)
+area_bound <- sf::st_transform(area_bound, 3857)
 ```
 
-We can subset our RGB image with the California vector:
+We can subset our basemap `bm_m` with the `area_bound` vector:
 ```{r}
-raster_cali <- bm_m[usa]
+bm_subset <- bm_m[area_bound]
 ```
 
 
@@ -399,7 +389,7 @@ tmap::tmap_mode("plot")
 
 #create an object the plots the basemap and the NRT flood raster
 #with the tmap library, call the tm_shape() function for the basemap
-tm_plot <- tmap::tm_shape(raster_cali)+
+tm_plot <- tmap::tm_shape(bm_subset)+
   tmap::tm_raster()+
   #create a new tmap shape for the NRT flood raster with style as "cat," meaning categorical.
   tmap::tm_shape(raster_df, style="cat")+
