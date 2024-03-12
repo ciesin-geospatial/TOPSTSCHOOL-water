@@ -1,5 +1,5 @@
 ---
-title: "NYC School Water Quality: Exposure to Lead"
+title: "NYS School Water Quality: Exposure to Lead"
 author: "Hasim Engin"
 date: "February 2, 2024"
 execute:
@@ -129,25 +129,23 @@ theme<-theme(axis.text=element_text(size=12, face="bold"),
              )
 
 ```
+# Lead Testing in NYS School Drinking Water
 
-## Objective
+## Overview 
+This use case explores the risks of exposure to lead via drinking water. Lead contamination is a serious issue that poses severe health risks and requires urgent remedial action. In this lesson, we will analyze data on lead levels in [NY State schools](https://health.data.ny.gov/Health/Lead-Testing-in-School-Drinking-Water-Sampling-and/rkyy-fsv9/data) collected from 2016, 2017, 2018 and 2019 and compare it with population characteristics at county level in NYS to understand its impact. 
+No “safe” levels of lead have been established, but we will discuss what level of lead can be detected. The lesson examines the sources of lead exposure and its adverse effects. The review also discusses the importance of data transparency, public participation, visualizing contamination as maps/graphs, and estimating population risks to address water quality issues.
 
--   This document helps to analyze school lead datasets collected from 2016, 2017, 2018 and 2019 and compare it with population characteristics at county level in NYS.
+## Learning Objectives
+-  Learn about lead as a drinking water contaminant and its health impacts.
+-  Visualize lead contamination data geographically and statistically.
+-  Discuss the importance of safe drinking water in the context of lead contamination.
+-  Understand and apply open data principles in the context of lead contamination data.
+-  Explore different data classification methods (equal, quantile, natural breaks, standard deviation)
 
-#### By completing this module, you are expected to learn following points
 
--   Possible health outcomes of consuming water with lead level above 15pbb and importance of water quality
--   Rea into R and analyze the data set
--   Convert school lead survey dataset to spatial data by using school xy coordinates
--   Plot school locations on a map
--   Obtain population data from US Census Bureau by using census API
--   Compare school lead datasets with population by aggregating the dataset into country boudary
--   Explore different data classification methods ( equal, quantile, natural breaks, standard deviation)
--   Create your own map
+##Introduction
 
-## Background Information
-
-Access to clean and safe drinking water is significant to ensure public health. Drinking water contaminants may have both short-term and long-term negative health impacts. One such contaminant that can have detrimental effects is lead, which is particularly harmful to a child's development. Children's central nervous systems and cognitive function have been linked to harm from lead exposure, even at low levels . It is therefore essential to supply lead free drinking water in schools and homes.
+Access to clean and safe drinking water is significant to ensure public health. Drinking water contaminants may have both short-term and long-term negative health impacts. One such contaminant that can have detrimental effects is lead, which is particularly harmful to a child's development. Children's central nervous systems and cognitive function have been linked to harm from lead exposure, even at low levels. It is therefore essential to supply lead free drinking water in schools and homes.
 
 Lead concentrations in drinking water should not exceed 10 ppb, according to guidelines issued by the World Health Organization, and 15 ppb is the action level set by the US EPA . These guidelines demonstrate how important it is to reduce lead exposure and contamination from drinking water on a global scale. Lead exposure has no safe threshold. Safety depends on making sure that lead levels in water are below legal thresholds, and ideally as close to zero as feasible since it can have serious negative health impacts, especially in children
 
@@ -157,6 +155,10 @@ The main source of lead in drinking water is the corrosion of lead-containing pl
 
 New York State (NYS) Lead Testing in School Drinking Water dataset analysis reveals that as of 2022, 1,864 schools had lead outlets testing higher than 15 ppb . While 527 schools finished their remediation, 1,851 schools reported taking remedial action. There are now 12 schools with outlets exceeding 15 ppb in operation, indicating possible continuous exposure. There are gaps evident with following up and documenting the corrective measures. To understand and mitigate the lead hazards, more transparency is needed around the schools which are at high exposure to the lead and improved repeated testing protocols could be in place. Guidelines, rules, and resources pertaining to lead testing and remediation in schools are provided by the New York State Department of Health . However, it seems that there is currently a lack of financial and technical support to schools to handle lead hazards, particularly in underprivileged communities.
 
+::: {.callout-tip style="color: #7d2748;"}
+## Lead in the News
+
+:::
 ### FLINT MICHIGAN LEAD EXPOSURE
 
 Thousands of people were exposed to dangerously high lead levels in their drinking water when the Flint water crisis broke out in 2014. According to a study conducted by Virginia tech researchers through their resident organized sampling to testing data from 252 homes revealed that Lead levels in the city had increased with over 17% of samples testing higher than the federal "action level" of 15 parts per billion (ppb), which calls for the need for corrective action. More than 40% had lead readings higher than 5 parts per billion, which the researchers deemed indicative of a "very serious" issue .
@@ -168,11 +170,6 @@ To mitigate the lead hazards, Initial step is to understand that it's essential 
 \$97 million in funding for service line replacement . However, still substantial investments and coordinated efforts are needed to fully remediate risks, especially in disadvantaged communities .\
 In 2021, the Biden-Harris administration announced an ambitious Lead Pipe and Paint Action Plan. This comprehensive 15 billion dollar effort intends to promptly replace all lead service lines and pipes that are contaminating drinking water systems across the country. The plan has a provision of providing a lead remediation grant of \$9 billion to disadvantaged communities through the Water Infrastructure Improvements for the Nation Act (WIIN) program, including for schools and childcare centers at EPA .
 
-### ENSURING SAFE DRINKING WATER
-
-The lead contamination issues evident in Flint and New York schools highlight the need to balance the tradeoffs between quickly addressing risks in the short term by improving monitoring and transparency around water quality issues, and managing the costs of major infrastructure changes required in the long term to prevent such crises and exposures - for example, replacing lead service lines and school plumbing. Community collaboration, precise surveillance databases, and adaptable adaptation strategies will be critical to ensuring that everyone has access to safe drinking water.
-
-Availability of safe drinking water is the basic human right, however from above cases it shows the alarming need to consider this risk from the lead contamination yet ignored by the state. From New York to Flint, Michigan, we witness alarming examples that necessitate immediate action backed by transparent and accessible data. Moreover an informed public through the learnings and accessing the data, can play a crucial role in building leadership roles to fulfill their responsibilities around providing healthy, lead free infrastructures in schools. Thus , it is significant to develop the curriculum which focuses on water quality issues globally and locally for students and school communities.
 
 ### Read data
 
@@ -533,6 +530,22 @@ tmap_leaflet(tmap)
 
 
 ```
+### ENSURING SAFE DRINKING WATER
+
+The lead contamination issues evident in Flint and New York schools highlight the need to balance the tradeoffs between quickly addressing risks in the short term by improving monitoring and transparency around water quality issues, and managing the costs of major infrastructure changes required in the long term to prevent such crises and exposures - for example, replacing lead service lines and school plumbing. Community collaboration, precise surveillance databases, and adaptable adaptation strategies will be critical to ensuring that everyone has access to safe drinking water.
+
+Availability of safe drinking water is the basic human right, however from above cases it shows the alarming need to consider this risk from the lead contamination yet ignored by the state. From New York to Flint, Michigan, we witness alarming examples that necessitate immediate action backed by transparent and accessible data. Moreover an informed public through the learnings and accessing the data, can play a crucial role in building leadership roles to fulfill their responsibilities around providing healthy, lead free infrastructures in schools. Thus , it is significant to develop the curriculum which focuses on water quality issues globally and locally for students and school communities.
+
+##In this lesson, you learned...
+
+Congratulations! Now you should be able to: 
+
+-  Read into R to analyze a dataset.
+-  Convert survey dataset to spatial data using xy coordinates. 
+-  Plot locations on a map.
+-  Obtain population data from US Census Bureau by using census API.
+-  Aggregate a dataset to a boundary.
+-  Create your own map.
 
 ## References
 
