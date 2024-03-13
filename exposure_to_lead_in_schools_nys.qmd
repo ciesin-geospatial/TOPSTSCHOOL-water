@@ -533,6 +533,11 @@ tmap_leaflet(tmap)
 
 
 ```
+## Explore the data
+
+<iframe src="https://topstschool.shinyapps.io/nyc-lead" width="100%" height="800" title="iframe test" data-external="1">
+</iframe>  
+
 
 ## References
 
