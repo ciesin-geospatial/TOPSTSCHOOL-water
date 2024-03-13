@@ -78,22 +78,25 @@ usa<-usa[!(usa$shapeName %in% drops),]
 wsim_gldas<-wsim_gldas[usa]
 ```
 
-Now we'll verify the pre-processing steps with `print()`. The raster object now contains 15 timesteps from 
+Now we'll verify the pre-processing steps with `print()`. The raster object now contains 15 timesteps from December 2000 to December 2014.
 
 ```{r}
 print(wsim_gldas)
 ```
 
-## Multi-Panel Time Series
+## Annual CONUSA Time Series
 
 We can start our visual exploration of annual drought in the CONUSA with a time series plot depicting each year in the dataset.
 
-```{r warning = TRUE}
+```{r warning = FALSE, message = FALSE}
 # the histogram can be studied to properly choose breaks. Breaks chosen are [-60, -40, -20, 0, 20, 40, 50] from studying the histogram.
-
-wsim_gldas |>
-  plot(reset = FALSE,
-       col = leg_colors<-c(
+ggplot2::ggplot(usa)+
+  stars::geom_stars(data = wsim_gldas)+
+  ggplot2::coord_equal()+
+  ggplot2::facet_wrap(~time)+
+  ggplot2::geom_sf(fill = NA)+
+  ggplot2::scale_fill_stepsn(
+    colors = c(
     '#9B0039',
     # -50 to -40
     '#D44135',
@@ -104,10 +107,20 @@ wsim_gldas |>
     # -10 to -5
     '#FFEDA3',
     # -5 to -3
-    '#FFF4C7'), breaks = c(-60, -50, -40, -20, -10,-5, 0))
+    '#FFF4C7'), breaks = c(-60, -50, -40, -20, -10,-5, 0))+
+  ggplot2::theme_minimal()+
+  ggplot2::theme(
+    axis.title.x=ggplot2::element_blank(),
+    axis.text.x=ggplot2::element_blank(),
+    axis.ticks.x=ggplot2::element_blank(),
+    axis.title.y=ggplot2::element_blank(),
+    axis.text.y=ggplot2::element_blank(),
+    axis.ticks.y=ggplot2::element_blank())
 ```
 
 There are several significant drought events throughout 2000-2014. The southeast in 2000, southwest in 2002, the majority of the western 3rd in 2007, Texas-Oklahoma in 2011, Montana-Wyoming-Colorado in 2012, and the entirety of the California coast in 2014. The droughts of 2012 and 2011 are particularly severe and widespread with return periods greater than 50 covering multiple states. Based on historical norms, we should only expect droughts this strong every 50-60 years!
+
+## Monthly Time Series
 
 We can get a better look at these drought events by using the 1 month composite WSIM-GLDAS dataset and subsetting the data with a smaller spatial extent. Let's examine the 2014 California drought.
 
@@ -139,99 +152,130 @@ wsim_gldas_1mo <- dplyr::filter(wsim_gldas_1mo, time %in% keeps)
 print(wsim_gldas_1mo)
 ```
 
+We're down to 12 monthly timesteps. Lets zoom in on California and see how this drought progressed over the course of the year.
+
+```{r warning = FALSE, message = FALSE}
+california<-usa[usa$shapeName=="California",]
+wsim_gldas_california <- wsim_gldas_1mo[california]
+
+# monthly plots of california
+ggplot2::ggplot(california)+
+  stars::geom_stars(data = wsim_gldas_california)+
+  ggplot2::coord_equal()+
+  ggplot2::facet_wrap(~time)+
+  ggplot2::geom_sf(fill = NA)+
+  ggplot2::scale_fill_stepsn(
+    colors = c(
+    '#9B0039',
+    # -50 to -40
+    '#D44135',
+    # -40 to -20
+    '#FF8D43',
+    # -20 to -10
+    '#FFC754',
+    # -10 to -5
+    '#FFEDA3',
+    # -5 to -3
+    '#FFF4C7',
+    # -3 to 0
+    '#FFFFFF'), breaks = c(-60, -50, -40, -20, -10,-5,-3, 0))+
+  ggplot2::theme_minimal()+
+  ggplot2::theme(
+    axis.title.x=ggplot2::element_blank(),
+    axis.text.x=ggplot2::element_blank(),
+    axis.ticks.x=ggplot2::element_blank(),
+    axis.title.y=ggplot2::element_blank(),
+    axis.text.y=ggplot2::element_blank(),
+    axis.ticks.y=ggplot2::element_blank())
+```
+This is a startling series of maps. The entire state faced massive deficits in January and February. This was followed by extreme droughts throughout the entire western half of the state in May-August. Although northern and eastern California saw some relief by September, southwest California continued to suffer through December.
+
+## Monthly Histograms
+
+We can get a different view of the data by creating a histogram of the deficit anomalies. We can extract the data from the raster time series and create a data frame of values that are easier to manipulate into a histogram.
 
 ```{r}
-# subset for USA
-wsim_gldas_1mo<-wsim_gldas_1mo[usa]
+# Pull the values
+deficit_hist <-  
+  wsim_gldas_california |>
+  as.data.frame(wsim_gldas_california$deficit)
 
-# subset for deficit
-wsim_gldas_1mo_usa <- wsim_gldas_1mo['deficit']
+# Rename the date for just the months
+deficit_hist$time<-lubridate::month(deficit_hist$time, label = TRUE, abbr = FALSE)
+# remove the NA values
+deficit_hist<-stats::na.omit(deficit_hist)
+
+ggplot2::ggplot(deficit_hist, ggplot2::aes(deficit))+
+  ggplot2::geom_histogram(binwidth = 6, fill = "#325d88")+
+  ggplot2::facet_wrap(~time)+
+  ggplot2::theme_minimal()
+```
+This starts to quantify what our eyes were telling us with the time series maps. The number of raster cells under a 60 year deficit is pretty incredible in most months. 
+
+## Zonal Summaries
+
+The previous section digs deeper into the 2014 California drought, but mostly just examines the state as a whole. Although we have a sense of what's happening in different cities or counties by looking at the time series plots, they do not provide quantitative summaries of specific areas. 
+
+Zonal statistics are one way to summarize the cells of a raster layer that lie within the boundary of another data layer; this may be another raster or vector (shapefile) layer. For example, summarizing deficit return periods with another raster depicting land cover type or a vector boundary/shapefile of countries, states, or counties. 
+
+For the purposes of this lesson we'll begin by calculating the mean deficit return period by California counties. We'll start by retrieving a layer with California counties from geoBoundaries.
+
+```{r}
+# get the adm2 (county) level data for the USA
+cali_counties <- httr::GET("https://www.geoboundaries.org/api/current/gbOpen/USA/ADM2/")
+cali_counties <- httr::content(cali_counties)
+cali_counties <- sf::st_read(cali_counties$gjDownloadURL)
+# geoBoundaries does not list which counties belong to which state so you need to run an intersection
+cali_counties<-sf::st_intersection(cali_counties, california)
+plot(sf::st_geometry(cali_counties))
+```
+That looks pretty good. The ADM1 (national) and ADM2 (province/state) data for many countries in geoBoundaries does not always match up correctly. However, boundaries for the USA are pretty consistent across ADM0/ADM1/ADM2 so simple intersection procedures are less likely to bleed over into neighboring states.
+
+We will perform our zonal statistics using the exactextractr package. It is the fastest, most accurate, and most flexible zonal statistics tool for the R programming language, but it currently has no default methods for the `stars` package, so we'll switch to `terra` for this portion of the lesson.
+
+```{r}
+wsim_gldas_1mo<-terra::sds("composite_1mo.nc")
+wsim_gldas_1mo<-wsim_gldas_1mo["deficit"]
+keeps<-seq(lubridate::ymd("2014-01-01"), lubridate::ymd("2014-12-01"), by = "month")
+
+wsim_gldas_1mo<-wsim_gldas_1mo[[terra::time(wsim_gldas_1mo) %in% keeps]]
+names(wsim_gldas_1mo) <- keeps
 print(wsim_gldas_1mo)
 ```
 
-
-
-```{r}
-# create a new sequence of dates, this time monthly, for the chosen year of 2011
-keeps3<-seq(lubridate::ymd("2012-01-01"),
-           lubridate::ymd("2012-12-01"), 
-           by = "month")
-
-#change data type to POSIXct
-#keeps3 <- as.POSIXct(keeps3)
-
-wsim_gldas_1mo <- dplyr::filter(wsim_gldas_1mo, time %in% keeps3)
-print(wsim_gldas_1mo)
-```
-The output shows that we've selected a single attribute ('deficit') and 15 time-steps in the 'time' dimension. We'll plot the last timestep to check the visuals on our raster data.
 
 ```{r warning=FALSE, message=FALSE}
-wsim_gldas |>
-  dplyr::slice(index = 15, along = "time") |>
-  plot(reset = FALSE, breaks = rev(c(0,-5,-10,-20,-40,-50, -75)))
-
-plot(sf::st_geometry(usa),
-     add = TRUE,
-     lwd = 3,
-     fill = NA,
-     border = 'purple')
-```
-This looks reasonable. There are widespread water deficits all throughout the western USA.
-
-## Exploratory Histogram
-
-We can get a different view of the data by creating a histogram of the deficit anomalies. This allows
-
-```{r}
-# filter for the first time-step in the file
-deficit_hist <-  
-  wsim_gldas |>
-  dplyr::slice(time, 15) |>
-  as.data.frame(wsim_gldas$deficit)
-```
-
-Check the values.
-
-```{r}
-ggplot2::ggplot(deficit_hist, ggplot2::aes(deficit))+
-  ggplot2::geom_histogram(na.rm = TRUE)+
-  ggplot2::xlim(c(0,-70))
-```
-
-Although most of the country has a deficit anomaly of less than 10 years, more than 5 thousand cells have return periods of 60 years or more! Most of these are along the California coast.
-
-```{r}
-ggplot2::ggplot(usa1, ggplot2::aes(Deficit))+
-  ggplot2::geom_histogram(na.rm = TRUE)+
-  ggplot2::xlim(c(-60,50))
-```
-
-
-
-Create a multi-panel figure with each panel representing 1 month to identify the most intense months of drought or flooding. Starting with this one maybe use `ggplot` and a nice palette, legend, and panel headings. Will probably have to use some sort of faceting to make individual panels.
-
-
-```{r}
-# turn into dataframe
-df_wsim_gldas_1mo <-as.data.frame(wsim_gldas_1mo, xy = TRUE) 
-
-ggplot2::ggplot(data = df_wsim_gldas_1mo) +
-  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = deficit)) +
-  ggplot2::scale_fill_viridis_c(limits = c(-60, 60), option = "magma") +
-  ggplot2::theme_void() +
-  ggplot2::theme(legend.position = "bottom") +
-  ggplot2::geom_sf(data = usa, fill = NA, color = "black") +
-  ggplot2::facet_wrap(time ~ .)
+cali_county_summaries<-
+  exactextractr::exact_extract(wsim_gldas_1mo, cali_counties, 'mean')
+names(cali_county_summaries)<-lubridate::month(keeps, label = TRUE, abbr = FALSE)
+cali_counties<-cbind(cali_counties, cali_county_summaries)
 
 ```
 
-Visualize an individual cell with particular extreme or maybe volatile values. Use Google Maps to identify the latitude/longitude of a place of interest. Maybe an urban center or other important location in the region that suffered from the extreme event.
+```{r warning=FALSE, message=FALSE}
+plot(cali_counties[c(11:23)],
+     pal = c(
+    '#9B0039',
+    # -50 to -40
+    '#D44135',
+    # -40 to -20
+    '#FF8D43',
+    # -20 to -10
+    '#FFC754',
+    # -10 to -5
+    '#FFEDA3',
+    # -5 to -3
+    '#FFF4C7'), breaks = c(-61, -50, -40, -20, -10,-5, 5), key.pos = 1)
+```
 
-Create a vector with the point location.
+
+## Locations of Interest
+
+To this point we've explored data at the national or state level, however, we can also extract deficit return periods for a point location
 
 ```{r}
 # vector of coordinates Missouri River Basin
-coords <- c(-95.833471, 40.721001)
+coords <- c(34.0549, -118.2426)
 
 # create a stars object with point coordinates where 'sf::st_sfc()' is used to create a geometry list column and add a coordinate reference system. 'sf::st_points()' is within that function to turn the coords vector into a point. 'sf:: st_crs()' and 'stars::st_dimensions()'  respectively retrieves the coordinate reference system and the dimensions of wsim_gldas_1mo to ensure that the final values in point_stars is the same reference system and shape. 
 
