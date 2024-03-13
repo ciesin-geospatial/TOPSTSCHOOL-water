@@ -1,0 +1,568 @@
+---
+title: "NYC School Water Quality: Exposure to Lead"
+author: "Hasim Engin"
+date: "February 2, 2024"
+execute:
+  echo: true
+  warning: false
+  eval: false
+---
+
+```{r, context="setup", include=FALSE}
+
+
+rm(list=ls())
+
+list.of.packages <- c("tidyverse","scales", "sf", "tmap","leaflet","raster","shiny","tidycensus","DT","dataset","shinyWidgets")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+#import libraries
+library(tidyverse)
+library(scales)
+library (sf)
+library(tmap)
+library(leaflet)
+library(tools)
+library(raster)
+library(shiny)
+library(tidycensus)
+library(DT)
+library(datasets)
+library(shinyWidgets)
+```
+
+```{r, context="data", echo=FALSE}
+
+# this changes prepairing all the datasets for following sections
+# quarto require all inputs in shiny application to be in the same chink and 
+# the chunk should be context="data"
+# this section will not be visible to user
+# However each part of the process will be viisble to user in their respective section
+
+
+##setwd("D:/Grid3/school_lead_data")
+#school_lead_data<-"Lead_Testing_in_School_Drinking_Water_Sampling_and_Results_Compliance_Year_2016.csv"
+get_data<-"https://raw.githubusercontent.com/ciesin-geospatial/TOPSTSCHOOL-module-1-water/main/Lead_Testing_in_School_Drinking_Water_Sampling_and_Results_Compliance_Year_2016.csv"
+school_lead_df<-read_csv(url(get_data))
+
+# extract xy coordinates
+school_lead_df<-school_lead_df %>% mutate(location_temp=str_extract(Location,"(?<=\\().*(?=\\))")) %>% 
+  separate(location_temp,c("lat","long"),sep=",")
+
+
+# remove space from fields names
+names(school_lead_df) <- names(school_lead_df) %>% stringr::str_replace_all("\\s","_")
+
+
+# extract year fro date field. we are using Date_Results_Updated for the date
+school_lead_df<-school_lead_df %>%  mutate(year=format(as.Date(Date_Results_Updated, format="%d/%m/%Y"),"%Y"))
+
+school_lead_df<-school_lead_df %>%  mutate(lead_summary_by_school=case_when(
+                                          Number_of_Outlets_above_15_ppb ==0~ "has lead < 15ppb",
+                                          Number_of_Outlets_above_15_ppb >0~ "has lead >15ppb",
+                                          TRUE ~ "no data"))
+
+school_locations<-school_lead_df %>% filter(!is.na(lat)) %>% 
+  # convert the dataset to spatial dataset by using WGS84 projection
+  st_as_sf(coords = c("long", "lat"),crs = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0") 
+
+get_census_data<- function(state_abr){
+  census_api_key("94dee3107dc86d32c8039896b244eeb4aad72eb7")
+  county_census<-get_decennial(
+  geography = "county", 
+  variables = c("total_pop"="P1_001N","total_white"="P1_003N", "total_black"="P1_004N",
+                "total_asian"="P1_006N","total_hispanic"="P2_002N"),
+  year = 2020,
+  state=state_abr,
+  output = "wide") %>% dplyr::select(GEOID,total_pop,total_white,total_black, total_asian,total_hispanic)
+# get school age (5-17) population estimates from ACS 
+county_acs<- get_acs(
+  geography = "county", 
+  variables = c("white_5_9"="B01001A_004","white_10_14"="B01001A_005","white_15_17"="B01001A_006",
+                "black_5_9"="B01001B_004","black_10_14"="B01001B_005","black_15_17"="B01001B_006",
+                "asian_5_9"="B01001D_004","asian_10_14"="B01001D_005","asian_15_17"="B01001D_006",
+                "hispanic_5_9"="B01001I_004","hispanic_10_14"="B01001I_005","hispanic_15_17"="B01001I_006"),
+  year = 2020,
+  state=state_abr,
+  output = "wide",
+  geometry = TRUE) %>% mutate(white_5_17=white_5_9E+white_10_14E+white_15_17E,
+             black_5_17=black_5_9E+black_10_14E+black_15_17E,
+             asian_5_17=asian_5_9E+asian_10_14E+asian_15_17E,
+             hispanic_5_17=hispanic_5_9E+hispanic_10_14E+hispanic_15_17E)
+
+county_population<-county_acs %>% left_join(county_census, by="GEOID")%>%  
+  separate(NAME, c("county","state"),",")
+return (county_population)}
+
+
+### ===== selection by dropdowns ===========###
+
+state_list<-datasets::state.abb
+list_of_counties<-school_lead_df %>% pull(County) %>% unique()
+list_of_counties<-append(list_of_counties,"All Counties")
+field_list<-c("total_white","total_black","total_asian","total_hispanic",
+              "white_5_17","black_5_17","hispanic_5_17","asian_5_17")
+classification_methods<-c("sd", "equal", "pretty", "quantile", "jenks")
+lead_field_list<-c("school_count","outlets_under_15_ppb","outlets_above_15_ppb")
+lead_data_all_fields<-names(school_lead_df ) %>% unique()
+
+
+select_state<-column(3, selectInput("state", label = "Select a state",
+              choices = state_list, selected = "NY"))
+select_county<-column(3, selectInput("county", label = "Select a county",
+              choices = list_of_counties, selected = "Bronx"))
+select_fields1<-column(3, selectInput("field1", label = "Select a field for map (left)",
+              choices = field_list, selected = "total_white"))
+select_fields2<-column(3, selectInput("field2", label = "Select a field for maps (right)",
+              choices = field_list, selected = "white_5_17"))
+select_classification_method<-column(3, selectInput("classification", label = "Classification method",
+              choices = classification_methods, selected = "jenks"))
+select_fields3<-column(3, selectInput("field3", label = "Select a field",
+              choices = lead_field_list, selected = "school_count"))
+select_fields4<-  column(4, selectInput("fields", label = "Select fields",
+              choices = lead_data_all_fields, selected = "County",multiple = TRUE))
+
+theme<-theme(axis.text=element_text(size=12, face="bold"),
+             axis.title=element_text(size=13, face="bold"),
+              plot.title=element_text(size=13, face="bold"),
+              panel.background = element_rect(fill = "lightblue",colour = "grey")
+             )
+
+```
+
+## Objective
+
+-   This document helps to analyze school lead datasets collected from 2016, 2017, 2018 and 2019 and compare it with population characteristics at county level in NYS.
+
+#### By completing this module, you are expected to learn following points
+
+-   Possible health outcomes of consuming water with lead level above 15pbb and importance of water quality
+-   Rea into R and analyze the data set
+-   Convert school lead survey dataset to spatial data by using school xy coordinates
+-   Plot school locations on a map
+-   Obtain population data from US Census Bureau by using census API
+-   Compare school lead datasets with population by aggregating the dataset into country boudary
+-   Explore different data classification methods ( equal, quantile, natural breaks, standard deviation)
+-   Create your own map
+
+## Background Information
+
+Access to clean and safe drinking water is significant to ensure public health. Drinking water contaminants may have both short-term and long-term negative health impacts. One such contaminant that can have detrimental effects is lead, which is particularly harmful to a child's development. Children's central nervous systems and cognitive function have been linked to harm from lead exposure, even at low levels . It is therefore essential to supply lead free drinking water in schools and homes.
+
+Lead concentrations in drinking water should not exceed 10 ppb, according to guidelines issued by the World Health Organization, and 15 ppb is the action level set by the US EPA . These guidelines demonstrate how important it is to reduce lead exposure and contamination from drinking water on a global scale. Lead exposure has no safe threshold. Safety depends on making sure that lead levels in water are below legal thresholds, and ideally as close to zero as feasible since it can have serious negative health impacts, especially in children
+
+The main source of lead in drinking water is the corrosion of lead-containing plumbing materials. The EPA considers lead levels over 15 ppb to be dangerous. Lead poisoning must be prevented at all costs, particularly in schools where young students' developing brains are vulnerable. Developing effective preventive and remedial strategies requires an understanding of the factors that contribute to lead contamination. It is significant to understand that the distribution of lead contamination often coincides with socioeconomic issues . Lead exposure often has a disproportionate impact on communities with lower incomes and limited access to resources . Older plumbing systems with lead pipes and solder may leak lead into drinking water, particularly in regions with acidic water . Furthermore, runoff from contaminated soil and industrial discharges can also introduce lead into water systems. Low income communities' residential areas often lack access to safe drinking water due to inadequate infrastructure or reliance on private wells that may be contaminated with lead. Studies also show that most of these low income and marginalized groups reside in the areas which are more likely to be located near industrial facilities and other sources which are exposed to lead pollution .
+
+### LEAD IN NEW YORK SCHOOLS
+
+New York State (NYS) Lead Testing in School Drinking Water dataset analysis reveals that as of 2022, 1,864 schools had lead outlets testing higher than 15 ppb . While 527 schools finished their remediation, 1,851 schools reported taking remedial action. There are now 12 schools with outlets exceeding 15 ppb in operation, indicating possible continuous exposure. There are gaps evident with following up and documenting the corrective measures. To understand and mitigate the lead hazards, more transparency is needed around the schools which are at high exposure to the lead and improved repeated testing protocols could be in place. Guidelines, rules, and resources pertaining to lead testing and remediation in schools are provided by the New York State Department of Health . However, it seems that there is currently a lack of financial and technical support to schools to handle lead hazards, particularly in underprivileged communities.
+
+### FLINT MICHIGAN LEAD EXPOSURE
+
+Thousands of people were exposed to dangerously high lead levels in their drinking water when the Flint water crisis broke out in 2014. According to a study conducted by Virginia tech researchers through their resident organized sampling to testing data from 252 homes revealed that Lead levels in the city had increased with over 17% of samples testing higher than the federal "action level" of 15 parts per billion (ppb), which calls for the need for corrective action. More than 40% had lead readings higher than 5 parts per billion, which the researchers deemed indicative of a "very serious" issue .
+
+The article by NY times describes how, in 2019 , Thirty Flint school buildings' drinking water samples had excessive lead levels. This demonstrates how the problems remained and continued to affect children's health and development years after the Flint water crisis started. Schools have an obligation to supply their pupils with clean drinking water. Rather than waiting for concerns to arise, schools can detect contamination issues early and take corrective action by implementing a lead testing program. Better learning outcomes are made possible by shielding schoolkids from lead exposure.
+
+To mitigate the lead hazards, Initial step is to understand that it's essential to regularly test and monitor the drinking water in households and schools to identify lead contamination. When elevated lead levels are found, the first course of action for mitigation is to quickly close down the source and offer alternatives for drinking water. Replacing plumbing and lead service lines is necessary for longer-term mitigation in order to eliminate the primary source of contamination. Applying corrosion inhibitors is an additional strategy to stop infrastructure from leaking lead. Maintaining transparency and exchanging information with communities regarding the outcomes of lead testing and mitigation strategies is essential. However, significant infrastructural changes are required to totally eliminate lead dangers. To assist schools and underprivileged communities in completing thorough lead abatement and ensuring safe and accessible drinking water for all. In line with above actions and past Flint water crisis, the state of Michigan approved
+
+\$97 million in funding for service line replacement . However, still substantial investments and coordinated efforts are needed to fully remediate risks, especially in disadvantaged communities .\
+In 2021, the Biden-Harris administration announced an ambitious Lead Pipe and Paint Action Plan. This comprehensive 15 billion dollar effort intends to promptly replace all lead service lines and pipes that are contaminating drinking water systems across the country. The plan has a provision of providing a lead remediation grant of \$9 billion to disadvantaged communities through the Water Infrastructure Improvements for the Nation Act (WIIN) program, including for schools and childcare centers at EPA .
+
+### ENSURING SAFE DRINKING WATER
+
+The lead contamination issues evident in Flint and New York schools highlight the need to balance the tradeoffs between quickly addressing risks in the short term by improving monitoring and transparency around water quality issues, and managing the costs of major infrastructure changes required in the long term to prevent such crises and exposures - for example, replacing lead service lines and school plumbing. Community collaboration, precise surveillance databases, and adaptable adaptation strategies will be critical to ensuring that everyone has access to safe drinking water.
+
+Availability of safe drinking water is the basic human right, however from above cases it shows the alarming need to consider this risk from the lead contamination yet ignored by the state. From New York to Flint, Michigan, we witness alarming examples that necessitate immediate action backed by transparent and accessible data. Moreover an informed public through the learnings and accessing the data, can play a crucial role in building leadership roles to fulfill their responsibilities around providing healthy, lead free infrastructures in schools. Thus , it is significant to develop the curriculum which focuses on water quality issues globally and locally for students and school communities.
+
+### Read data
+
+-   The section below reads NYS school lead testing result from 2016 to 2019.The datasets is hosted on github reposotory. We are going to read the dataset by uisng dataset url
+
+```{r, eval=FALSE}
+# dataset url on github repository
+data_url<-"https://raw.githubusercontent.com/renastechschool/Python_tutorials/main/Lead_Testing_in_School_Drinking_Water_Sampling_and_Results_Compliance_Year_2016_formated.csv?token=GHSAT0AAAAAACNH7S3BJGTQXNGH4UPQCJI6ZNQB3VA"
+# read dataset.Input data wrapped by url mothod.This allows to read data from a url
+school_lead_df<-read_csv(url(data_url))
+
+```
+
+### Prepairing the lead dataset for the analysis
+
+-   All datasets requires some pre-cleaning and formatting. In the section below, we format fields names. R do not like fields names with space so we need to convert space to underscore "\_". Also We need to extract year from date field for following part of the this work.
+
+```{r, eval=FALSE}
+#  There are empty space in the field name and R do not like them
+# line below replace empty space with _
+names(school_lead_df) <- names(school_lead_df) %>% stringr::str_replace_all("\\s","_")
+
+
+# extract year from date field. we are using Date_Results_Updated for the date
+school_lead_df<-school_lead_df %>%  mutate(year=format(as.Date(Date_Results_Updated, format="%d/%m/%Y"),"%Y"))
+
+# data reports lead level by outlets if a outlet lead level above or under 15ppb
+# the line below categorized he schools if they have any outlet above or under 15ppb
+school_lead_df<-school_lead_df %>%  mutate(lead_summary_by_school=case_when(
+                                          Number_of_Outlets_above_15_ppb ==0~ "has lead < 15ppb",
+                                          Number_of_Outlets_above_15_ppb >0~ "has lead >15ppb",
+                                          TRUE ~ "no data"))
+
+```
+
+### Get fimiliar with the dataset
+
+-   Getting familiar with the dataset is the first step of an analysis. The section below allows to get to know the datasets attributes in detail. It allaws to query data by geocraphic region (county) and different attributes ( fields)
+
+```{r, context="render"}
+
+
+#| panel: fill
+fluidPage(
+      fluidRow(style = "padding-bottom: 30px;background-color:#f1f2f3;",
+        select_county,select_fields4),
+      fluidRow(column(12, DT::dataTableOutput("table"))))
+```
+
+```{r, context="server"}
+
+
+#| context: server
+output$table<- DT::renderDataTable({
+if (input$county=="All Counties")
+    {school_lead_df %>% dplyr::select(input$fields) }
+
+  else(school_lead_df %>% filter(County==input$county)%>% dplyr::select(input$fields))
+})
+```
+
+<br>
+
+## Conversion from tabular data to geo-spatial data
+
+-   A dataset needs to have a geometry attribute to plot the data on a map or do different spatial analysis.The dataset have xy coordinates of schools. XY coordinates allows us to convert the tabular dataset to spatial dataset. The section does the this conversion. There is another point needs to be taken into account while the conversion is done. We need to know projection of xy coordinates. XY coordinates can be in different projections systems. Projection information mostly is stored in the metadata but unfortunately there is no any metadata attached to the dataset.However the most common projection is the geographic coordinate system. WGS84 projection is used to make the dataset to spatial dataset. There is another problem needs to solved priority to the conversion. XY coordinates are not properly formatted. This is an example 231-02 67 AVENUE Queens, NY 11364(40.74779141700003, -73.74551716499997). We need to extract (40.74779141700003, -73.74551716499997) part and store each side of comma two separate fields. The first number refers to y (latitude) coordinate, second number refers to x (longitude) coordinate.
+
+<br>
+
+```{r ,context: "data"}
+
+# In the datasets xy coordinates of schools  are combined with school address and recorded under
+# location field as 231-02 67 AVENUEQueens, NY 11364(40.74779141700003, -73.74551716499997)
+# (40.74779141700003, -73.74551716499997) needs to be extracted and sparated by "," and 
+# saved undr different fields names
+# line below extract xy coordinates and save under "lat","long" fields
+school_lead_df<-school_lead_df %>% mutate(location_temp=str_extract(Location,"(?<=\\().*(?=\\))")) %>% 
+  separate(location_temp,c("lat","long"),sep=",")
+
+# line below create geometry attributes by using lat long fields and 
+# geographic coordinate system
+# this step allow us to map the school locations and do some geospatial anaylysis
+school_locations<-school_lead_df %>%  filter(!is.na(lat)) %>% 
+  # convert the dataset to spatial dataset by using WGS84 projection
+  st_as_sf(coords = c("long", "lat"),crs = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0") 
+
+```
+
+### Mapping the dataset
+
+-   The section below maps the school location in New York State
+
+```{r ,context: "render"}
+
+#|panel: fill
+fluidPage(
+      fluidRow(style = "padding-bottom: 30px;background-color:#f1f2f3;",
+               select_county),
+      fluidRow(column(12,leafletOutput("map"))))
+
+```
+
+<br>
+
+```{r ,context: "server"}
+#| context: server
+
+school_loc<-reactive({school_locations %>% filter(County==input$county)})
+
+output$map<-renderLeaflet({
+
+  
+#  if (input$county=="All Counties"){school_loc <-school_locations
+#    tmap<-tm_basemap(leaflet::providers$Esri.WorldImagery)+
+#   tm_shape(school_loc, name="school locations") +
+#   tm_dots(id="",col="County",palette="magma",
+#         popup.vars=c("School name: "="School" ),
+#         legend.show = FALSE)
+# tmap_leaflet(tmap)
+#  }
+#   
+#   else{school_loc <-school_locations %>% filter(County==input$county)
+  
+  tmap<-tm_basemap(leaflet::providers$Esri.WorldImagery)+
+  tm_shape(school_loc(), name="school locations") +
+  tm_dots(id="",col="County",palette="magma",
+        popup.vars=c("School name: "="School" ),
+        legend.show = FALSE)
+tmap_leaflet(tmap)
+
+
+})
+
+```
+
+<br>
+
+## Abtain population data from US Census Bureau
+
+-   The section below pulls population from US Census Bureau by using census api API.
+
+```{r , eval=FALSE }
+#| context: "render"
+#|panel: fill
+
+fluidPage(
+      fluidRow(style = "padding-bottom: 20px;background-color:#f1f2f3;",
+               select_state,select_fields1, select_fields2, select_classification_method),
+
+      fluidRow(column(6, plotOutput("plot1")),
+                column(6, plotOutput("plot2"))),
+      fluidRow(column(6, leafletOutput("map1")),
+                column(6,leafletOutput("map2"))))
+
+```
+
+```{r , eval=FALSE}
+#| context: server
+
+# get total population from census 2020
+county_census<-reactive({
+  req(input$state)
+  get_census_data(input$state) })
+
+
+output$plot1<-renderPlot({
+
+  county_census()%>%st_drop_geometry() %>%
+    dplyr::select(contains("total")) %>% gather(key,value) %>%
+    group_by(key) %>% summarise(Count=sum(value)) %>%
+    filter(key!="total_pop") %>%
+    mutate(percent = prop.table(Count),  prc=paste0( "%",round(percent*100, 1)," \n(", comma(Count/1000),"K)")) %>%
+     ggplot(aes(x=key,y=Count,fill=key))+
+    geom_bar(stat="identity")+
+    geom_text(aes(label = prc),size=5, hjust=0.7,
+    position=position_stack(0.9))+guides(fill=FALSE)+
+     labs(x="",y=" ", fill="", title = "Total Population by Race")+
+    coord_flip()+theme
+})
+
+output$plot2<-renderPlot({
+
+    county_census() %>%st_drop_geometry() %>%
+    dplyr::select("white_5_17","black_5_17","hispanic_5_17","asian_5_17") %>%
+    gather(key,value) %>%
+    group_by(key) %>% summarise(Count=sum(value)) %>%
+    mutate(percent = prop.table(Count),  prc=paste0( "%",round(percent*100, 1)," \n(", comma(Count/1000),"K)")) %>%
+     ggplot(aes(x=key,y=Count,fill=key))+
+    geom_bar(stat="identity")+
+    geom_text(aes(label = prc),size=5, hjust=0.7,
+    position=position_stack(0.9))+guides(fill=FALSE)+
+     labs(x="",y=" ", fill="", title = "Total Populaiton age 5-17 by Race")+
+    coord_flip()+theme
+})
+
+
+output$map1<-renderLeaflet({
+
+tmap<-tm_basemap(leaflet::providers$Esri.WorldImagery)+
+  tmap::tm_shape(county_census(), name="NYS counties") +
+  tm_polygons(col=input$field1,style=input$classification, palette="RdYlGn")
+tmap_leaflet(tmap)
+
+})
+
+output$map2<-renderLeaflet({
+
+tmap<-tm_basemap(leaflet::providers$Esri.WorldImagery)+
+  tmap::tm_shape(county_census(), name="NYS counties") +
+  tm_polygons(col=input$field2,style=input$classification, n=6,palette="RdYlGn")
+tmap_leaflet(tmap)
+
+})
+
+
+
+```
+
+<br>
+
+## Explore your data spatially
+
+```{r }
+#| contex: render
+#| panel: fill
+fluidPage(
+      fluidRow(style = "padding-bottom: 20px;background-color:#f1f2f3;",
+              select_state,select_county),
+
+      fluidRow(column(5,"", plotOutput("plot")),
+                column(7,"", leafletOutput("map"))))
+```
+
+```{r }
+#| context: server
+
+counties_bry <- reactive({req(input$state)
+                              get_census_data(input$state) })
+
+school_loc <- reactive({school_locations %>%filter(County==input$county)})
+
+
+output$plot<-renderPlot({
+  if (input$county=="All Counties"){school_lead_df_<-school_lead_df}
+  else{school_lead_df_<-school_lead_df %>% filter(County==input$county)}
+  school_lead_df_ %>%
+  group_by(lead_summary_by_school) %>% summarize(Count=n()) %>%
+    mutate(percent = prop.table(Count),  prc=paste0( "   %",round(percent*100, 1)," (", comma(Count),")")) %>%
+  ggplot(aes(x=lead_summary_by_school,
+                      y=Count,fill=lead_summary_by_school))+
+    geom_bar(stat="identity")+
+  geom_text(aes(label = prc),size=5,
+    position=position_stack(0.9))+guides(fill=FALSE)+
+    scale_fill_manual(values=c("green3","red","grey"))+
+     labs(x="",y="Count of School", fill="", title = "Count of schools based on lead status",
+         caption="has lead < 15ppb: None of the outlets have lead over 15ppb\nhas lead >15ppb: At least a outlet has lead over 15ppb")+theme
+})
+
+
+output$map<-renderLeaflet({
+tmap<-tm_basemap(leaflet::providers$Esri.WorldImagery)+
+  tmap::tm_shape(counties_bry() , name="NYS counties") +tm_polygons("black",alpha=0,popup.vars=c("County Name :  "="county"))+
+  tm_shape(counties_bry() ,name="NYS counties ") +  tm_borders("black", lwd = 2) +
+  tm_shape(school_loc(), name="School locations") +
+tm_dots(id="something",col="lead_summary_by_school",palette=c("has lead < 15ppb"="green","has lead < 15ppb"="red"),
+        popup.vars=c("School: "="School" ),
+        legend.show = FALSE)
+tmap_leaflet(tmap)
+
+})
+
+
+```
+
+<br>
+
+------------------------------------------------------------------------
+
+## Aggregate school locations in county boundary and compaire with county populaiton
+
+-   In the section below, we are aggregating points into county boundary.
+
+```{r }
+#| contex: render
+#| panel: fill
+ fluidPage(
+
+      fluidRow(style = "padding-bottom: 20px;background-color:#f1f2f3;",
+
+               select_state,select_fields1,select_fields3, select_classification_method),
+
+      fluidRow(column(6,"", leafletOutput("map1")),
+
+               column(6,"", leafletOutput("map2"))))
+```
+
+```{r}
+#| context: server
+
+# get total population from census 2020
+
+county_bry<-reactive({
+  req(input$state)
+
+get_census_data(input$state)})
+
+output$map1<-renderLeaflet({
+
+ county_bry<- st_transform(county_bry(), crs(school_locations))
+
+  school_locations_join<-st_join(school_locations,county_bry,join = st_intersects) %>%
+
+  group_by(GEOID,county) %>% summarise(school_count=n(),
+
+                               outlets_under_15_ppb=sum(Number_of_Outlets_under_15_ppb, na.rm =TRUE),
+
+                               outlets_above_15_ppb=sum(Number_of_Outlets_above_15_ppb, na.rm=TRUE)) %>%
+
+  dplyr::select(GEOID,county,school_count,outlets_under_15_ppb,outlets_above_15_ppb) %>% st_drop_geometry()
+
+  county_with_school<-county_bry%>% left_join(school_locations_join, by="GEOID")
+
+tmap<-tm_basemap(leaflet::providers$Esri.WorldImagery)+
+
+  tmap::tm_shape(county_with_school, name="county boundaries") +
+
+  tm_polygons(col=input$field1,style=input$classification, n=6,palette="YlOrRd")
+
+tmap_leaflet(tmap)
+
+})
+
+output$map2<-renderLeaflet({
+
+ county_bry<- st_transform(county_bry(), crs(school_locations))
+
+  school_locations_join<-st_join(school_locations,county_bry,join = st_intersects) %>%
+
+  group_by(GEOID,county) %>% summarise(school_count=n(),
+
+                               outlets_under_15_ppb=sum(Number_of_Outlets_under_15_ppb, na.rm =TRUE),
+
+                               outlets_above_15_ppb=sum(Number_of_Outlets_above_15_ppb, na.rm=TRUE)) %>%
+
+  dplyr::select(GEOID,county,school_count,outlets_under_15_ppb,outlets_above_15_ppb) %>% st_drop_geometry()
+
+  county_with_school<-county_bry%>% left_join(school_locations_join, by="GEOID")
+
+tmap<-tm_basemap(leaflet::providers$Esri.WorldImagery)+
+
+  tmap::tm_shape(county_with_school, name="county boundaries") +
+
+  tm_polygons(col=input$field3,style=input$classification, n=6,palette="YlOrRd")
+
+tmap_leaflet(tmap)
+
+})
+
+
+```
+
+## References
+
+-   1 Lanphear BP, Hornung R, Khoury J, Yolton K, Baghurst P, Bellinger DC, et al. Low-level environmental lead exposure and children's intellectual function: an international pooled analysis. Environ Health Perspect \[Internet\]. 2005 Jul \[cited 2023 Dec 7\];113(7):894--9. Available from: <https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1257652/>
+
+-   2 Guidelines for drinking-water quality, 4th edition, incorporating the 1st addendum \[Internet\]. \[cited 2023 Dec 7\]. Available from: <https://www.who.int/publications-detail-redirect/9789241549950>
+
+-   3 Lanphear BP, Hornung R, Khoury J, Yolton K, Baghurst P, Bellinger DC, et al. Low-level environmental lead exposure and children's intellectual function: an international pooled analysis. Environ Health Perspect \[Internet\]. 2005 Jul \[cited 2023 Dec 7\];113(7):894--9. Available from: <https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1257652/>
+
+-   4 Pelc W, Pawlas N, Dobrakowski M, Kasperczyk S. Environmental and socioeconomic factors contributing to elevated blood lead levels in children from an industrial area of Upper Silesia. Enviro Toxic and Chemistry \[Internet\]. 2016 Oct \[cited 2023 Dec 25\];35(10):2597--603. Available from: <https://setac.onlinelibrary.wiley.com/doi/10.1002/etc.3429>
+
+-   5Schaider LA, Swetschinski L, Campbell C, Rudel RA. Environmental justice and drinking water quality: are there socioeconomic disparities in nitrate levels in U.S. drinking water? Environmental Health \[Internet\]. 2019 Jan 17 \[cited 2023 Dec 25\];18(1):3. Available from: <https://doi.org/10.1186/s12940-018-0442-6>
+
+-   6 US EPA O. Basic information about lead in drinking water \[Internet\]. 2016 \[cited 2023 Dec 25\]. Available from: <https://www.epa.gov/ground-water-and-drinking-water/basic-information-about-lead-drinking-water>
+
+-   7 PSCI \[Internet\]. 2020 \[cited 2023 Dec 25\]. Racial disparities and climate change. Available from: <https://psci.princeton.edu/tips/2020/8/15/racial-disparities-and-climate-change>
+
+-   8 New York State Department of Health \| Health Data NY \[Internet\]. \[cited 2023 Dec 7\]. Lead testing in school drinking water sampling and results compliance year 2016 \| state of new york. Available from: <https://health.data.ny.gov/Health/Lead-Testing-in-School-Drinking-Water-Sampling-and/rkyy-fsv9>
+
+-   9 Lead testing of school drinking water \[Internet\]. \[cited 2023 Dec 7\]. Available from: <https://www.health.ny.gov/environmental/water/drinking/lead/lead_testing_of_school_drinking_water.htm>
+
+-   10 Flint water crisis: everything you need to know \[Internet\]. 2018 \[cited 2023 Dec 21\]. Available from: <https://www.nrdc.org/stories/flint-water-crisis-everything-you-need-know>
+
+-   11 Green EL. Flint's children suffer in class after years of drinking the lead-poisoned water. The New York Times \[Internet\]. 2019 Nov 6 \[cited 2023 Dec 21\]; Available from: <https://www.nytimes.com/2019/11/06/us/politics/flint-michigan-schools.html>
+
+-   12 Flint residents still fighting to replace lead pipes, get torn yards fixed \| Bridge Michigan \[Internet\]. \[cited 2023 Dec 25\]. Available from: <https://www.bridgemi.com/michigan-environment-watch/flint-residents-still-fighting-replace-lead-pipes-get-torn-yards-fixed>
+
+-   18 How the Flint water crisis has impacted US lead-pipe removal efforts \[Internet\]. \[cited 2023 Dec 25\]. Available from: <https://www.asce.org/publications-and-news/civil-engineering-source/civil-engineering-magazine/article/2021/08/how-the-flint-water-crisis-has-impacted-us-lead-pipe-removal-efforts>
+
+-   14 House TW. The White House. 2021 \[cited 2023 Dec 25\]. Fact sheet: the biden-harris lead pipe and paint action plan. Available from: <https://www.whitehouse.gov/briefing-room/statements-releases/2021/12/16/fact-sheet-the-biden-harris-lead-pipe-and-paint-action-plan/>
+
+
+<iframe src="https://topstschool.shinyapps.io/nyc-lead/" width="100%" height="800"></iframe>
