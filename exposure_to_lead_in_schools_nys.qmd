@@ -145,7 +145,7 @@ No “safe” levels of lead have been established, but we will discuss what lev
 
 ## Introduction
 
-Access to clean and safe drinking water is significant to ensure public health. Drinking water contaminants may have both short-term and long-term negative health impacts. One such contaminant that can have detrimental effects is lead, which is particularly harmful to a child's development. Children's central nervous systems and cognitive function have been linked to harm from lead exposure, even at low levels. Therefore, it is essential to address lead-contaminated in water in schools and homes.
+Access to clean and safe drinking water is significant to ensure public health. Drinking water contaminants may have both short-term and long-term negative health impacts. One such contaminant that can have detrimental effects is lead, which is particularly harmful to a child's development. Children's central nervous systems and cognitive function have been linked to harm from lead exposure, even at low levels. Therefore, it is essential to address lead-contaminated water in schools and homes.
 
 Lead exposure has no safe threshold; therefore, safety depends on ensuring that lead levels in water are below the legal thresholds set by the World Health Organization (WHO) and the US Environmental Protection Agency (EPA). According to guidelines issued by the WHO, lead concentrations in drinking water should not exceed 10 ppb (Parts Per Billion), and 15 ppb is the action level set by the EPA. 
 
@@ -153,20 +153,33 @@ It is crucial to highlight that the degree of lead able to be detected depends u
 
 ## LEAD IN NEW YORK SCHOOLS
 
-New York State (NYS) Lead Testing in School Drinking Water dataset analysis reveals that as of 2022, 1,864 schools had lead outlets testing higher than 15 ppb. While 527 schools finished their remediation, 1,851 schools reported taking remedial action. There are now 12 schools with outlets exceeding 15 ppb in operation, indicating possible continuous exposure. However, there are gaps in following up and documenting the corrective measures. More transparency is necessary for schools with high exposure to lead in order to address the hazards of lead contamination and implement improved repeated testing protocols. The New York State Department of Health provides guidelines, rules, and resources pertaining to lead testing and remediation in schools. However, it seems that there is currently a lack of financial and technical support to schools to handle lead hazards.
+New York State (NYS) Lead Testing in School Drinking Water dataset shows the school drinking water lead sampling and results information reported by each NYS public school and Boards of Cooperative Educational Services (BOCES) [(NYS Department of Health)](https://health.data.ny.gov/Health/Lead-Testing-in-School-Drinking-Water-Sampling-and/rkyy-fsv9/data). More information on the NYS dataset sampling is available [here](https://www.health.ny.gov/environmental/water/drinking/lead/lead_testing_of_school_drinking_water.htm).
+
+Analysis of the dataset reveals that as of 2022, 1,864 schools had lead outlets testing higher than 15 ppb. While 527 schools finished their remediation, 1,851 schools reported taking remedial action. There are now 12 schools with outlets exceeding 15 ppb in operation, indicating possible continuous exposure. However, there are gaps in following up and documenting the corrective measures. More transparency is necessary for schools with high exposure to lead to address the hazards of lead contamination and implement improved repeated testing protocols. The New York State Department of Health provides guidelines, rules, and resources pertaining to lead testing and remediation in schools. However, it seems that there is currently a lack of financial and technical support for schools to handle lead hazards.
 
 ::: {.callout-tip style="color: #7d2748;"}
-## Lead in the News
+### Lead in the News
+
+Thousands of people were exposed to dangerously high lead levels in their drinking water when the [Flint water crisis](https://www.nrdc.org/stories/flint-water-crisis-everything-you-need-know) broke out in 2014. A study by Virginia Tech researchers, through their resident-organized sampling to testing data of 252 homes, revealed that lead levels in the city had increased. Over 17% of samples tested higher than the federal "action level" of 15 ppb, which calls for the need for corrective action. More than 40% had lead readings higher than 5 ppb, which the researchers deemed indicative of a "very serious" issue.
+
+Even years after the crisis began, elevated lead levels remained in Flint's schools. An article by [The New York Times](https://www.nytimes.com/2019/11/06/us/politics/flint-michigan-schools.html) discusses how, in 2019, drinking water samples from 30 Flint school buildings still exhibit excessive lead levels. The elevated levels demonstrate remaining problems with a prolonged impact on children's health and development. Schools have an obligation to supply their pupils with clean drinking water. The Flint water crisis brought to light the long-term consequences of prolonged exposure to lead, especially for vulnerable groups such as children. 
+
+Lead exposure is cumulative, as noted in the article by the [Tampa Bay Times](https://projects.tampabay.com/projects/2018/investigations/school-lead/hillsborough-disclosure/). The duration of lead exposure in Flint has lasting impacts on the public, not only affecting physical health but also leading to psychological consequences of communities not being able to trust their drinking water.
+Rather than waiting for concerns to arise, schools can detect contamination issues early and take corrective action by implementing a lead testing program. Better learning outcomes are made possible by shielding children from lead exposure. The Flint water crisis made clear how crucial it is to conduct proactive lead testing, monitor the situation, and take prompt, corrective action. It also made clear how important it is to be transparent, involve the community, and address barriers to clean drinking water access.
+
+In 2021, the Biden-Harris administration announced an ambitious [Lead Pipe and Paint Action Plan](https://www.whitehouse.gov/briefing-room/statements-releases/2021/12/16/fact-sheet-the-biden-harris-lead-pipe-and-paint-action-plan/). This comprehensive $15 billion effort intends to promptly replace all lead service lines and pipes that are contaminating drinking water systems across the country. The plan has a provision of providing a lead remediation grant of $9 billion to disadvantaged communities through the Water Infrastructure Improvements for the Nation Act (WIIN) program, including for schools and childcare centers at EPA.
+
+
 
 :::
 
 
 ### Read data
 
--   The section below reads NYS school lead testing results from 2016 to 2019. The dataset is hosted on a GitHub repository and we will read the dataset by using the dataset url.
+To work with the NYS data, first we will read the NYS school lead testing results from 2016 to 2019. The dataset is hosted on a GitHub repository and we will read the dataset by using the dataset url.
 
 ```{r, eval=FALSE}
-# Dataset url on github repository
+# Dataset url on GitHub repository.
 data_url<-"https://raw.githubusercontent.com/renastechschool/Python_tutorials/main/Lead_Testing_in_School_Drinking_Water_Sampling_and_Results_Compliance_Year_2016_formated.csv?token=GHSAT0AAAAAACNH7S3BJGTQXNGH4UPQCJI6ZNQB3VA"
 # Read dataset. Input data wrapped by url mothod. This allows to read data from a url.
 school_lead_df<-read_csv(url(data_url))
@@ -179,8 +192,8 @@ All datasets require some pre-cleaning and formatting.
 In the section below, we will format field names. R does not like fields names with spaces, so we need to convert space to an underscore "_". Also, we need to extract the year from the date field for the next step of our work.
 
 ```{r, eval=FALSE}
-# There are empty spaces in the field names which R does not like
-# Replace empty space with "_"
+# There are empty spaces in the field names which R does not like.
+# Replace empty space with "_".
 names(school_lead_df) <- names(school_lead_df) %>% stringr::str_replace_all("\\s","_")
 
 
@@ -314,9 +327,9 @@ tmap_leaflet(tmap)
 
 <br>
 
-## Obtain population data from US Census Bureau
+### Obtain population data from US Census Bureau
 
--   The section below pulls population from US Census Bureau by using census api API.
+We will next pull population  datafrom US Census Bureau by using the Census Bureau's Application Programming Interface (API).
 
 ```{r , eval=FALSE }
 #| context: "render"
@@ -397,7 +410,7 @@ tmap_leaflet(tmap)
 
 <br>
 
-## Explore your data spatially
+### Explore your data spatially
 
 ```{r }
 #| contex: render
@@ -455,9 +468,9 @@ tmap_leaflet(tmap)
 
 ------------------------------------------------------------------------
 
-## Aggregate school locations in county boundary and compaire with county populaiton
+### Aggregate school locations in county boundary and compare with county population
 
--   In the section below, we are aggregating points into county boundary.
+Lastly, we will aggregate points into county boundaries.
 
 ```{r }
 #| contex: render
@@ -540,8 +553,10 @@ tmap_leaflet(tmap)
 ### ENSURING SAFE DRINKING WATER
 
 Access to safe drinking water is a fundamental human right and a pillar of public health. However, the cases discussed underscore the critical need to address the risk of lead contamination. From New York to Flint, Michigan, these examples serve as reminders of the urgent need for action, supported by transparent and accessible data.
-A balance is needed between short and long-term action. For instance, promply addressing risks in the short term by improving monitoring and transparency around water quality issues and, in the long term, managing the costs of major infrastructure changes required prevent such crises and exposures - for example, by replacing lead service lines and school plumbing. Community collaboration, precise surveillance databases, and flexible adaptation strategies are critical in ensuring access to safe drinking water.
-Furthermore, empowering the public with knowledge and access to this data can catalyze action and foster leadership within communities to address these challenges. Educating individuals about water quality issues, both globally and locally, is paramount.
+A balance is needed between short and long-term action - promptly addressing risks in the short term by closing down contaminated water sources, improving monitoring, and transparency in reporting water quality issues. In the long term, managing the costs of major infrastructure changes required to prevent such crises and exposures, such as replacing lead service lines and school plumbing. Community collaboration, precise surveillance databases, and flexible adaptation strategies are critical in ensuring access to safe drinking water.
+Maintaining transparency and exchanging information with communities regarding the outcomes of lead testing and mitigation strategies is essential; empowering the public with knowledge and access to data can catalyze action and foster leadership within communities to address these challenges. Educating individuals about water quality issues, both globally and locally, is paramount.
+
+
 ##In this lesson, you learned...
 
 Congratulations! Now you should be able to: 
