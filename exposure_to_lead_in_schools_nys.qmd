@@ -547,6 +547,8 @@ tmap_leaflet(tmap)
 
 
 ```
+
+
 ### ENSURING SAFE DRINKING WATER
 
 Access to safe drinking water is a fundamental human right and a pillar of public health. However, the cases discussed underscore the critical need to address the risk of lead contamination. From New York to Flint, Michigan, these examples serve as reminders of the urgent need for action, supported by transparent and accessible data.
@@ -564,6 +566,12 @@ Congratulations! Now you should be able to:
 -  Obtain population data from US Census Bureau by using census API.
 -  Aggregate a dataset to a boundary.
 -  Create your own map.
+
+## Explore the data
+
+<iframe src="https://topstschool.shinyapps.io/nyc-lead" width="100%" height="800" title="iframe test" data-external="1">
+</iframe>  
+
 
 ## References
 

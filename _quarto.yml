@@ -11,6 +11,7 @@ format:
     toc: true
     toc-title: Contents
     toc-location: left
+lightbox: true
 execute: 
   warning: false
 
