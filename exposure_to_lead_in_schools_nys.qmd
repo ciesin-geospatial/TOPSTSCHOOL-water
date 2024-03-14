@@ -233,34 +233,41 @@ if (input$county=="All Counties")
 ```
 <br>
 
-## Conversion from tabular data to geo-spatial data
+### Converting from tabular data to geo-spatial data.
 
--   A dataset needs to have a geometry attribute to plot the data on a map or do different spatial analysis.The dataset have xy coordinates of schools. XY coordinates allows us to convert the tabular dataset to spatial dataset. The section does the this conversion. There is another point needs to be taken into account while the conversion is done. We need to know projection of xy coordinates. XY coordinates can be in different projections systems. Projection information mostly is stored in the metadata but unfortunately there is no any metadata attached to the dataset.However the most common projection is the geographic coordinate system. WGS84 projection is used to make the dataset to spatial dataset. There is another problem needs to solved priority to the conversion. XY coordinates are not properly formatted. This is an example 231-02 67 AVENUE Queens, NY 11364(40.74779141700003, -73.74551716499997). We need to extract (40.74779141700003, -73.74551716499997) part and store each side of comma two separate fields. The first number refers to y (latitude) coordinate, second number refers to x (longitude) coordinate.
+A dataset needs to have a geometry attribute to plot the data on a map or to do different spatial analysis. 
+The NYS dataset has xy coordinates of schools. The xy coordinates will allow us to convert the tabular dataset to a spatial dataset. 
+
+We first need to address that the xy coordinates are not properly formatted. The coordinates are currently stored with school addresses, for example: 31-02 67 AVENUE Queens, NY 11364(40.74779141700003, -73.74551716499997). We need to extract the coordinates (40.74779141700003, -73.74551716499997) and store the value on each side of the comma as a separate field. The first number refers to the y coordinate (latitude), the second number refers to the x coordinate (longitude).
+
+While converting the data, we also need to know the projection of xy coordinates. XY coordinates can be in different projections systems. Projection information is typically stored in the metadata of a dataset. However, in the NYS dataset there is not any metadata attached to the dataset.
+
+The most commonly used geographic coordinate system is the [WORLD GEODETIC SYSTEM 1984 (WGS 84)](https://earth-info.nga.mil/index.php?dir=wgs84&action=wgs84). We will use the WGS84 projection to convert the NYS dataset to spatial data. 
 
 <br>
 
 ```{r ,context: "data"}
 
-# In the datasets xy coordinates of schools  are combined with school address and recorded under
-# location field as 231-02 67 AVENUEQueens, NY 11364(40.74779141700003, -73.74551716499997)
-# (40.74779141700003, -73.74551716499997) needs to be extracted and sparated by "," and 
-# saved undr different fields names
-# line below extract xy coordinates and save under "lat","long" fields
+# In the datasets xy coordinates of schools are combined with school addresses 
+# and recorded under the location field. 
+# For example: 231-02 67 AVENUEQueens, NY 11364(40.74779141700003, -73.74551716499997)
+# The xy coordinates, (40.74779141700003, -73.74551716499997), need to be extracted, 
+# sparated by a ",", and saved under different fields names.
+# First, we will extract the xy coordinates and save under "lat","long" fields.
 school_lead_df<-school_lead_df %>% mutate(location_temp=str_extract(Location,"(?<=\\().*(?=\\))")) %>% 
   separate(location_temp,c("lat","long"),sep=",")
 
-# line below create geometry attributes by using lat long fields and 
-# geographic coordinate system
-# this step allow us to map the school locations and do some geospatial anaylysis
+# Next, we will create geometry attributes by using lat long fields and the geographic coordinate system.
+# This step allows us to map the school locations and do geospatial anaylysis.
 school_locations<-school_lead_df %>%  filter(!is.na(lat)) %>% 
-  # convert the dataset to spatial dataset by using WGS84 projection
+  # Convert the dataset to spatial dataset by using WGS84 projection.
   st_as_sf(coords = c("long", "lat"),crs = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0") 
 
 ```
 
 ### Mapping the dataset
 
--   The section below maps the school location in New York State
+We will now map the school locations in New York State from the dataset. 
 
 ```{r ,context: "render"}
 
@@ -307,7 +314,7 @@ tmap_leaflet(tmap)
 
 <br>
 
-## Abtain population data from US Census Bureau
+## Obtain population data from US Census Bureau
 
 -   The section below pulls population from US Census Bureau by using census api API.
 
@@ -532,10 +539,9 @@ tmap_leaflet(tmap)
 ```
 ### ENSURING SAFE DRINKING WATER
 
-The lead contamination issues evident in Flint and New York schools highlight the need to balance the tradeoffs between quickly addressing risks in the short term by improving monitoring and transparency around water quality issues, and managing the costs of major infrastructure changes required in the long term to prevent such crises and exposures - for example, replacing lead service lines and school plumbing. Community collaboration, precise surveillance databases, and adaptable adaptation strategies will be critical to ensuring that everyone has access to safe drinking water.
-
-Availability of safe drinking water is the basic human right, however from above cases it shows the alarming need to consider this risk from the lead contamination yet ignored by the state. From New York to Flint, Michigan, we witness alarming examples that necessitate immediate action backed by transparent and accessible data. Moreover an informed public through the learnings and accessing the data, can play a crucial role in building leadership roles to fulfill their responsibilities around providing healthy, lead free infrastructures in schools. Thus , it is significant to develop the curriculum which focuses on water quality issues globally and locally for students and school communities.
-
+Access to safe drinking water is a fundamental human right and a pillar of public health. However, the cases discussed underscore the critical need to address the risk of lead contamination. From New York to Flint, Michigan, these examples serve as reminders of the urgent need for action, supported by transparent and accessible data.
+A balance is needed between short and long-term action. For instance, promply addressing risks in the short term by improving monitoring and transparency around water quality issues and, in the long term, managing the costs of major infrastructure changes required prevent such crises and exposures - for example, by replacing lead service lines and school plumbing. Community collaboration, precise surveillance databases, and flexible adaptation strategies are critical in ensuring access to safe drinking water.
+Furthermore, empowering the public with knowledge and access to this data can catalyze action and foster leadership within communities to address these challenges. Educating individuals about water quality issues, both globally and locally, is paramount.
 ##In this lesson, you learned...
 
 Congratulations! Now you should be able to: 
