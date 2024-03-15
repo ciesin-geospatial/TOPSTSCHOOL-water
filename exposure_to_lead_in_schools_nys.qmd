@@ -140,7 +140,7 @@ No “safe” levels of lead have been established, but we will discuss what lev
 -  Visualize lead contamination data geographically and statistically.
 -  Discuss the importance of safe drinking water in the context of lead contamination.
 -  Understand and apply open data principles in the context of lead contamination data.
--  Explore different data classification methods (equal, quantile, natural breaks, standard deviation)
+-  Explore different data classification methods (equal, quantile, natural breaks, standard deviation).
 
 
 ## Introduction
@@ -206,11 +206,11 @@ school_lead_df<-school_lead_df %>%  mutate(lead_summary_by_school=case_when(
 
 ```
 
-### Get familiar with the dataset.
+### Get familiar with the dataset
 
 Getting familiar with the dataset is the first step of an analysis. To understand the attributes, we will query data by geographic region (county) and different attributes (fields).
 
-The code below creastes a [Shiny app](https://shiny.rstudio.com/) which allows users to select a county and specific fields from a data frame (school_lead_df), and then it displays the corresponding data table based on the user's selections.
+The code below creates a [Shiny app](https://shiny.rstudio.com/) which allows users to select a county and specific fields from a data frame (school_lead_df), and then it displays the corresponding data table based on the user's selections.
 
 ::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
@@ -243,7 +243,7 @@ if (input$county=="All Counties")
 ```
 <br>
 
-### Converting from tabular data to geo-spatial data.
+### Converting from tabular data to geo-spatial data
 
 A dataset needs to have a geometry attribute to plot the data on a map or to do different spatial analysis. 
 The NYS dataset has xy coordinates of schools. The xy coordinates will allow us to convert the tabular dataset to a spatial dataset. 
@@ -552,11 +552,13 @@ tmap_leaflet(tmap)
 ### ENSURING SAFE DRINKING WATER
 
 Access to safe drinking water is a fundamental human right and a pillar of public health. However, the cases discussed underscore the critical need to address the risk of lead contamination. From New York to Flint, Michigan, these examples serve as reminders of the urgent need for action, supported by transparent and accessible data.
+
 A balance is needed between short and long-term action - promptly addressing risks in the short term by closing down contaminated water sources, improving monitoring, and transparency in reporting water quality issues. In the long term, managing the costs of major infrastructure changes required to prevent such crises and exposures, such as replacing lead service lines and school plumbing. Community collaboration, precise surveillance databases, and flexible adaptation strategies are critical in ensuring access to safe drinking water.
+
 Maintaining transparency and exchanging information with communities regarding the outcomes of lead testing and mitigation strategies is essential; empowering the public with knowledge and access to data can catalyze action and foster leadership within communities to address these challenges. Educating individuals about water quality issues, both globally and locally, is paramount.
 
 
-##In this lesson, you learned...
+## In this lesson, you learned...
 
 Congratulations! Now you should be able to: 
 
