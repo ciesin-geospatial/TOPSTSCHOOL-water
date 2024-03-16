@@ -5,8 +5,7 @@ project:
 format:
   html:
     embed-resources: true
-    theme: 
-      - sandstone
+    theme: sandstone
     css: "https://github.com/ciesin-geospatial/TOPSTSCHOOL/blob/main/custom.scss"
     toc: true
     toc-title: Contents
@@ -31,6 +30,7 @@ website:
           - text: "MODIS NRT Flood Data Acquisition Exploration"
             url: https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/lance-modis-nrt-global-flood-mcdwd-f3.html
           - text: "Interactive NYC School Lead Data Explorer"
+            url: https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/exposure_to_lead_in_schools_nys.html
     tools:
       - icon: github
         menu:
@@ -38,3 +38,9 @@ website:
             url:  https://github.com/ciesin-geospatial/TOPSTSCHOOL
           - text: Report a Bug
             url:  https://github.com/ciesin-geospatial/TOPSTSCHOOL/issues
+      - icon: globe
+          href: https://ciesin-geospatial.github.io/TOPSTSCHOOL/
+          text: "TOPSTSCHOOL GitHub Home Page"
+      - icon: youtube
+          href: https://www.youtube.com/channel/UCOIrczFd7_ht2bNUQ3qnM8w
+          text: "Youtube Channel"
