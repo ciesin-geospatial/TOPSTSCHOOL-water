@@ -39,8 +39,8 @@ website:
           - text: Report a Bug
             url:  https://github.com/ciesin-geospatial/TOPSTSCHOOL/issues
       - icon: globe
-          href: https://ciesin-geospatial.github.io/TOPSTSCHOOL/
-          text: "TOPSTSCHOOL GitHub Home Page"
+        href: https://ciesin-geospatial.github.io/TOPSTSCHOOL/
+        text: "TOPSTSCHOOL GitHub Home Page"
       - icon: youtube
-          href: https://www.youtube.com/channel/UCOIrczFd7_ht2bNUQ3qnM8w
-          text: "Youtube Channel"
+        href: https://www.youtube.com/channel/UCOIrczFd7_ht2bNUQ3qnM8w
+        text: "Youtube Channel"
