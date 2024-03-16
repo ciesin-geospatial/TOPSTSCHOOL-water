@@ -6,7 +6,7 @@ format:
   html:
     embed-resources: true
     theme: sandstone
-    css: "https://github.com/ciesin-geospatial/TOPSTSCHOOL/blob/main/custom.scss"
+    css: "https://raw.githubusercontent.com/ciesin-geospatial/TOPSTSCHOOL/main/custom.scss"
     toc: true
     toc-title: Contents
     toc-location: left
