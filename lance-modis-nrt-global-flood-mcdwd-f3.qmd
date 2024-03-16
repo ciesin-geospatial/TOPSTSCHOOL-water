@@ -140,7 +140,7 @@ Based on availability, edit the year_day variable YYYY-DD. Example: '2022-01'
 ```{r}
 
 #add the year and date you want to search for (YYYY-DD, 2022-01)
-year_day <- '2024-067'
+year_day <- '2024-076'
 
 ```
 
@@ -433,3 +433,9 @@ Congratulations! Now you should be able to:
 -   Create a GET HTTP request to download near-real-time data.
 
 -   Plot on a map and classify raster data to determine areas with unusual flooding.
+
+## Lesson 4
+
+In this lesson we explored the LANCE MODIS Near-Rear-Time (NRT) Flood dataset. In our next lesson we will think of water at the local level and focuse on New Nork State School Drinking Water datasets .
+
+[Lesson 4: New York Sate School Water Quality: Exposure to Lead](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/exposure_to_lead_in_schools_nys.html){.btn .btn-primary .btn role="button"}
