@@ -1,0 +1,31 @@
+# Get the rocker image we want
+FROM rocker/geospatial:latest
+
+# copy the whole repo to the image
+ADD . /home/rstudio/TOPSTSCHOOL-MODULE-1-WATER
+
+## give the rstudio user permissions on these files
+RUN chown -R rstudio /home/rstudio/TOPSTSCHOOL-MODULE-1-WATER
+
+# Add packages not part of rocker/geospatial
+RUN Rscript -e "install.packages('cubelyr')"
+RUN Rscript -e "install.packages('exactextractr')"
+RUN Rscript -e "install.packages('basemaps')"
+RUN Rscript -e "install.packages('shiny')"
+
+# Python Environment
+## python and pip
+RUN apt-get update
+RUN apt-get install -y python3
+RUN apt-get install -y python3-pip
+## python geospatial
+RUN pip install geopandas pyproj shapely xarray rioxarray 
+RUN pip install rasterio netcdf4 h5netcdf dask bottleneck 
+RUN pip install numpy pandas nc-time-axis requests
+## exactextract
+### dependencies
+RUN pip install CMake pybind11 GEOS
+### latest on git
+RUN pip install git+https://github.com/isciences/exactextract.git
+
+CMD ["/init"]
