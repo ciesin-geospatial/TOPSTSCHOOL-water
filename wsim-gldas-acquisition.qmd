@@ -32,13 +32,21 @@ A [raster](https://docs.qgis.org/2.18/en/docs/gentle_gis_introduction/raster_dat
 
 The **Water Security (WSIM-GLDAS) Monthly Grids, v1 (1948 -- 2014)** dataset can be download from the [NASA SEDAC](https://sedac.ciesin.columbia.edu/data/set/water-wsim-gldas-v1) website [@isciences2022]. Downloads are organized by combination of variable (composite surplus/deficit, temperature, PETmE, runoff, soil moisture, precipitation) and integration period (1, 3, 6, 12 months). Each variable-integration combination consists of a NetCDF **raster** file with a time dimension that contains a raster layer for each of the 804 months between January, 1948 and December, 2014. Some variables also contain multiple attributes each with their own time dimension of 804 rasters. Hence, this is a large file that takes upwards of 2 hours to download and may cause memory issues on certain systems.
 
-We will work with the [**Composite Anomaly Twelve-Month Return Period**](https://sedac.ciesin.columbia.edu/downloads/data/water/water-wsim-gldas-v1/water-wsim-gldas-v1-composite-twelve-month-netcdf.zip) NetCDF file .
+::: column-margin
+::: {.callout-tip style="color: #5a7a2b;"}
+## Data Science Review
+
+The **Water Security (WSIM-GLDAS) Monthly Grids dataset** used in this lesson is hosted by [NASA's Socioeconomic Data and Applications Center (SEDAC](https://sedac.ciesin.columbia.edu/)), one of several [Distributed Active Archive Centers (DAACs)](https://www.earthdata.nasa.gov/eosdis/daacs). SEDAC hosts a variety of data products including geo-spatial population data, human settlements and infrastructure, exposure and vulnerability to climate change, and satellite-based data on land use, air, and water quality. In order to download data hosted by SEDAC, you are required to have a free NASA EarthData account. You can create an account here: [NASA EarthData](https://urs.earthdata.nasa.gov/users/new)
+:::
+:::
+
+We will work with the [**Composite Anomaly Twelve-Month Return Period**](https://sedac.ciesin.columbia.edu/downloads/data/water/water-wsim-gldas-v1/water-wsim-gldas-v1-composite-twelve-month-netcdf.zip) NetCDF file.
 
 ![](images/watercycle_rc.png)[^1]
 
 [^1]: Photo Credit, Dennis Cain/NWS.
 
-The water cycle is the constant process of circulation of water on, above, and under the Earth's surface. Human interventions such as greenhouse gas emissions, land use changes, dam and reservoir development, and groundwater overexploitation have all drastically affected the natural water cycle in recent decades. Human interventions in the water cycle have consequential impacts on oceanic, groundwater, and land processes, influencing phenomena such as droughts and floods.
+The water cycle is the constant process of circulation of water on, above, and under the Earth's surface. Human interventions such as greenhouse gas emissions, land use changes, dam and reservoir development, and groundwater over exploitation have all drastically affected the natural water cycle in recent decades. Human interventions in the water cycle have consequential impacts on oceanic, groundwater, and land processes, influencing phenomena such as droughts and floods.
 
 Precipitation deficits can also cause drought, which is a prolonged period of little to no rainfall. Droughts have impacts on the environment and humans, at times causing a chain reaction. For example, California had a drought from 2012 to 2014. While it isn't uncommon for California to have periods of low precipitation, that with a combination of sustained record high temperatures created severe water shortages. The drought subsequently dried out rivers which depleted populations of the [Chinook salmon](https://www.fisheries.noaa.gov/species/chinook-salmon) disrupting Native American tribes' food supply. [@NationalPublicRadio2014]
 
