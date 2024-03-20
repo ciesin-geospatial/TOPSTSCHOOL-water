@@ -1,0 +1,115 @@
+---
+title: "Untitled"
+format: html
+jupyter: python3
+---
+```{bash}
+# conda create –name tops_geospatial geopandas pyproj shapely xarray rioxarray rasterio netcdf4 h5netcdf dask bottleneck numpy pandas nc-time-axis
+```
+
+```{python}
+import sys
+print(sys.executable)
+```
+## Read in WSIM-GLDAS
+
+```{python}
+import xarray as xr
+
+file_path = "composite_12mo.nc"
+wsim_gldas = xr.open_dataset(file_path, engine = 'h5netcdf')
+```
+
+## Temporal/Variable Subsetting
+```{python}
+import pandas as pd
+wsim_gldas
+
+keeps = pd.date_range(start="2000-12-01", end="2014-12-01", freq = "YS-DEC")
+keeps
+
+wsim_gldas = wsim_gldas.sel(time= keeps)
+wsim_gldas = wsim_gldas[["deficit", "crs"]]
+wsim_gldas
+```
+
+```{python}
+p = wsim_gldas.deficit.plot(x="lon", y="lat", col="time", col_wrap = 3, cmap = "Reds_r", aspect = 2)
+```
+
+## Read in geoBoundaries
+
+```{python}
+import requests
+import geopandas as gp
+
+usa = requests.get("https://www.geoboundaries.org/api/current/gbOpen/USA/ADM1/")
+
+usa = usa.json()
+usa['gjDownloadURL']
+usa = gp.read_file(usa['gjDownloadURL'])
+
+drops = ["Alaska", "Hawaii", "American Samoa", "Puerto Rico", "Commonwealth of the Northern Mariana Islands", "Guam", "United States Virgin Islands"]
+
+usa = usa[~usa.shapeName.isin(drops)]
+usa.boundary.plot()
+```
+
+```{python}
+import rioxarray as rio
+wsim_gldas = wsim_gldas.rio.write_crs("epsg: 4326")
+wsim_gldas = wsim_gldas.rio.clip(usa.geometry.values)
+```
+
+```{python fig.width="100%"}
+wsim_gldas.deficit.plot(x="lon", y="lat", col="time", col_wrap = 3, cmap = "Reds_r", aspect = 1.75, size =1.25)
+```
+
+## Extract the California Counties
+```{python}
+usa_counties = requests.get("https://www.geoboundaries.org/api/current/gbOpen/USA/ADM2/")
+
+usa_counties = usa_counties.json()
+usa_counties['gjDownloadURL']
+usa_counties = gp.read_file(usa_counties['gjDownloadURL'])
+
+california = usa[usa["shapeName"].str.contains("California")]
+california_counties = usa_counties.overlay(california, how='intersection')
+california_counties.plot()
+```
+
+## WSIM-GLDAS 1-Month Integration
+```{python}
+file_path = "composite_1mo.nc"
+wsim_gldas_1mo = xr.open_dataset(file_path, engine = 'h5netcdf')
+```
+
+## Temporal/Variable Subsetting
+```{python}
+keeps = pd.date_range(start="2014-01-01", end="2014-12-01", freq = "MS")
+
+wsim_gldas_1mo = wsim_gldas_1mo.sel(time= keeps)
+wsim_gldas_1mo = wsim_gldas_1mo[["deficit", "crs"]]
+wsim_gldas_1mo
+```
+
+```{python}
+wsim_gldas_1mo = wsim_gldas_1mo.rio.write_crs("epsg: 4326")
+wsim_gldas_1mo = wsim_gldas_1mo.rio.clip(california_counties.geometry.values)
+```
+
+```{python}
+wsim_gldas_1mo.deficit.plot(x="lon", y="lat", col="time", col_wrap = 3, cmap = "Reds_r", aspect = 1, size =2.5)
+```
+
+## Choropleths
+```{python}
+from exactextract import exact_extract
+import calendar
+
+ex_ex_out = exact_extract(wsim_gldas_1mo.deficit, california_counties, "mean", output = 'pandas')
+
+ex_ex_out.columns = calendar.month_name
+
+test = pd.concat([california_counties.reset_index(drop=True), ex_ex_out], axis=1)
+```
