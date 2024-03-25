@@ -133,7 +133,7 @@ We can get a better look at these drought events by using the 1 month composite 
 ::: {.callout-tip style="color: #7d2748;"}
 ## Drought in the News
 
-The California drought of 2012-2014 was the worst in 1,200 years. Analysis found that it wasn’t uncommon for California to have periods of low precipitation, but that combined with sustained record high temperatures created severe water shortages (Woods Hole Oceanographic Institution, 2014). This drought caused problems for homeowners, and even conflicts between farmers and wild salmon!
+The California drought of 2012-2014 was the worst in 1,200 years. Analysis found that it wasn’t uncommon for California to have periods of low precipitation, but that combined with sustained record high temperatures created severe water shortages. [@WHOI2014] This drought caused problems for homeowners, and even conflicts between farmers and wild salmon!
 
 Governor Jerry Brown declared a drought emergency and called on residents to reduce water intake by 20%. Water use went up by 8% in May of 2014 compared to 2013, in places like coastal California and Los Angeles. Due to that, the state voted to fine water-wasters up to 500 dollars. The drought also affected residents differently based on economic status. For example, in El Dorado County, located in a rural area east of Sacramento, residents were taking bucket showers. Rural residents also rely on wells, which were drying up. The federal government eventually announced a $9.7 million emergency drought aid for those areas.[@Sanders2014]
 
