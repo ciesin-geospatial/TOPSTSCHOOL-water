@@ -46,9 +46,9 @@ We will work with the [**Composite Anomaly Twelve-Month Return Period**](https:/
 
 [^1]: Photo Credit, Dennis Cain/NWS.
 
-The water cycle is the constant process of circulation of water on, above, and under the Earth's surface. Human interventions such as greenhouse gas emissions, land use changes, dam and reservoir development, and groundwater over exploitation have all drastically affected the natural water cycle in recent decades. Human interventions in the water cycle have consequential impacts on oceanic, groundwater, and land processes, influencing phenomena such as droughts and floods.
+The water cycle is the constant process of circulation of water on, above, and under the Earth's surface.[@NOAA2019] Human interventions such as greenhouse gas emissions, land use changes, dam and reservoir development, and groundwater over exploitation have all drastically affected the natural water cycle in recent decades. Human interventions in the water cycle have consequential impacts on oceanic, groundwater, and land processes, influencing phenomena such as droughts and floods. [@Zhou2016]
 
-Precipitation deficits can also cause drought, which is a prolonged period of little to no rainfall. Droughts have impacts on the environment and humans, at times causing a chain reaction. For example, California had a drought from 2012 to 2014. While it isn't uncommon for California to have periods of low precipitation, that with a combination of sustained record high temperatures created severe water shortages. The drought subsequently dried out rivers which depleted populations of the [Chinook salmon](https://www.fisheries.noaa.gov/species/chinook-salmon) disrupting Native American tribes' food supply. [@NationalPublicRadio2014]
+Precipitation deficits can also cause drought, which is a prolonged period of little to no rainfall. Droughts have impacts on the environment and humans, at times causing a chain reaction.[@Rodgers2023] For example, California had a drought from 2012 to 2014. While it isn't uncommon for California to have periods of low precipitation, that with a combination of sustained record high temperatures created severe water shortages. The drought subsequently dried out rivers which depleted populations of the [Chinook salmon](https://www.fisheries.noaa.gov/species/chinook-salmon) disrupting Native American tribes' food supply.[@NationalPublicRadio2014]
 
 ## Reading the Data
 
@@ -198,9 +198,9 @@ From here we can crop the WSIM GLDAS raster stack by indexing it with the stored
 ::: {.callout-tip style="color: #7d2748;"}
 ## Drought in the News
 
-Texas experienced a severe drought in 2011 that caused rivers to dry up and lakes to reach historic low levels. Climate experts discovered that the drought was produced by "La Niña", a weather pattern that causes the surface temperature of the Pacific Ocean to be cooler than normal. This in turn creates drier and warmer weather in the southern United States. La Niña can occur for a year or more, and returns once every few years. The drought was further exacerbated by high temperatures related to climate change in February of 2013 [@StateImpact].
+Texas experienced a severe drought in 2011 that caused rivers to dry up and lakes to reach historic low levels. [@StateImpact] Climate experts discovered that the drought was produced by "La Niña", a weather pattern that causes the surface temperature of the Pacific Ocean to be cooler than normal. This in turn creates drier and warmer weather in the southern United States. La Niña can occur for a year or more, and returns once every few years. The drought was further exacerbated by high temperatures related to climate change in February of 2013.[@NOAA2023]
 
-The drought cost farmers and ranchers an estimated \$8 billion in losses. Furthermore, the dry conditions fueled a series of wildfires across the state in early September of 2011. The most devastating wildfire occurred in Bastrop County, in which 34,000 acres and 1,300 homes were destroyed [@StormSignals2011].
+The drought cost farmers and ranchers an estimated \$8 billion in losses. Furthermore, the dry conditions fueled a series of wildfires across the state in early September of 2011. The most devastating wildfire occurred in Bastrop County, in which 34,000 acres and 1,300 homes were destroyed. [@StormSignals2011]
 :::
 
 ```{r}
