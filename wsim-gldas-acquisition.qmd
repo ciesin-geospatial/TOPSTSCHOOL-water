@@ -9,16 +9,17 @@ bibliography: wsim-gldas-references.bib
 
 ## Overview
 
-In this lesson, you will acquire **Water Security Indicator Model - Global Land Data Assimilation System (WSIM-GLDAS)** from the [NASA Socioeconomic Data and Applications Center (SEDAC)](https://sedac.ciesin.columbia.edu/) website and will also retrieve [geoBoundaries](https://www.geoboundaries.org/api.html) data directly from an API. You will learn how to subset data for a region of interest and save the subsetted data as a new file.
+In this lesson, you will acquire **Water Security Indicator Model - Global Land Data Assimilation System (WSIM-GLDAS)** from the [NASA Socioeconomic Data and Applications Center (SEDAC)](https://sedac.ciesin.columbia.edu/) website and will also retrieve a global administrative boundary data set called [geoBoundaries](https://www.geoboundaries.org/api.html) data directly from an application programming interface (API). You will learn how to subset the data for a region of interest and save the subsetted data as a new file.
 
 ## Learning Objectives
 
 After completing this lesson, you should be able to:
 
 -   Retrieve WSIM-GLDAS data from SEDAC.
--   Subset data for a region of interest and time period.
--   Plot geospatial data to visualize precipitation deficit patterns.
--   Write a pre-processed NetCDF file to disk.
+-   Retrieve Administrative Boundary data from geoboundaries.
+-   Subset WSIM-GLDAS data for a region and time period of interest.
+-   Visualize geospatial data to highlight precipitation deficit patterns.
+-   Write a pre-processed NetCDF-formatted file to disk.
 
 ## Introduction
 
