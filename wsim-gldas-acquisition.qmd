@@ -26,11 +26,11 @@ After completing this lesson, you should be able to:
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Data Science Review
 
-A [raster](https://docs.qgis.org/2.18/en/docs/gentle_gis_introduction/raster_data.html) is a grid of geographic data which has information stored per pixel. Rasters can store many types of information as attributes, and they usually have dimensions such as latitude, longitude, and time.
+A [raster](https://docs.qgis.org/2.18/en/docs/gentle_gis_introduction/raster_data.html) is a type of geographic data in image format which has information stored in each pixel. Rasters are often referred to as grids because of their regularly-shaped matrix data structure. Rasters can store many types of information, and they usually have dimensions that include latitude, longitude, and time. NetCDF is one format for raster data; others include Geotiff, ASCII, and many more.
 :::
 :::
 
-The **Water Security (WSIM-GLDAS) Monthly Grids, v1 (1948 -- 2014)** dataset can be download from the [NASA SEDAC](https://sedac.ciesin.columbia.edu/data/set/water-wsim-gldas-v1) website [@isciences2022]. Downloads are organized by combination of variable (composite surplus/deficit, temperature, PETmE, runoff, soil moisture, precipitation) and integration period (1, 3, 6, 12 months). Each variable-integration combination consists of a NetCDF **raster** file with a time dimension that contains a raster layer for each of the 804 months between January, 1948 and December, 2014. Some variables also contain multiple attributes each with their own time dimension of 804 rasters. Hence, this is a large file that takes upwards of 2 hours to download and may cause memory issues on certain systems.
+The **Water Security (WSIM-GLDAS) Monthly Grids, v1 (1948 -- 2014)** dataset can be download from the [NASA SEDAC](https://sedac.ciesin.columbia.edu/data/set/water-wsim-gldas-v1) website [@isciences2022]. Downloads are organized by a combination of thematic variables (composite surplus/deficit, temperature, PETmE, runoff, soil moisture, precipitation) and integration periods (a temporal aggregation) of 1, 3, 6, 12 months. Each variable-integration combination consists of a NetCDF **raster** file with a time dimension that contains a raster layer for each of the 804 months between January, 1948 and December, 2014. Some variables also contain multiple attributes each with their own time series. Hence, this is a large file that can take a lot of time to download and may cause computer memory issues on certain systems. This is considered BIG data.
 
 ::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
@@ -40,15 +40,15 @@ The **Water Security (WSIM-GLDAS) Monthly Grids dataset** used in this lesson is
 :::
 :::
 
-We will work with the [**Composite Anomaly Twelve-Month Return Period**](https://sedac.ciesin.columbia.edu/downloads/data/water/water-wsim-gldas-v1/water-wsim-gldas-v1-composite-twelve-month-netcdf.zip) NetCDF file.
+For this lesson, we will work with the WSIM-GLDAS data set [**Composite Anomaly Twelve-Month Return Period**](https://sedac.ciesin.columbia.edu/downloads/data/water/water-wsim-gldas-v1/water-wsim-gldas-v1-composite-twelve-month-netcdf.zip) NetCDF file. This represents the variable "Composite Anomaly" for the integration period of one month. Please go ahead and download the file. 
 
 ![](images/watercycle_rc.png)[^1]
 
 [^1]: Photo Credit, Dennis Cain/NWS.
 
-The water cycle is the constant process of circulation of water on, above, and under the Earth's surface.[@NOAA2019] Human interventions such as greenhouse gas emissions, land use changes, dam and reservoir development, and groundwater over exploitation have all drastically affected the natural water cycle in recent decades. Human interventions in the water cycle have consequential impacts on oceanic, groundwater, and land processes, influencing phenomena such as droughts and floods. [@Zhou2016]
+The water cycle is the constant process of circulation of water on, above, and under the Earth's surface.[@NOAA2019] Human activities produce greenhouse gas emissions, land use changes, dam and reservoir development, and groundwater extraction which have affected the natural water cycle in recent decades. The influence of these human activities on the water cycle have consequential impacts on oceanic, groundwater, and land processes, influencing phenomena such as droughts and floods. [@Zhou2016]
 
-Precipitation deficits can also cause drought, which is a prolonged period of little to no rainfall. Droughts have impacts on the environment and humans, at times causing a chain reaction.[@Rodgers2023] For example, California had a drought from 2012 to 2014. While it isn't uncommon for California to have periods of low precipitation, that with a combination of sustained record high temperatures created severe water shortages. The drought subsequently dried out rivers which depleted populations of the [Chinook salmon](https://www.fisheries.noaa.gov/species/chinook-salmon) disrupting Native American tribes' food supply.[@Bland2014]
+Precipitation deficits can also cause drought, which is a prolonged period of little to no rainfall leading to a shortage of water. Droughts have impacts on the environment and humans, at times causing a chain reaction.[@Rodgers2023] For example, California had a drought from 2012 to 2014. While it isn't uncommon for California to have periods of low precipitation, that with a combination of sustained record high temperatures created severe water shortages. The drought subsequently dried out rivers which depleted populations of the [Chinook salmon](https://www.fisheries.noaa.gov/species/chinook-salmon) disrupting Native American tribes' food supply.[@Bland2014]
 
 ## Reading the Data
 
@@ -60,7 +60,7 @@ This lesson uses the [`stars`](https://r-spatial.github.io/stars/), [`sf`](https
 :::
 :::
 
-First, install and load the R packages required for this exercise:
+First, install and load the R packages required for this exercise. This is accomplished by defining the list of packages and assigning them to the new variable called "packages_to_check". Next we loop (iterate) through each of the packages in the list to see if they are already installed. If they were, we continue to the next item, and if they aren't, then we go ahead and install them.
 
 ```{r eval=FALSE}
 packages_to_check <- c("stars", "sf", "lubridate", "cubelyr", "lubridate")
@@ -87,15 +87,15 @@ wsim_gldas_anoms <- stars::read_stars("composite_12mo.nc", proxy = TRUE)
 print(wsim_gldas_anoms)
 ```
 
-Reading in the file with the argument `proxy = TRUE` allows you to inspect basic elements of the file without reading the whole file into memory. Multidimensional raster datasets can be extremely large and bring your computing environment to a halt if you have memory limitations.
+Initializing R (reading) the file with the 'argument' `proxy = TRUE` allows you to inspect basic elements of the file without reading the whole file into memory. Multidimensional raster datasets can be extremely large and bring your computing environment to a halt if you have memory limitations.
 
-Now we can use the print command to view basic information. The output tells us we have 5 attributes (deficit, deficit_cause, surplus, surplus_cause, both) and 3 dimensions. The first 2 dimensions are the spatial extents (x/y--longitude/latitude) and time is the 3rd dimension.
+Now we can use the 'print' command to view basic information. The output tells us we have 5 attributes (deficit, deficit_cause, surplus, surplus_cause, both) and 3 dimensions. The first 2 dimensions are the spatial extents (x/y--longitude/latitude) and time is the 3rd dimension.
 
-This means the total number of individual raster layers in this NetCDF is 4020 (5 attributes x 804 time steps/months).
+This means that the total number of individual raster layers in this NetCDF is 4020 (5 attributes x 804 time steps/months). Again, BIG data.
 
 ## Attribute Selection
 
-The WSIM data is quite large with many variables available. We can manage this large data by subsetting the data for a single variable; in this case "deficit" (drought). Read the data back in; this time with `proxy = FALSE` and only selecting the deficit layer.
+The WSIM-GLDAS data is quite large with many variables available. We can manage this large file by selecting a single variable; in this case "deficit" (drought). Read the data back in; this time with `proxy = FALSE` and only selecting the deficit layer.
 
 ```{r}
 #subtetting the variable 'deficit'
@@ -104,7 +104,7 @@ wsim_gldas_anoms <- stars::read_stars("composite_12mo.nc", sub = 'deficit', prox
 
 ## Time Selection
 
-Specifying a temporal range of interest will free up more space. We'll grab every year for 2000-2014. This can be accomplished by generating a sequence for every year between December 2000 and December 2014, and then passing that list of dates to `filter`.
+Specifying a temporal range of interest make the file size smaller and therefore more manageable. We'll select every year for the range 2000-2014. This can be accomplished by generating a sequence for every year between December 2000 and December 2014, and then passing that list of dates to `filter`.
 
 ```{r}
 # generate a vector of dates for subsetting
@@ -127,33 +127,33 @@ wsim_gldas_anoms |>
   plot(key.pos = 1, breaks = c(0, -5, -10, -20, -30, -50), key.lab = "Deficit")
 ```
 
-Although we've pared it down to a single attribute with a restricted time period of interest, we can take it a step further and reduce the spatial extent to a country or state of interest.
+Although we have now reduced the data to a single attribute with a restricted time period of interest, we can take it a step further and limit the spatial extent to a country or state of interest.
 
 ## Spatial Selection
 
-We can spatially crop the raster stack with a few different methods. Options include using a bounding box (xmin, ymin, xmax, ymax), another raster object, or a vectorized boundary like a shapefile or geojson.
+We can spatially crop the raster stack with a few different methods. Options include using a bounding box in which outer geographic coordinates (xmin, ymin, xmax, ymax) are specified, or using another raster object, or a vectorized boundary like a shapefile or geojson to set the clipping extent. 
 
 ::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Data Science Review
 
-Built by the community and [William & Mary geoLab](https://github.com/wmgeolab/geoBoundaries), the geoBoundaries Global Database of Political Administrative Boundaries Database is an online, open license (CC BY 4.0 / ODbL) resource of information on administrative boundaries (i.e., state, county) for every country in the world. Since 2016, we have tracked approximately 1 million boundaries within over 200 entities, including all UN member states.
+Built by the community and [William & Mary geoLab](https://github.com/wmgeolab/geoBoundaries), the geoBoundaries Global Database of Political Administrative Boundaries is an online, open license (CC BY 4.0 / ODbL) resource of information on administrative boundaries (i.e., state, county) for every country in the world. Since 2016, the project has tracked approximately 1 million spatial units within more than 200 entities, including all UN member states.
 :::
 :::
 
-Using a vector boundary is one of the more common geoprocessing tasks. In this example we'll pull a geojson of the United States from the geoBoundaries API. You can also download vectorized boundaries directly from [www.geoboundaries.org](www.geoboundaries.org).
+In this example, we use a vector boundary to accomplish the geoprocessing task of clipping the data to an administrative or political units. First, we acquire the data in geojson format for the United States from the geoBoundaries API. (Note that it is also possible to  download the vectorized boundaries directly from [www.geoboundaries.org](www.geoboundaries.org) in lieu of using the API).
 
-The call to geoBoundaries' API is as such:
+To use the geoBoundaries' API, the root URL below is modified to include a 3 letter code from the International Standards Organization used to identify countries (ISO3), and an administrative level for the data request. Administrative levels correspond to geographic units such as the Country (administrative level 0), the State/Province (administrative level 1) the County/District (administrative level 2) and so on.
 
 "https://www.geoboundaries.org/api/current/gbOpen/*ISO3C*/*LEVEL*/"
 
-We adjust the bolded components of the URL address to specify the country we want using the ISO 3 Character Country Code (USA) and the desired Administrative Level (ADM1).
+For this example, we adjust the bolded components of the sample URL address below to specify the country we want using the ISO3 Character Country Code for the United States (USA) and the desired Administrative Level of State (ADM1).
 
 ```{r}
 usa <- httr::GET("https://www.geoboundaries.org/api/current/gbOpen/USA/ADM1/")
 ```
 
-After the `GET` call, we have to translate the `content`.
+In the line of code above, we used a function called 'httr:GET' to obtain metadata from the URL. We assign the result to a new variable called "usa". Next, we will examine the `content`.
 
 ```{r}
 usa <- httr::content(usa)
@@ -161,7 +161,7 @@ usa <- httr::content(usa)
 names(usa)
 ```
 
-The parsed content object contains 32 components. Item 29 is a direct link to the geojson file (gjDownloadURL). Read that in and check the visuals.
+The parsed content contains 32 components. Item 29 is a direct link to the geojson file (gjDownloadURL) representing the vector boundary data. Next we will obtain those vectors and visualize the results.
 
 ```{r}
 usa <- sf::st_read(usa$gjDownloadURL)
@@ -169,7 +169,9 @@ usa <- sf::st_read(usa$gjDownloadURL)
 plot(sf::st_geometry(usa))
 ```
 
-This looks good, but it includes all United States territories. For simplicity, we can get it down to only the contiguous United States.
+Upon examination, shown in the image above, one can see that it includes all US states and overseas territories. For the purpose of this demonstration, we can simplify it to the contiguous United States (of course, it could also be simplified to other areas of interest simply by adapting the code below).
+
+We first create a list of the geographies we wish to remove and assign them to a variable called "drops". Next we reassign our "usa" variable to include only those geographies in the continental US and finally we plot the results. 
 
 ```{r}
 drops<-
@@ -185,7 +187,7 @@ usa<-usa[!(usa$shapeName %in% drops),]
 plot(sf::st_geometry(usa))
 ```
 
-We can take this a step further and select a target state.
+We can take this a step further and select a single state for analysis. Here we use a slightly different method by creating a new variable called "texas" by calling the state out by name.
 
 ```{r}
 texas <- usa[usa$shapeName == "Texas",]
@@ -193,21 +195,21 @@ texas <- usa[usa$shapeName == "Texas",]
 plot(sf::st_geometry(texas))
 ```
 
-From here we can crop the WSIM GLDAS raster stack by indexing it with the stored boundary of Texas.
+From here we can clip the WSIM GLDAS raster stack by indexing it with the stored boundary of Texas.
 
 ::: {.callout-tip style="color: #7d2748;"}
 ## Drought in the News
 
 Texas experienced a severe drought in 2011 that caused rivers to dry up and lakes to reach historic low levels.[@StateImpact] Climate experts discovered that the drought was produced by "La Niña", a weather pattern that causes the surface temperature of the Pacific Ocean to be cooler than normal. This in turn creates drier and warmer weather in the southern United States. La Niña can occur for a year or more, and returns once every few years. The drought was further exacerbated by high temperatures related to climate change in February of 2013.[@NOAA2023]
 
-The drought cost farmers and ranchers an estimated \$8 billion in losses. Furthermore, the dry conditions fueled a series of wildfires across the state in early September of 2011. The most devastating wildfire occurred in Bastrop County, in which 34,000 acres and 1,300 homes were destroyed. [@Roeseler2011]
+It is estimated that the drought cost farmers and ranchers about \$8 billion in losses. Furthermore, the dry conditions fueled a series of wildfires across the state in early September of 2011, the most devastating of which occurred in Bastrop County, where 34,000 acres and 1,300 homes were destroyed. [@Roeseler2011]
 :::
 
 ```{r}
 wsim_gldas_anoms_tex <- wsim_gldas_anoms[texas]
 ```
 
-For a final visual check we'll take the last time-step in the WSIM-GLDAS dataset (15/December, 2014) and plot it with an overlay of the Texas boundary.
+Finally, we visualize the last time-step in the WSIM-GLDAS dataset (15/December, 2014) and render it with an overlay of the Texas boundary, using the following steps. 
 
 ```{r warning = FALSE}
 wsim_gldas_anoms_tex |>
@@ -221,7 +223,7 @@ plot(sf::st_geometry(texas),
      border = 'purple')
 ```
 
-The subsetted dataset may be written to disk, and saved for future modules.
+At this point, you may want to ask, does the data look plausible? That is, are the values being rendered in your map of interest? This simple check is helpful to make sure your subsetting has worked as expected, although you will want to use other methods to systematically evaluate the data. If the results are acceptable, the subsetted dataset may be written to disk, and saved for future modules.
 
 ```{r}
 stars::write_mdim(wsim_gldas_anoms_tex, "wsim_gldas_tex.nc")
