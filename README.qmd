@@ -2,7 +2,7 @@
 title: "README"
 format: gfm
 ---
-<img src='https://raw.githubusercontent.com/ciesin-geospatial/TOPSTSCHOOL/main/images/TOPTSCHOOL-logo02.hi-res.png' align="right" height="175" style="padding-left: 25px; padding-bottom: 25px;"/>
+<img src='https://raw.githubusercontent.com/ciesin-geospatial/TOPSTSCHOOL/main/images/TOPTSCHOOL-updated-logo02.png' align="right" height="175" style="padding-left: 25px; padding-bottom: 25px;"/>
 
 # Welcome to the Water Module!
 
