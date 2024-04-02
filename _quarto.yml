@@ -20,7 +20,7 @@ website:
     search: true
     left:
       - text: "Home"
-        file: index.qmd
+        url: https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/index.html
       - text: "Lessons"
         menu:
           - text: "WSIM Data Acquisition and Processing"
