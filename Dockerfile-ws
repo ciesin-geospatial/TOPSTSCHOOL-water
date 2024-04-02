@@ -5,11 +5,7 @@ FROM rocker/geospatial:latest
 ## WSIM lessons
 ADD wsim-gldas-acquisition.qmd /home/rstudio/
 ADD wsim-gldas-vis.qmd /home/rstudio/
-
-## WSIM files (temporary solution)
-ADD composite_12mo.nc /home/rstudio
-ADD composite_1mo.nc /home/rstudio
-
+ADD wsim-vis-python.qmd /home/rstudio
 ## MODIS NRT LESSON
 ADD lance-modis-nrt-global-flood-mcdwd-f3.qmd /home/rstudio
 
@@ -35,7 +31,5 @@ RUN pip install rasterio netcdf4 h5netcdf dask bottleneck
 RUN pip install numpy pandas nc-time-axis requests
 RUN pip install CMake pybind11 GEOS
 RUN pip install git+https://github.com/isciences/exactextract.git
-
-ADD wsim-vis-python.qmd /home/rstudio/
 
 CMD ["/init"]

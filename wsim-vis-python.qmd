@@ -56,9 +56,9 @@ usa.boundary.plot()
 ```
 
 ```{python}
-import rioxarray as rio
-wsim_gldas = wsim_gldas.rio.write_crs("epsg: 4326")
-wsim_gldas = wsim_gldas.rio.clip(usa.geometry.values)
+import rioxarray
+wsim_gldas = wsim_gldas.rioxarray.write_crs("epsg: 4326")
+wsim_gldas = wsim_gldas.rioxarray.clip(usa.geometry.values)
 ```
 
 ```{python fig.width="100%"}
@@ -94,8 +94,8 @@ wsim_gldas_1mo
 ```
 
 ```{python}
-wsim_gldas_1mo = wsim_gldas_1mo.rio.write_crs("epsg: 4326")
-wsim_gldas_1mo = wsim_gldas_1mo.rio.clip(california_counties.geometry.values)
+wsim_gldas_1mo = wsim_gldas_1mo.rioxarray.write_crs("epsg: 4326")
+wsim_gldas_1mo = wsim_gldas_1mo.rioxarray.clip(california_counties.geometry.values)
 ```
 
 ```{python}
@@ -107,9 +107,54 @@ wsim_gldas_1mo.deficit.plot(x="lon", y="lat", col="time", col_wrap = 3, cmap = "
 from exactextract import exact_extract
 import calendar
 
-ex_ex_out = exact_extract(wsim_gldas_1mo.deficit, california_counties, "mean", output = 'pandas')
+cc_summaries = exact_extract(wsim_gldas_1mo.deficit, california_counties, "mean", output = 'pandas', include_cols = "shapeName_1", include_geom = True)
 
-ex_ex_out.columns = calendar.month_name
+col_names = [["county"], calendar.month_name[1:], ["geometry"]]
+col_names = sum(col_names, [])
 
-test = pd.concat([california_counties.reset_index(drop=True), ex_ex_out], axis=1)
+cc_summaries.columns = col_names
+
+cc_summaries.plot("January", cmap = "Reds_r")
+```
+
+## GPWv4
+
+```{python}
+file_path = "gpw_v4_population_density_rev11_2015_15_min.tif" 
+gpw = xr.open_dataset(file_path)
+```
+
+## Re-Classify the WSIM-GLDAS Raster
+
+```{python}
+import numpy
+
+wsim_bins = [Inf, 0, -3, -5, -10, -20, -40, -60]
+
+#for timestep in wsim_gldas_1mo.time:
+
+test = xr.DataArray(wsim_gldas_1mo.deficit[1])
+test = numpy.digitize(test, bins=wsim_bins)
+```
+
+
+```{python}
+import rioxarray
+# Open into an xarray.DataArray
+gpw_da = rioxarray.open_rasterio(file_path)
+
+# Covert our xarray.DataArray into a xarray.Dataset
+gpw_ds = gpw_da.to_dataset('band')
+
+# Rename the variable to a more useful name
+gpw_ds = gpw_ds.rename({1: 'per_density'})
+```
+
+```{python}
+test = exact_extract(wsim_gldas_1mo.deficit, california_counties, ['coverage', 'values', 'weights'], output = 'pandas', include_geom = False, weights = gpw_da)
+```
+
+```{python}
+explode_cols = list(test.columns)
+test1 = test.explode(explode_cols)
 ```
