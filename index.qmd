@@ -2,7 +2,7 @@
 title: "Welcome SCHOOL Module 1: Water"
 ---
 
-<img src="https://raw.githubusercontent.com/ciesin-geospatial/TOPSTSCHOOL/main/images/TOPTSCHOOL-logo02.hi-res.png" align="right" height="200" style="padding-left: 15px; padding-bottom: 15px;"/>
+<img src="https://raw.githubusercontent.com/ciesin-geospatial/TOPSTSCHOOL/main/images/TOPSTSCHOOL-logo02.png" align="right" height="200" style="padding-left: 15px; padding-bottom: 15px;"/>
 
 Welcome to the first module of the TOPSTSCHOOL curriculum!
 
