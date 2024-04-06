@@ -141,6 +141,12 @@ wsim_gldas_anoms |>
 Although we have now reduced the data to a single attribute with a restricted time of interest, we can take it a step further and limit the spatial extent to a country or state of interest.
 
 ## Spatial Selection
+::: column-margin
+::: {.callout-tip style="color: #5a7a2b;"}
+## Data Science Review
+[GeoJSON](https://geojson.org/) is a format for encoding, storing and sharing geographic data. It's commonly used in web mapping applications to represent geographic features with their associated attributes. GeoJSON files are easily readable by both humans and computers, making them a popular choice for sharing geographic data over the internet.
+:::
+:::
 
 We can spatially crop the raster stack with a few different methods. Options include using a bounding box in which the outer geographic coordinates (xmin, ymin, xmax, ymax) are specified, or using another raster object, or a vectorized boundary like a shapefile or GeoJSON to set the clipping extent.
 
