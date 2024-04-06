@@ -3,7 +3,7 @@ title: "Acquiring and Pre-Processing the WSIM-GLDAS Dataset"
 author: 
   - "Josh Brinks"
   - "Elaine Famutimi"
-date: "December, 6 2023"
+date: "April 6, 2024"
 bibliography: wsim-gldas-references.bib
 ---
 
@@ -244,7 +244,7 @@ The size of the pre-processed dataset is 1.6 MB compared to the original dataset
 
 If you want to share an image of the plot that you created you can save it to your computer as a .png file. You can open the `png()` device, producing the plot, and closing the device with `dev.off()`:
 
-```{r}
+```{r eval=FALSE}
 # Save the map plot as a PNG file
 # Specify file name and dimensions 
 png("map_plot.png", width = 4, height = 4, units="in", res=300)  
