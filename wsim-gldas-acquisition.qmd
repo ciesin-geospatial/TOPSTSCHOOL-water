@@ -9,7 +9,7 @@ bibliography: wsim-gldas-references.bib
 
 ## Overview
 
-In this lesson, you will acquire the data set called ***Water Security Indicator Model - Global Land Data Assimilation System*** **(WSIM-GLDAS)** from the [NASA Socioeconomic Data and Applications Center (SEDAC)](https://sedac.ciesin.columbia.edu/) website and will also retrieve a global administrative boundary data set called [geoBoundaries](https://www.geoboundaries.org/api.html) data directly from an application programming interface (API). You will learn how to subset the data for a region of interest and save the result data as a new file.
+In this lesson, you will acquire the data set called **Water Security Indicator Model - Global Land Data Assimilation System(WSIM-GLDAS)** from the [NASA Socioeconomic Data and Applications Center (SEDAC)](https://sedac.ciesin.columbia.edu/) website and will also retrieve a global administrative boundary data set called [geoBoundaries](https://www.geoboundaries.org/api.html) data directly from an application programming interface (API). You will learn how to subset the data for a region of interest and save the result data as a new file.
 
 ## Learning Objectives
 
