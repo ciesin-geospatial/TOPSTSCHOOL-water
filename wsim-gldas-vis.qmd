@@ -1,25 +1,25 @@
 ---
-title: "WSIM-GLDAS Dataset Exploration and Visualizations"
+title: "Water Security Indicator Model - Global Land Data Assimilation System (WSIM-GLDAS) Dataset Exploration and Visualizations"
 author: 
   - "Joshua Brinks"
   - "Elaine Famutimi"
-date: "December, 6 2023"
+date: "April 6, 2024"
 bibliography: wsim-gldas-references.bib
 ---
 
 ## Overview
 
-In our previous lesson, *Acquiring and Pre-Processing the WSIM-GLDAS Dataset*, we downloaded components of WSIM-GLDAS from SEDAC, subsetted the data using vector boundaries from geoBoundaries, performed a visual check, and wrote the file to disk. In this lesson, we will extend our work with WSIM-GLDAS by introducing an additional integration period, calculating simple summary statistics, integrating WSIM-GLDAS with the Gridded Population of the World, and developing more complex visualizations.
+In our previous lesson, *Acquiring and Pre-Processing the Water Security Indicator Model - Global Land Data Assimilation System* (WSIM-GLDAS) Dataset, we downloaded components of WSIM-GLDAS from SEDAC, subset the data using vector boundaries from geoBoundaries, performed a visual check, and wrote the file to disk. In this lesson, we will extend our work with WSIM-GLDAS by introducing an additional integration (temporal aggregation) period, calculating simple summary statistics, integrating WSIM-GLDAS with the Gridded Population of the World (GPW) data, and developing more complex visualizations.
 
 ## Learning Objectives
 
 After completing this lesson, you should be able to:
 
--   Subset data for a region and time period of interest.
--   Summarize raster data using zonal statistics.
+-   Subset the WSIM-GLDAS raster data for a region and time period of interest.
 -   Perform visual exploration with histograms.
--   Build choropleth maps summarizing data by vector boundaries.
--   Integrate multiple spatial datasets to perform complex analyses and construct intricate visualizations.
+-   Integrate gridded population with WSIM-GLDAS data to perform analyses and construct visualizations.
+    -   Make choropleth maps visualizing WSIM-GLDAS data by administrative vector boundaries.
+    -   Summarize WSIM-GLDAS and population raster data using zonal statistics.
 
 ## Introduction
 
@@ -27,21 +27,22 @@ After completing this lesson, you should be able to:
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Coding Review
 
-This lesson uses the [`stars`](https://r-spatial.github.io/stars/), [`sf`](https://r-spatial.github.io/sf/), [`dplyr`](https://dplyr.tidyverse.org/), [`lubridate`](https://lubridate.tidyverse.org/) [`exactextractr`](https://isciences.gitlab.io/exactextractr/), [`ggplot2`](https://ggplot2.tidyverse.org/), [`terra`](https://rspatial.org/pkg/), and [`data.table`](https://rdatatable.gitlab.io/data.table/) packages. If you'd like to learn more about the functions used in this lesson you can use the help guides on their package websites.
+This lesson uses the [`stars`](https://r-spatial.github.io/stars/), [`sf`](https://r-spatial.github.io/sf/), [`dplyr`](https://dplyr.tidyverse.org/), [`lubridate`](https://lubridate.tidyverse.org/) [`exactextractr`](https://isciences.gitlab.io/exactextractr/), [`ggplot2`](https://ggplot2.tidyverse.org/), [`terra`](https://rspatial.org/pkg/), [`data.table`](https://rdatatable.gitlab.io/data.table/), and [kableExtra](https://cran.r-project.org/web/packages/kableExtra/index.html) packages. If you'd like to learn more about the functions used in this lesson you can use the help guides on their package websites.
 :::
 :::
 
 ## Load Data
 
-We'll being with the WSIM-GLDAS 12 month integration anomaly file from SEDAC and quickly subset it to the Continental United States (CONUSA). We can reduce our memory overhead by reading in just the `'deficit'` attribute from the WSIM-GLDAS composite 12 month integration file.
+We’ll begin with the **WSIM-GLDAS Composite Anomaly Twelve-Month Return Period** (an anomaly is defined as a rare observation) file from SEDAC and we will subset it spatially to the Continental United States (CONUSA). This will reduce our memory footprint. We can further reduce our memory overhead by reading in just the `'deficit'`—that is, the variable we want to analyze— from the WSIM-GLDAS Composite Anomaly Twelve-Month Return Period file, rather than reading the entire NetCDF with all of its attributes.
 
 ```{r warning=FALSE}
 wsim_gldas <- stars::read_stars("composite_12mo.nc", proxy = FALSE, sub = 'deficit')
 
+
 print(wsim_gldas)
 ```
 
-For this exercise we want to explore droughts in the continental United States for the years 2000-2014. In the 12 momth integration dataset, each monthly time step is an average of the previous 12 months. Therefore, if we wish to view a snapshot of drought for a given year we need to use the December timestep for that year. We can create a sequence of dates starting with December 2000 to get every year until 2014.
+For this exercise, we want to explore droughts in the continental United States for the years 2000-2014. In the 12-month return period dataset, each monthly time step is an average of the previous 12 months. (This is called a moving average.) Therefore, if we wish to view a snapshot of drought for a given calendar year we need to use the December timestep which would include the 12 months of only that calendar year. We can create a data set of annualized monthly averages starting with December 2000 and ending in December 2014 using the `ymd()` function of the *lubridate* package and the `filter()` function of the *dplyr* package as demonstrated below.
 
 ```{r warning=FALSE}
 # generate a vector of dates for subsetting
@@ -49,13 +50,15 @@ keeps<-seq(lubridate::ymd("2000-12-01"),
            lubridate::ymd("2014-12-01"), 
            by = "year")
 
+#change data type to POSIXct
+keeps <- as.POSIXct(keeps)
+
 # filter using that vector
 wsim_gldas <- dplyr::filter(wsim_gldas, time %in% keeps)
 print(wsim_gldas)
-
 ```
 
-Now can subset the WSIM-GLDAS dataset using the USA country boundary from geoBoundaries.
+Next, we can clip the WSIM-GLDAS dataset using the USA country boundary from geoBoundaries. As in lesson 1, we acquire the boundary vector data using the geoBoundaries API.
 
 ```{r warning=FALSE}
 #directly acquire the boundary from geoBoundaries API
@@ -78,15 +81,23 @@ wsim_gldas<-wsim_gldas[usa] |>
 stars::st_set_dimensions("time", values = as.character(seq(2000,2014)))
 ```
 
-Now we'll verify the pre-processing steps with `print()`. The raster object now contains 15 timesteps from December 2000 to December 2014.
+In the preprocessing step of the data science lifecycle, it is important to periodically check the results. Now we’ll verify the pre-processing steps with the `print()` function. Note that the raster object now contains 15 timesteps from December 2000 to December 2014.
 
 ```{r}
 print(wsim_gldas)
 ```
 
+You will want to review the printout to make sure it looks okay.
+
+-   Does it contain the variables you were expecting?
+
+-   Do the values for the variables seem plausible?
+
+Other basic descriptive analyses are useful to verify and understand your data. One of these is to produce a frequency distribution (also known as a histogram), which is reviewed below.
+
 ## Annual CONUSA Time Series
 
-We can start our visual exploration of annual drought in the CONUSA with a time series plot depicting each year in the dataset.
+The statistical properties reviewed in the previous step are useful for exploratory data analysis, but we should also inspect the data’s spatial characteristics. We can start our visual exploration of annual drought in the CONUSA by creating a map visualization depicting the deficit return period for each of the years in the subset dataset we loaded in the previous step.
 
 ```{r warning = FALSE, message = FALSE}
 ggplot2::ggplot(usa)+
@@ -111,7 +122,8 @@ ggplot2::ggplot(usa)+
     '#FFFFFF'), breaks = c(-60, -50, -40, -20, -10,-5,-3, 0))+
   ggplot2::labs(
     title="Annual Mean Deficit Anomalies for the CONUSA",
-    subtitle = "Using Observed 12 Month Integrated WSIM-GLDAS Data for 2000-2014"
+    subtitle = "Using Observed 12 Month Integrated WSIM-GLDAS Data for 2000-2014",
+    fill = "Deficit Return Period"
   )+
   ggplot2::theme_minimal()+
   ggplot2::theme(
@@ -123,13 +135,13 @@ ggplot2::ggplot(usa)+
     axis.ticks.y=ggplot2::element_blank())
 ```
 
-There are several significant drought events throughout 2000-2014. The southeast in 2000, southwest in 2002, the majority of the western 3rd in 2007, Texas-Oklahoma in 2011, Montana-Wyoming-Colorado in 2012, and the entirety of the California coast in 2014. The droughts of 2012 and 2011 are particularly severe and widespread with return periods greater than 50 covering multiple states. Based on historical norms, we should only expect droughts this strong every 50-60 years!
+This visualization shows that there were several significant drought events (as indicated by return-period values) throughout 2000-2014. The southeast in 2000, the southwest in 2002, the majority of the western 3rd in 2007, Texas-Oklahoma in 2011, Montana-Wyoming-Colorado in 2012, and the entirety of the California coast in 2014. The droughts of 2012 and 2011 are particularly severe and widespread with return periods greater than 50 years covering multiple states. Based on historical norms, we should only expect droughts this strong every 50-60 years!
 
 ## Monthly Time Series
 
-We can get a better look at these drought events by using the 1 month composite WSIM-GLDAS dataset and subsetting the data with a smaller spatial extent. Let's examine the 2014 California drought.
+We can get a more detailed look at these drought events by using the 1-month composite WSIM-GLDAS dataset and clipping the data to a smaller spatial extent. Let’s examine the 2014 California drought.
 
-::: {.callout-tip style="color: #7d2748;"}
+::: {.callout-tip style="color: #5a7a2b;"}
 ## Drought in the News
 
 The California drought of 2012-2014 was the worst in 1,200 years. Analysis found that it wasn't uncommon for California to have periods of low precipitation, but that combined with sustained record high temperatures created severe water shortages. [@WHOI2014] This drought caused problems for homeowners, and even conflicts between farmers and wild salmon!
@@ -139,13 +151,13 @@ Governor Jerry Brown declared a drought emergency and called on residents to red
 Additionally, there were thousands of adult salmon struggling to survive in the Klamath River in Northern California, where water was running low and warm due to the diversion of river flow into the Central Valley, an agricultural area that grows almond trees. Almonds are one of California's most important crops, with the state producing 80% of the world's almonds. However, salmon, which migrate upstream, could get a disease called gill rot, which flourishes in warm water and already killed tens of thousands of Chinook in 2002. This disease was spreading through the salmon population again due to this water allocation, affecting local Native American tribes that rely on the fish.[@Bland2014]
 :::
 
-To reduce our memory overhead, we'll start by removing the 12 month composite object.
+In order to limit the amount of computing memory required for the operation, we will first clear items from the in-memory workspace and then reload a smaller composite file, we’ll start by removing the 12-month composite object.
 
 ```{r}
 rm(wsim_gldas)
 ```
 
-Now let's load the composite 1 month file from SEDAC.
+Now let’s load into the in-memory workspace the composite 1-month file from SEDAC.
 
 ```{r}
 gc()
@@ -161,13 +173,14 @@ Once again, we'll subset the time dimension for our period of interest. This tim
 keeps<-seq(lubridate::ymd("2014-01-01"),
            lubridate::ymd("2014-12-01"), 
            by = "month")
-
+#change data type to POSIXct
+keeps <- as.POSIXct(keeps)
 # filter using that vector
 wsim_gldas_1mo <- dplyr::filter(wsim_gldas_1mo, time %in% keeps)
 print(wsim_gldas_1mo)
 ```
 
-We're down to 12 monthly timesteps. Lets zoom in on California and see how this drought progressed over the course of the year.
+Now we have 12 rasters with monthly data for 2014. Let's zoom in on California and see how this drought progressed over the course of the year.
 
 ```{r warning = FALSE, message = FALSE}
 california<-usa[usa$shapeName=="California",]
@@ -200,7 +213,8 @@ ggplot2::ggplot(california)+
     '#FFFFFF'), breaks = c(-60, -50, -40, -20, -10,-5,-3, 0))+
   ggplot2::labs(
     title="Deficit Anomalies for California",
-    subtitle = "Using Observed Monthly WSIM-GLDAS Data for 2014"
+    subtitle = "Using Observed Monthly WSIM-GLDAS Data for 2014",
+    fill = "Deficit Return Period"
   )+
   ggplot2::theme_minimal()+
   ggplot2::theme(
@@ -212,11 +226,17 @@ ggplot2::ggplot(california)+
     axis.ticks.y=ggplot2::element_blank())
 ```
 
-This is a startling series of maps. The entire state faced massive deficits in January and February. This was followed by extreme droughts throughout the entire western half of the state in May-August. Although northern and eastern California saw some relief by September, southwest California continued to suffer through December.
+This series of maps shows a startling picture. California faced massive water deficits throughout the state in January and February. This was followed by water deficits in the western half of the state in May-August. Although northern and eastern California saw some relief by September, southwest California continued to see deficits through December.
 
 ## Monthly Histograms
 
-We can get a different view of the data by creating a histogram of the deficit anomalies. We can extract the data from the raster time series and create a data frame of values that are easier to manipulate into a histogram.
+::: column-margin
+::: {.callout-tip style="color: #5a7a2b;"}
+A [data frame](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/data.frame) is a data structure used for storing tabular data. It organizes data in rows and columns. Each column can have a different type of data (numeric, character, factor, etc.), and rows represent individual observations or cases. Data frames provide a convenient way to work with structured data, making them essential for data analysis and statistics projects.
+:::
+:::
+
+We explore the data further by creating a frequency distribution (also called a histogram) of the deficit anomalies for any given spatial extent; here we are still looking at the distributions in California. We extract the data from the raster time series and create a data frame of values that are easier to manipulate into a histogram. [R data frames](https://www.w3schools.com/r/r_data_frames.asp) are data displayed in table format, which can be plotted on graphs or charts.
 
 ```{r}
 # Pull the values
@@ -233,15 +253,15 @@ ggplot2::ggplot(deficit_hist, ggplot2::aes(deficit))+
   ggplot2::theme_minimal()
 ```
 
-This starts to quantify what our eyes were telling us with the time series maps. The number of raster cells under a 60 year deficit is pretty incredible in most months.
+This starts to quantify what our eyes were telling us with the time series maps. Whereas the map shows where the deficits occur, the frequency distribution indicates the number of raster cells for each return period of the deficit range. The number of raster cells under a 60-year deficit (return period) is very high in most months, far exceeding any other value in the range.
 
 ## Zonal Summaries
 
-The previous section digs deeper into the 2014 California drought, but mostly just examines the state as a whole. Although we have a sense of what's happening in different cities or counties by looking at the time series plots, they do not provide quantitative summaries of specific areas.
+The previous section describeser into the 2014 California drought, examining the state as a whole. Although we have a sense of what’s happening in different cities or counties by looking at the maps, the maps do not provide quantitative summaries of those local areas.
 
-Zonal statistics are one way to summarize the cells of a raster layer that lie within the boundary of another data layer; this may be another raster or vector (shapefile) layer. For example, summarizing deficit return periods with another raster depicting land cover type or a vector boundary/shapefile of countries, states, or counties.
+Zonal statistics are one way to summarize the cells of a raster layer that lie within the boundary of another data layer (which may be in either raster or vector format). . For example, aggregating deficit return periods with another raster depicting land cover type or a vector boundary (shapefile) of countries, states, or counties, will produce descriptive statistics by that new layer. These statistics include: sum, mean, median, standard deviation, and range.
 
-For the purposes of this lesson we'll begin by calculating the mean deficit return period by California counties. We'll start by retrieving a layer with California counties from geoBoundaries.
+For this lesson, we begin by calculating the mean deficit return period by California counties. First we retrieve a vector data set of California counties from the geoBoundaries API. Since geoBoundaries does not attribute which counties belong to which states, we utilize a spatial operation called intersect in order to select only those counties in California.
 
 ```{r}
 # get the adm2 (county) level data for the USA
@@ -253,17 +273,19 @@ cali_counties<-sf::st_intersection(cali_counties, california)
 plot(sf::st_geometry(cali_counties))
 ```
 
-That looks pretty good. The ADM1 (national) and ADM2 (province/state) data for many countries in geoBoundaries does not always match up correctly. However, boundaries for the USA are pretty consistent across ADM0/ADM1/ADM2 so simple intersection procedures are less likely to bleed over into neighboring states.
+The output of that intersection looks as expected. As noted above, in general a visual and/or tabular check on your data layers is always a good idea. If you expect 50 counties in a given state, you should see 50 counties resulting from your intersection of your two layers, etc. You may want to be on the look out for too few (such as an island area that may be in one layer but not the other) or too many counties (such as those that intersect with a neighboring state).
 
 ::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Coding Review
 
-[exactextractr](https://github.com/isciences/exactextractr) [@Baston2023] is an R package that summarizes raster values over groupings, or zones, also known as zonal statistics. Zonal statistics help in assessing the statistical characteristics of a certain region.
+The [exactextractr](https://github.com/isciences/exactextractr) [@Baston2023] R package summarizes raster values over groupings, or zones, also known as zonal statistics. Zonal statistics help in assessing the statistical characteristics of a certain region.
+
+The [terra](https://cran.r-project.org/web/packages/terra/index.html) R package processes raster geospatial data, offering functionalities such as data manipulation, spatial analysis, modeling, and visualization, with a focus on efficiency and scalability.
 :::
 :::
 
-We will perform our zonal statistics using the exactextractr package [@Baston2023]. It is the fastest, most accurate, and most flexible zonal statistics tool for the R programming language, but it currently has no default methods for the `stars` package, so we'll switch to `terra` for this portion of the lesson.
+We will perform our zonal statistics using the `exactextractr` package [@Baston2023]. It is the fastest, most accurate, and most flexible zonal statistics tool for the R programming language, but it currently has no default methods for the `stars` package, so we'll switch to `terra` for this portion of the lesson.
 
 ```{r}
 wsim_gldas_1mo<-terra::sds("composite_1mo.nc")
@@ -281,7 +303,7 @@ cali_county_summaries<-
 names(cali_county_summaries)<-lubridate::month(keeps, label = TRUE, abbr = FALSE)
 ```
 
-exactextractr will return summary statistics in the same order of the input boundary file so we can simply bind the California county names to the exactextractr output. We'll append the summary statistics to the sf object for more plotting, but we'll also make a simpler version to view as a table to inspect the raw data. We can take a quick look at the first 10 counties and their mean deficit return period for January-June.
+*exactextractr* will return summary statistics in the same order of the input boundary file, therefore we can join the California county names to the exactextractr outputand join the summary statistics for visualization. We also make a version to view as a table to inspect the raw data. We can take a quick look at the first 10 counties to see their mean deficit return period for January-June.
 
 ```{r}
 cali_counties<-cbind(cali_counties, cali_county_summaries)
@@ -293,7 +315,7 @@ kableExtra::kbl(cali_county_table[c(1:10),c(1:7)]) |>
       bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
-This definitely confirms the sea of red in our exploratory maps. The data is currently in wide format, which makes for easy viewing of a time series, but more advanced programmatic visualization typically require data to be in long format (more on that later).
+This confirms the widespread distribution of high deficit values (all the bright red) in our exploratory maps. The data is currently in wide format, which makes for easy viewing of a time series, but more advanced programmatic visualization typically requires data to be in a normalized, or long, format (more on that later).
 
 ## County Choropleths
 
@@ -317,22 +339,21 @@ plot(cali_counties[c(11:23)],
     '#FFFFFF'), 
     breaks = c(-61, -50, -40, -20, -10,-5,-3, 5), 
     key.pos = 1)
+title("Deficit Return Period", cex.main = 2, line =-77, adj =0)
 ```
 
-Due to the widespread extreme drought in the raw data, the mean values do not appear much different from the raw deficit raster layer, however, choropleths can be easier for users to survey the landscape and place themselves and their lived experiences with the data.
+Due to the widespread water deficits in the raw data, the mean values do not appear much different from the raw deficit raster layer, however, thematic (also called choropleth) maps can make it easier for users to survey the landscape by visualizing familiar geographies (like counties) that place themselves and their lived experiences alongside the data.
 
-While this paints a striking picture of widespread drought, how many people are affected by this drought? Although the land area appears rather large, if you're not familiar with the distribution of urban centers in California it can be difficult to get a sense of the direct human impact.
+While this paints a striking picture of widespread water deficits, how many people are affected by this drought? Although the land area appears rather large, if one is not familiar with the distribution of population and urban centers in California it can be difficult to get a sense of the direct human impact. (This is partly because more populous locations are usually represented by smaller land areas and the less populous locations are usually represented by large administrative boundaries containing much more land area. Normalizing a given theme by land area may be something an analyst wants to do but we cover another approach below.)
 
 ## Integrating Population Data
 
-**Gridded Population of the World** (GPW) is a dataset collection in SEDAC that models the distribution of the global human population through counts and densities in a raster format [@CIESIN2018]. We will take full advantage of exactextractr to integrate across WSIM-GLDAS, geoBoundaries, and GPW. To begin, we need to download the 15 minute 2010 population *density* GPWv4. This most closely matches our time period (2014) and the resolution of WSIM-GLDAS. Although it may seem more intuitive to use GPW's population *count* data layers, you can achieve more accurate results (especially along coastlines) by using population density in conjunction with land area estimates derived from exactextractr.
+**Gridded Population of the World** (GPW) is a dataset collection in SEDAC that models the distribution of the global human population as counts and densities in a raster format [@CIESIN2018]. We will take full advantage of exactextractr to integrate across WSIM-GLDAS, geoBoundaries, and GPW. To begin, we need to download the 15 minute 2010 population *density* GPWv4. This most closely matches our time period (2014) and the resolution of WSIM-GLDAS. Although it may seem more intuitive to use GPW's population *count* data layers, you can achieve more accurate results (especially along coastlines) by using population density in conjunction with land area estimates derived from exactextractr.
 
-::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Data Review
 
-The Gridded Population of the World Version 4 is available in multiple target metrics (e.g. counts, density), time periods (2000, 2005, 2010, 2015, 2020), and spatial resolutions (30 sec, 2.5 min, 15 min, 30 min, 60 min). Read more about GPW at the [collection home page on SEDAC](https://sedac.ciesin.columbia.edu/data/collection/gpw-v4).
-:::
+The Gridded Population of the World Version 4 is available in multiple target metrics (e.g. counts, density), time periods (2000, 2005, 2010, 2015, 2020), and spatial resolutions (30 sec, 2.5 min, 15 min, 30 min, 60 min). Read more about GPW at the [collection home page on SEDAC](https://sedac.ciesin.columbia.edu/data/collection/gpw-v4). GPW is one of four global datasets available in raster format: Data sets vary in the degree to which they use additional information as ancillary variables to model the spatial distribution of population from the administrative units (vector polygons) in which they originate. A review of these data sets and their underlying models is found in a paper by Leyk and colleagues [@leyk2019]. Fitness-for-use is an important principle in determining the best dataset to use for a specific analysis. Because the question we ask here is — what is the population exposure to different levels of water deficit in California? — uses spatially coarse inputs and is for a place with high-quality data inputs, GPW is a good choice for this analysis. Users with vector-format census data (at county or sub-county level) could also adapt this approach for those data. In the case of California, the US Census data and GPW will produce nearly identical estimates because GPW is based on the census inputs.
 :::
 
 Load in the population density layers.
@@ -342,7 +363,7 @@ pop_dens<-terra::rast("gpw_v4_population_density_rev11_2015_15_min.tif")
 print(pop_dens)
 ```
 
-For this example we'll classify the WSIM-GLDAS deficit return period raster layer into 6 categories. This will make it easier to manage the output and interpret the data.
+For this example we’ll classify the WSIM-GLDAS deficit return period raster layer into 6 categories. Binning the data will make it easier to manage the output and interpret the results.
 
 ```{r}
 # set the class breaks row-wise (from, to, new label)
@@ -361,9 +382,9 @@ wsim_gldas_1mo_class <-
   terra::classify(wsim_gldas_1mo, rclmat, include.lowest = TRUE)
 ```
 
-In our prior example we used exactextractr's built in `'mean'` function, but we can pass more complicated custom functions that will carryout several operations at once. The following chunks of code could be combined into a single function passed to exactextractr, but we will break it up a bit in case you want to follow along more easily. You can read more about exactextractr arguments in the package help guide. The key arguments to be aware of are the calls to:
+In our previous example, we used exactextractr’s built-in `'mean'` function, but we can pass other custom functions to exactextractr that will carry out several operations at once as well. The following code could be combined into a single function passed to exactextractr, but it is presented here as multiple functions in order to follow along more easily. You can read more about exactextractr arguments in the package [help guide](https://cran.r-project.org/web/packages/exactextractr/exactextractr.pdf). The key arguments to be aware of are the calls to:
 
-1.  `weights = pop_dens`: summarizes each WSIM-GLDAS cell's deficit return period with the corresponding population density value.
+1.  `weights = pop_dens`: summarizes each WSIM-GLDAS cell’s deficit return period with the corresponding population density value.
 2.  `coverage_area = TRUE`: calculates the corresponding area of the WSIM-GLDAS raster cell that is covered by the California boundary.
 
 ```{r}
@@ -380,11 +401,11 @@ pop_by_rp <-
 names(pop_by_rp)
 ```
 
-This returns a `data.frame` with a row for every WSIM-GLDAS cell that is overlapped by the California cell. The first column returns the label of the polygon boundary where the cell is located. In this instance it's not very helpful because we used the state level California boundary, but if we passed the ADM2 boundary with counties it would provide the name of the county where the cell is located. The next 12 columns list the deficit return period classification value for the cell in each of the 12 months corresponding to the time dimension of the `wsim_gldas_1mo` raster layer.
+This returns a `data.frame` with a row for every WSIM-GLDAS cell that is overlapped by the California cell. The names function provides a list of column headers in the data.frame. The first column (“shapeISO”) returns the label of the polygon boundary where the cell is located. In this instance, it’s not very helpful because we used the state-level California boundary, but if we passed the ADM2 boundary with counties it would provide the name of the county where the cell is located. The next 12 columns list the deficit return period classification value for the cell in each of the 12 months corresponding to the time dimension of the `wsim_gldas_1mo` raster layer.
 
-The last two columns are `weight` and `coverage_area`. The `weight` column lists the corresponding population density value (persons per km\^2) for that WSIM-GLDAS cell. Lastly, the `coverage_area` lists the total area (m\^2) of the WSIM-GLDAS cell that is covered by the California boundary layer. With this information we can calculate the number of people living in this cell and relay their respective deficit return period for each of the 12 months in our WSIM-GLDAS raster object. We will need to perform a few more processing steps to prepare this `data.frame` for a time series visualization integrating all the data.
+The last two columns are `weight` and `coverage_area`. The `weight` column lists the corresponding population density value (persons per km\^2) for that WSIM-GLDAS cell. Lastly, the `coverage_area` lists the total area (m\^2) of the WSIM-GLDAS cell that is covered by the California boundary layer. With this information, we can calculate the number of people living in this cell and their respective deficit return period for each of the 12 months in our WSIM-GLDAS raster object. We will need to perform a few more processing steps to prepare this `data.frame` for a time series visualization integrating all of the data.
 
-As mentioned before, we need to melt the data from wide format to long format so we can make a complex visualization in ggplot2.
+As mentioned before, we use a function called melt to transform the data from wide format to long format in order to produce a visualization in ggplot2.
 
 ```{r}
 pop_by_rp <-
@@ -397,9 +418,9 @@ pop_by_rp <-
 head(pop_by_rp)
 ```
 
-Now each row lists the area covered by the cell, the population density weight for the cell, the month the deficit return period cell corresponds to, and the actual deficit return period class for the cell.
+Each row lists the land (coverage) area covered by the zone, the population density value (weight) for the zone, the month the deficit return period corresponds to, and the actual deficit return period class for the zone.
 
-Next, we'll summarize the data by return period class.
+Next, we’ll summarize the data by return-period class.
 
 ```{r}
 pop_by_rp <-
@@ -450,7 +471,7 @@ ggplot2::ggplot(pop_by_rp,
                              color = return_period,
                              fill = return_period
                 ))+
-  ggplot2::geom_area(position = 'identity', outline.type = "upper", lwd = 0.75, color = "darkgrey")+
+  ggplot2::geom_bar(stat = "identity", position = "stack", color = "darkgrey")+
   ggplot2::scale_color_manual(values = leg_colors)+
   ggplot2::scale_fill_manual(values = leg_colors)+
   ggplot2::ylim(0,1)+
@@ -467,7 +488,6 @@ This figure really illustrates the human impact of the 2014 drought. Nearly 100%
 
 ## Congratulations! In this Lesson You Learned How To...
 
--   Download geoboundaries ADM1 and ADM2 data directly from their API.
 -   Identify hot spots of drought and select these hotspots for further analysis.
 -   Summarize data by county using the exactextractr tool.
 -   Integrate WSIM-GLDAS deficit, GPW population, and geoBoundaries administrative data to create complex time series visualizations.
@@ -479,3 +499,4 @@ In this lesson we explored the California drought of 2014. In our next lesson we
 [Lesson 3: Moderate Resolution Imaging Spectroradiometer (MODIS) Near-Real Time (NRT) flood data](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/lance-modis-nrt-global-flood-mcdwd-f3.html){.btn .btn-primary .btn role="button"}
 
 # References
+
