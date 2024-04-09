@@ -53,7 +53,7 @@ The **Water Security (WSIM-GLDAS) Monthly Grids dataset** used in this lesson is
 
 For this lesson, we will work with the WSIM-GLDAS data set **Composite Anomaly Twelve-Month Return Period** NetCDF file. This represents the variable "Composite Anomaly" for the integration period of twelve-month. Let's download the file directly from the SEDAC website. The [data set documentation](https://sedac.ciesin.columbia.edu/downloads/docs/water/water-wsim-gldas-v1-documentation.pdf) describes the composite variables as key features of WSIM-GLDAS which combine “the return periods of multiple water parameters into composite indices of overall water surpluses and deficits [@isciences2022a]”. The composite anomaly files represent these model outputs in terms of the rarity of their return period, or how often they occur. Please go ahead and download the file.
 
--   First, go to the SEDAC website at <https://sedac.ciesin.columbia.edu/>. You can explore the website by themes, data sets, or collections. We will use the search bar at the top to search for "water security wsim". Find and click on the Water Security (WSIM-GLDAS) Monthly Grids, v1 (1948 – 2014) data set. Take a moment to review the dataset's Overview, and Documentation pages.
+-   First, go to the SEDAC website at <https://sedac.ciesin.columbia.edu/>. You can explore the website by themes, data sets, or collections. We will use the search bar at the top to search for "water security wsim". Find and click on the Water Security (WSIM-GLDAS) Monthly Grids, v1 (1948–2014) data set. Take a moment to review the dataset's overview and documentation pages.
 
 -   When you're ready, click on the Data Download tab. You will be asked to sign in using your NASA EarthData account.
 
@@ -90,9 +90,9 @@ for (package_name in packages_to_check) {
 Once you've completed the download and placed the .nc file into your working directory read the file with the `stars::read_stars()` function.
 
 ```{r}
-
+# read in the 12 month integration WSIM-GLDAS file with stars
 wsim_gldas_anoms <- stars::read_stars("composite_12mo.nc", proxy = TRUE)
-
+# check the basic info
 print(wsim_gldas_anoms)
 ```
 
@@ -107,7 +107,7 @@ This means that the total number of individual raster layers in this NetCDF is 4
 The WSIM-GLDAS data is quite large with many variables available. We can manage this large file by selecting a single variable; in this case “deficit” (drought). Read the data back in; this time with `proxy = FALSE` and only selecting the deficit layer.
 
 ```{r}
-#subsetting the variable 'deficit'
+# read in just the deficit layer using proxy = false
 wsim_gldas_anoms <- stars::read_stars("composite_12mo.nc", sub = 'deficit', proxy = FALSE)
 ```
 
@@ -120,11 +120,9 @@ Specifying a temporal range of interest will make the file size smaller and ther
 keeps<-seq(lubridate::ymd("2000-12-01"),
            lubridate::ymd("2014-12-01"), 
            by = "year")
-#change data type to POSIXct
-keeps <- as.POSIXct(keeps)
-# filter using that vector
+# filter the dataset using the vector of dates
 wsim_gldas_anoms <- dplyr::filter(wsim_gldas_anoms, time %in% keeps)
-
+# re-check the basic info
 print(wsim_gldas_anoms)
 ```
 
@@ -132,7 +130,9 @@ Now we're down to a single attribute ("deficit") with 15 time steps. We can take
 
 ```{r warning=FALSE}
 wsim_gldas_anoms |>
+  # slice out the first 6 time steps
   dplyr::slice(index = 1:6, along = "time") |>
+  # plot them with some test breaks for the legend
   plot(key.pos = 1, breaks = c(0, -5, -10, -20, -30, -50), key.lab = "Deficit")
 ```
 
@@ -167,22 +167,25 @@ To use the geoBoundaries’ API, the root URL below is modified to include a 3 l
 For this example we adjust the bolded components of the sample URL address below to specify the country we want using the ISO3 Character Country Code for the United States (**USA**) and the desired Administrative Level of State (**ADM1**).
 
 ```{r}
+# make the request to geoboundarie's website for the USA boundaries
 usa <- httr::GET("https://www.geoboundaries.org/api/current/gbOpen/USA/ADM1/")
 ```
 
 In the line of code above, we used a function called httr:GET to obtain metadata from the URL. We assign the result to a new variable called “usa”. Next we will examine the `content`.
 
 ```{r}
+# parse the content into a readable format
 usa <- httr::content(usa)
-
+# look at the labels for available information
 names(usa)
 ```
 
 The parsed content contains 32 components. Item 29 is a direct link to the GeoJSON file (gjDownloadURL) representing the vector boundary data. Next we will obtain those vectors and visualize the results.
 
 ```{r}
+# directly read in the geojson with sf from the geoboundaries server
 usa <- sf::st_read(usa$gjDownloadURL)
-
+# check the visuals
 plot(sf::st_geometry(usa))
 ```
 
@@ -191,6 +194,7 @@ Upon examination, shown in the image above, one sees that it includes all US sta
 We first create a list of the geographies we wish to remove and assign them to a variable called “drops”. Next, we reassign our “usa” variable to include only those geographies in the continental US and finally, we plot the results.
 
 ```{r}
+# create a vector of territories we don't want in our CONUSA boundary
 drops<-
   c("Alaska", "Hawaii", 
     "American Samoa",
@@ -199,16 +203,18 @@ drops<-
     "Guam", 
     "United States Virgin Islands")
 
+# select all the states and territories not in the above list
 usa<-usa[!(usa$shapeName %in% drops),]
-
+# check the visuals
 plot(sf::st_geometry(usa))
 ```
 
 We can take this a step further and select a single state for analysis. Here we use a slightly different method by creating a new variable called “texas” by calling the state out by name.
 
 ```{r}
+# extract just texas from the CONUSA boundary
 texas <- usa[usa$shapeName == "Texas",]
-
+# check the visuals
 plot(sf::st_geometry(texas))
 ```
 
@@ -223,16 +229,18 @@ It is estimated that the drought cost farmers and ranchers about \$8 billion in 
 :::
 
 ```{r}
+# crop the wsim-gldas file to the extent of te texas boundary
 wsim_gldas_anoms_tex <- wsim_gldas_anoms[texas]
 ```
 
 Finally, we visualize the last time-step in the WSIM-GLDAS dataset (15/December, 2014) and render it with an overlay of the Texas boundary, using the following steps.
 
 ```{r warning = FALSE}
+# slive out the first 15 timesteps of wsim-gldas and plot them
 wsim_gldas_anoms_tex |>
   dplyr::slice(index = 15, along = "time") |>
   plot(reset = FALSE, breaks = c(0, -5, -10, -20, -30, -50))
-
+# add the texas boundary on top
 plot(sf::st_geometry(texas),
      add = TRUE,
      lwd = 3,
@@ -243,6 +251,7 @@ plot(sf::st_geometry(texas),
 At this point, you may want to ask, does the data look plausible? That is, are the values being rendered in your map of interest? This simple check is helpful to make sure your subsetting has worked as expected. (You will want to use other methods to systematically evaluate the data.) If the results are acceptable, the subsetted dataset may be written to disk as a NetCDF file, and saved for future modules.
 
 ```{r}
+# write the processed wsim-gldas file to disk as a netcdf
 stars::write_mdim(wsim_gldas_anoms_tex, "wsim_gldas_tex.nc")
 ```
 
