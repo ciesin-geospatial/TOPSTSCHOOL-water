@@ -26,10 +26,10 @@ RUN apt-get update
 RUN apt-get install -y python3
 RUN apt-get install -y python3-pip
 
+RUN pip install exactextract
 RUN pip install geopandas pyproj shapely xarray rioxarray 
 RUN pip install rasterio netcdf4 h5netcdf dask bottleneck 
 RUN pip install numpy pandas nc-time-axis requests
-RUN pip install CMake pybind11 GEOS
-RUN pip install git+https://github.com/isciences/exactextract.git
+RUN pip install exactextract
 
 CMD ["/init"]
