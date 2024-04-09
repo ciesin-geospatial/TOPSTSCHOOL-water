@@ -417,41 +417,24 @@ The NRT flood data can be compared to the Cropland Data Layer (CDL), which provi
 For this part of the excercise, we will use the package *terra*, discussed in the previous lesson, and the function `rast()` to import the CDL service.
 
 ```{r}
-install.packages("leaflet.esri")
-library(leaflet.esri)
-```
-```{r}
-
-url = r"https://pdi.scinet.usda.gov/image/rest/services/CDL_WM/ImageServer"
-
-map <- leaflet() %>%
-  addEsriImageMapLayer(
-    url = url,
-    options = imageMapLayerOptions(
-      useCors = FALSE,
-      mosaicRule = list(
-        method = 'esriMosaicAttribute',
-        where = "Year= 2023"
-      )
-    )
-  )
-map
-``` 
-
-```{r}
+#Read CDL GeoTIFF
 cdl<- stars::read_stars("2022_30m_cdls.tif")
 
 ```
 
 ```{r}
+Create boundaing box 
 bbox_5070 <- sf::st_as_sfc(bbox_subset)
 bbox_5070 <- sf::st_transform(bbox_5070, 5070)
 cdl <- cdl[bbox_5070]
-
+plot(cdl, downsample = 50)
 ```
 
 ```{r}
+
 flood_areas <- raster_df[raster_df == 3]
+flood_areas <- sf::st_transform(flood_areas, 5070)
+cdl_flooded <- cdl[flood_areas == 3]
 
 ```
 
@@ -459,23 +442,37 @@ flood_areas <- raster_df[raster_df == 3]
 flood_areas
 ```
 ```{r}
-breaks <- c(0, 3)
-plot(flood_areas, breaks=breaks, downsample = 10)
+## tmap mode set to "plot"
+tmap::tmap_mode("plot")
+
+## tmap mode can also be set to "view"
+#tmap_mode("view")
+
+#create an object the plots the basemap and the NRT flood raster
+#with the tmap library, call the tm_shape() function for the basemap
+tm_plot <- tmap::tm_shape(bm_m, raster.downsample = 10)+
+  tmap::tm_raster( )+
+  tmap::tm_shape(cdl_flooded, raster.downsample = 10)+
+  #add the classification styling to the raster
+  tmap::tm_raster( title = title)+
+  #style the plot
+  tmap::tm_layout(legend.outside = TRUE) +
+  tmap::tm_graticules(lines=FALSE)
 ```
 
 ```{r}
-bm_m[1]
+tm_plot
 ```
-```{r}
-crop_type_subset <- cdl[bm_m == 3]
-
-```
-## In this Lesson, You Learned...
 
 ```{r}
-plot(crop_type_subset)
+# Aggregate cropland classes within flood areas
+cropland_counts <- aggregate(cdl, by = flood_areas, FUN = sum)
 
+
+# Print cropland counts
+print(cropland_counts)
 ```
+
 Congratulations! Now you should be able to:
 
 -   Navigate the LANCE data website and determine what data is available.
