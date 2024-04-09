@@ -4527,8 +4527,8 @@ Drought in the News
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>          used (Mb) gc trigger   (Mb)  max used   (Mb)
-Ncells 1345397 71.9    2467141  131.8   2467141  131.8
-Vcells 4202789 32.1  422931144 3226.8 700692295 5345.9</code></pre>
+Ncells 1345397 71.9    2467127  131.8   2467127  131.8
+Vcells 4202795 32.1  422931148 3226.8 700692301 5345.9</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>wsim_gldas_1mo <span class="ot">&lt;-</span> stars<span class="sc">::</span><span class="fu">read_stars</span>(<span class="st">&quot;composite_1mo.nc&quot;</span>, <span class="at">sub =</span> <span class="st">&#39;deficit&#39;</span>, <span class="at">proxy =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -4906,7 +4906,7 @@ source      : gpw_v4_population_density_rev11_2015_15_min.tif
 name        : gpw_v4_population_density_rev11_2015_15_min </code></pre>
 </div>
 </div>
-<p>For this example we’ll classify the WSIM-GLDAS deficit return period raster layer into 6 categories. Binning the data will make it easier to manage the output and interpret the results.</p>
+<p>For this example we’ll classify the WSIM-GLDAS deficit return period raster layer into eight categories. Binning the data will make it easier to manage the output and interpret the results.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set the class breaks row-wise (from, to, new label)</span></span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5</span>, <span class="dv">0</span>,</span>
@@ -5061,7 +5061,7 @@ name        : gpw_v4_population_density_rev11_2015_15_min </code></pre>
 </section>
 <section id="lesson-3" class="level2">
 <h2 class="anchored" data-anchor-id="lesson-3">Lesson 3</h2>
-<p>In this lesson we explored the California drought of 2014. In our next lesson we will examine real time flood data in California using the MODIS data product.</p>
+<p>In this lesson we explored the California drought of 2014. In our next lesson, we will examine near real-time flood data in California using the MODIS data product.</p>
 <p><a href="https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/lance-modis-nrt-global-flood-mcdwd-f3.html" class="btn btn-primary btn" role="button">Lesson 3: Moderate Resolution Imaging Spectroradiometer (MODIS) Near-Real Time (NRT) flood data</a></p>
 </section>
 <section id="references" class="level1">

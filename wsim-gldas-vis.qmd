@@ -144,11 +144,8 @@ We can get a more detailed look at these drought events by using the 1-month com
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Drought in the News
 
-The California drought of 2012-2014 was the worst in 1,200 years. Analysis found that it wasn't uncommon for California to have periods of low precipitation, but that combined with sustained record high temperatures created severe water shortages. [@WHOI2014] This drought caused problems for homeowners, and even conflicts between farmers and wild salmon!
+The California drought of 2012-2014 was the worst in 1,200 years [@WHOI2014]. This drought caused problems for homeowners, and even conflicts between farmers and wild salmon! Governor Jerry Brown declared a drought emergency and called on residents to reduce water intake by 20%. Water use went up by 8% in May of 2014 compared to 2013, in places like coastal California and Los Angeles. Due to the water shortages, the state voted to fine water-wasters up to $500 dollars. The drought also affected residents differently based on economic status. For example, in El Dorado County, located in a rural area east of Sacramento, residents were taking bucket showers and rural residents reported wells, which they rely on for fresh water, were drying up. The federal government eventually announced a $9.7 million emergency drought aid for those areas [@Sanders2014].
 
-Governor Jerry Brown declared a drought emergency and called on residents to reduce water intake by 20%. Water use went up by 8% in May of 2014 compared to 2013, in places like coastal California and Los Angeles. Due to that, the state voted to fine water-wasters up to 500 dollars. The drought also affected residents differently based on economic status. For example, in El Dorado County, located in a rural area east of Sacramento, residents were taking bucket showers. Rural residents also rely on wells, which were drying up. The federal government eventually announced a \$9.7 million emergency drought aid for those areas.[@Sanders2014]
-
-Additionally, there were thousands of adult salmon struggling to survive in the Klamath River in Northern California, where water was running low and warm due to the diversion of river flow into the Central Valley, an agricultural area that grows almond trees. Almonds are one of California's most important crops, with the state producing 80% of the world's almonds. However, salmon, which migrate upstream, could get a disease called gill rot, which flourishes in warm water and already killed tens of thousands of Chinook in 2002. This disease was spreading through the salmon population again due to this water allocation, affecting local Native American tribes that rely on the fish.[@Bland2014]
 :::
 
 In order to limit the amount of computing memory required for the operation, we will first clear items from the in-memory workspace and then reload a smaller composite file, we’ll start by removing the 12-month composite object.
@@ -363,7 +360,7 @@ pop_dens<-terra::rast("gpw_v4_population_density_rev11_2015_15_min.tif")
 print(pop_dens)
 ```
 
-For this example we’ll classify the WSIM-GLDAS deficit return period raster layer into 6 categories. Binning the data will make it easier to manage the output and interpret the results.
+For this example we’ll classify the WSIM-GLDAS deficit return period raster layer into eight categories. Binning the data will make it easier to manage the output and interpret the results.
 
 ```{r}
 # set the class breaks row-wise (from, to, new label)
@@ -493,8 +490,8 @@ This figure really illustrates the human impact of the 2014 drought. Nearly 100%
 -   Integrate WSIM-GLDAS deficit, GPW population, and geoBoundaries administrative data to create complex time series visualizations.
 
 ## Lesson 3
-
-In this lesson we explored the California drought of 2014. In our next lesson we will examine real time flood data in California using the MODIS data product.
+ 
+In this lesson we explored the California drought of 2014. In our next lesson, we will examine near real-time flood data in California using the MODIS data product.
 
 [Lesson 3: Moderate Resolution Imaging Spectroradiometer (MODIS) Near-Real Time (NRT) flood data](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/lance-modis-nrt-global-flood-mcdwd-f3.html){.btn .btn-primary .btn role="button"}
 
