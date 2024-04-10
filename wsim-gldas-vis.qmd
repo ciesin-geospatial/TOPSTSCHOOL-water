@@ -528,13 +528,21 @@ pop_by_rp[, pop_frac := pop_rp / total_pop][, total_pop := NULL]
 head(pop_by_rp)
 ```
 
-Now we can put it all together into a visualization.
+Before plotting we'll make the month labels more legible for plotting, convert the WSIM-GLDAS return period class into a factor, set the WSIM-GLDAS class palette.
 
-```{r}
-# pretty month labels
-pop_by_rp[,month:=lubridate::month(pop_by_rp$month, label = TRUE)]
+::: column-margin
+::: {.callout-tip style="color: #5a7a2b;"}
+## Coding Review
+
+Factors are the most common way to handle categorical data in R. Although converting your categorical variables into factors is not not always the best choice, in many instances (especially plotting with *ggplot2*) the benefits will out way any annoyances. To learn more about factors and R check out Hadley Wickham's chapter on factors in [**R for Data Science 2nd Edition**.](https://r4ds.hadley.nz/factors.html)
+:::
+:::
+
+```{r warning=FALSE}
 # ggplot is easier with factors
-pop_by_rp[,return_period:=as.factor(return_period)]
+pop_by_rp$return_period<-
+  factor(pop_by_rp$return_period, 
+         levels = c("0", "-3", "-5", "-10", "-20", "-40", "-50", "-60"))
 # create the palette to pass to ggplot
 leg_colors<-c(
     '#9B0039',
@@ -553,20 +561,27 @@ leg_colors<-c(
     # 0-3
     "#FFFFFF")
 
+# pretty month labels
+pop_by_rp[,month:=lubridate::month(pop_by_rp$month, label = TRUE)]
+```
+
+Now we can put it all together into a visualization.
+
+```{r}
 # add the base data
 ggplot2::ggplot(pop_by_rp, 
                 # set plot wide aesthetics
                 ggplot2::aes(x = month, 
                              y = pop_frac,
                              group = return_period, 
-                             color = return_period,
-                             fill = return_period
-                ))+
-  # determine the overlay and positioning of each wsim-class' polygon
-  ggplot2::geom_bar(stat = "identity", position = "stack", color = "darkgrey")+
-  # set palettes on the wsim class areas/polygons
-  ggplot2::scale_color_manual(values = leg_colors)+
-  ggplot2::scale_fill_manual(values = leg_colors)+
+                             fill = return_period))+
+  # determine the overlay and positioning of each wsim-class' bar
+  ggplot2::geom_bar(stat = "identity", 
+                    position = "stack", 
+                    color = "darkgrey")+
+  # set palettes on the wsim class groups
+  # rev() the order of the order of the colors so we can have -60 on the bottom
+  ggplot2::scale_fill_manual(values = rev(leg_colors))+
   # limit y axis to 0/1
   ggplot2::ylim(0,1)+
   # labels
