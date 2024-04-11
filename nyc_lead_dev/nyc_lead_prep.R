@@ -11,6 +11,7 @@ library(tidycensus)
 library(DT)
 library(datasets)
 library(shinyWidgets)
+library (mapview)
 
 # this changes prepairing all the datasets for following sections
 # quarto require all inputs in shiny application to be in the same chink and 
@@ -44,6 +45,10 @@ school_lead_df<-school_lead_df |>  mutate(lead_summary_by_school=case_when(
 school_locations<-school_lead_df |> filter(!is.na(lat)) |> 
   # convert the dataset to spatial dataset by using WGS84 projection
   st_as_sf(coords = c("long", "lat"),crs = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0") 
+school_locations_all<-school_locations %>% mutate(County="All counties")
+school_locations<-bind_rows(school_locations,school_locations_all)
+
+
 
 get_census_data<- function(state_abr){
   census_api_key("94dee3107dc86d32c8039896b244eeb4aad72eb7")
@@ -78,13 +83,13 @@ get_census_data<- function(state_abr){
 
 state_list<-datasets::state.abb
 list_of_counties<-school_lead_df |> pull(County) |> unique()
-list_of_counties<-append(list_of_counties,"All Counties")
+list_of_counties<-append(list_of_counties,"All counties")
 field_list<-c("total_white","total_black","total_asian","total_hispanic",
               "white_5_17","black_5_17","hispanic_5_17","asian_5_17")
 classification_methods<-c("sd", "equal", "pretty", "quantile", "jenks")
 lead_field_list<-c("school_count","outlets_under_15_ppb","outlets_above_15_ppb")
 lead_data_all_fields<-names(school_lead_df ) |> unique()
-
+out_map_field_list<-c(field_list,lead_field_list)
 
 select_state<-column(3, selectInput("state", label = "Select a state",
                                     choices = state_list, selected = "NY"))
@@ -100,6 +105,8 @@ select_fields3<-column(3, selectInput("field3", label = "Select a field",
                                       choices = lead_field_list, selected = "school_count"))
 select_fields4<-  column(4, selectInput("fields", label = "Select fields",
                                         choices = lead_data_all_fields, selected = "County",multiple = TRUE))
+out_map_field<-column(4, selectInput("fields_map", label = "Select fields",
+                                     choices = out_map_field_list, selected = "school_count"))
 
 theme<-theme(axis.text=element_text(size=12, face="bold"),
              axis.title=element_text(size=13, face="bold"),
@@ -115,12 +122,11 @@ theme<-theme(axis.text=element_text(size=12, face="bold"),
 # (40.74779141700003, -73.74551716499997) needs to be extracted and sparated by "," and 
 # saved undr different fields names
 # line below extract xy coordinates and save under "lat","long" fields
-school_lead_df<-school_lead_df |> mutate(location_temp=str_extract(Location,"(?<=\\().*(?=\\))")) |> 
-  separate(location_temp,c("lat","long"),sep=",")
+#school_lead_df<-school_lead_df |> mutate(location_temp=str_extract(Location,"(?<=\\().*(?=\\))")) |> 
+  #separate(location_temp,c("lat","long"),sep=",")
 
-# line below create geometry attributes by using lat long fields and 
-# geographic coordinate system
-# this step allow us to map the school locations and do some geospatial anaylysis
-school_locations<-school_lead_df |>  filter(!is.na(lat)) |> 
-  # convert the dataset to spatial dataset by using WGS84 projection
-  st_as_sf(coords = c("long", "lat"),crs = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0") 
+
+
+
+
+
