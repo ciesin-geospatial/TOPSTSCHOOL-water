@@ -140,7 +140,7 @@ Based on availability, edit the year_day variable YYYY-DD. Example: '2022-01'
 ```{r}
 
 #add the year and date you want to search for (YYYY-DD, 2022-01)
-year_day <- '2024-076'
+year_day <- '2024-099'
 
 ```
 
@@ -183,31 +183,20 @@ Access the NASA Earthdata with the GET function. Replace `USER_TOKEN` with the t
 
 ```{r, eval=FALSE}
 
+api_key <- readLines("lance-modis-nrt-key.txt")
+# Convert the API key to a string
+api_key <- toString(api_key)
+#"Bearer USER_TOKEN"
+api_key <- paste("Bearer ", api_key)
 
 # Define headers (include your token)
 headers <- c(
-  Authorization = "Bearer USER_TOKEN"
+  Authorization = api_key
 )
 
 # Make GET request
 response <- httr::GET(url, httr::add_headers(.headers=headers))
 ```
-
-````{=html}
-<!---
-```{r, echo=FALSE}
-
-
-# Define headers (include your token)
-headers <- c(
-  Authorization = "Bearer eyJ0eXAiOiJKV1QiLCJvcmlnaW4iOiJFYXJ0aGRhdGEgTG9naW4iLCJzaWciOiJlZGxqd3RwdWJrZXlfb3BzIiwiYWxnIjoiUlMyNTYifQ.eyJ0eXBlIjoiVXNlciIsInVpZCI6ImpmbWFydGluZXo0IiwiZXhwIjoxNzE1MDU0NTk3LCJpYXQiOjE3MDk4NzA1OTcsImlzcyI6IkVhcnRoZGF0YSBMb2dpbiJ9.QX03RDGdNrHYUzIS-DXrcKQDEC0OwbsEkJPLGFHEh1sQQc-nnx4EvZEGEe7bjJB5alZqfPvpOce7ixXYHaAK0bGRVlnhpEpc_KMiL_aIEcwnF9SDaDa73e7Y5-M80cagi-gpX65clwhkJec5kmCgowHHC98aAQxzqjrqwdTy9qBPlUfhlCjwMlAMZQYrO5ScHStlJJG3-IHNBTralHnDxqi43SjGZUZ6ne-9X9SqGtdEVeRq9sqL0T4-F2iHENpFdcJyJe5C6IgoV0Jdmoi9YYum5LfWW6VtnueAQRpgWoCmCK7yqYRfYKQe_dkGFtHCGZA1jhboxLGO3LswBX3KXQ"
-)
-
-# Make GET request
-response <- httr::GET(url, httr::add_headers(.headers=headers))
-```
---->
-````
 
 Check the response status from the GET function:
 
@@ -396,7 +385,9 @@ We redo the same process as above to plot the data with a basemap but with a dif
 bm_m <- basemaps::basemap_stars(bbox_subset, map_service = "esri", map_type = "world_imagery")
 #combine RGB bands of the bsemap
 bm_m <- stars::st_rgb(bm_m)
+```
 
+```{r}
 ## tmap mode set to "plot"
 tmap::tmap_mode("plot")
 
@@ -421,8 +412,66 @@ tm_plot <- tmap::tm_shape(bm_m)+
 #View the plot:
 tm_plot
 ```
+The NRT flood data can be compared to the Cropland Data Layer (CDL), which provides agricultural categories based on the Farm Service Agency (FSA) Common Land Unit (CLU) Program and is produced by the U.S. Department of Agriculture National Agricultural Statistics Service [@nass2023], to quantify how many acres of crop lands may be affected by the flooding identified in the NRT Flood data. We can access the dataset by using the [Cropland Collaborative Research Outcomes System (CroplandCROS)](https://croplandcros.scinet.usda.gov/) ArcGIS REST Services. 
 
-## In this Lesson, You Learned...
+For this part of the excercise, we will use the package *terra*, discussed in the previous lesson, and the function `rast()` to import the CDL service.
+
+```{r}
+#Read CDL GeoTIFF
+cdl<- stars::read_stars("2022_30m_cdls.tif")
+
+```
+
+```{r}
+Create boundaing box 
+bbox_5070 <- sf::st_as_sfc(bbox_subset)
+bbox_5070 <- sf::st_transform(bbox_5070, 5070)
+cdl <- cdl[bbox_5070]
+plot(cdl, downsample = 50)
+```
+
+```{r}
+
+flood_areas <- raster_df[raster_df == 3]
+flood_areas <- sf::st_transform(flood_areas, 5070)
+cdl_flooded <- cdl[flood_areas == 3]
+
+```
+
+```{r}
+flood_areas
+```
+```{r}
+## tmap mode set to "plot"
+tmap::tmap_mode("plot")
+
+## tmap mode can also be set to "view"
+#tmap_mode("view")
+
+#create an object the plots the basemap and the NRT flood raster
+#with the tmap library, call the tm_shape() function for the basemap
+tm_plot <- tmap::tm_shape(bm_m, raster.downsample = 10)+
+  tmap::tm_raster( )+
+  tmap::tm_shape(cdl_flooded, raster.downsample = 10)+
+  #add the classification styling to the raster
+  tmap::tm_raster( title = title)+
+  #style the plot
+  tmap::tm_layout(legend.outside = TRUE) +
+  tmap::tm_graticules(lines=FALSE)
+```
+
+```{r}
+tm_plot
+```
+
+```{r}
+# Aggregate cropland classes within flood areas
+cropland_counts <- aggregate(cdl, by = flood_areas, FUN = sum)
+
+
+# Print cropland counts
+print(cropland_counts)
+```
 
 Congratulations! Now you should be able to:
 
