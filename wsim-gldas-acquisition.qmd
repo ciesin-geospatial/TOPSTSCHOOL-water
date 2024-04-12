@@ -41,7 +41,7 @@ The **Water Security (WSIM-GLDAS) Monthly Grids dataset** used in this lesson is
 :::
 :::
 
-For this lesson, we will work with the WSIM-GLDAS data set [**Composite Anomaly Twelve-Month Return Period**](https://sedac.ciesin.columbia.edu/downloads/data/water/water-wsim-gldas-v1/water-wsim-gldas-v1-composite-twelve-month-netcdf.zip) NetCDF file. This represents the variable "Composite Anomaly" for the integration period of one month. Please go ahead and download the file. 
+For this lesson, we will work with the WSIM-GLDAS data set [**Composite Anomaly Twelve-Month Return Period**](https://sedac.ciesin.columbia.edu/downloads/data/water/water-wsim-gldas-v1/water-wsim-gldas-v1-composite-twelve-month-netcdf.zip) NetCDF file. This represents the variable "Composite Anomaly," defined as a rare observation, for the integration period of twelve-months. Please go ahead and download the file. 
 
 ![](images/watercycle_rc.png)[^1]
 
