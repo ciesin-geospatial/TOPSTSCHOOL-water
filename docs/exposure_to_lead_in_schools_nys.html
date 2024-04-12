@@ -4802,9 +4802,9 @@ vertical-align: -.125em;
   <li><a href="#read-data" id="toc-read-data" class="nav-link" data-scroll-target="#read-data">Read data</a></li>
   <li><a href="#preparing-the-lead-dataset-for-the-analysis" id="toc-preparing-the-lead-dataset-for-the-analysis" class="nav-link" data-scroll-target="#preparing-the-lead-dataset-for-the-analysis">Preparing the lead dataset for the analysis</a></li>
   <li><a href="#get-familiar-with-the-dataset" id="toc-get-familiar-with-the-dataset" class="nav-link" data-scroll-target="#get-familiar-with-the-dataset">Get familiar with the dataset</a></li>
-  <li><a href="#converting-from-tabular-data-to-geo-spatial-data" id="toc-converting-from-tabular-data-to-geo-spatial-data" class="nav-link" data-scroll-target="#converting-from-tabular-data-to-geo-spatial-data">Converting from tabular data to geo-spatial data</a></li>
+  <li><a href="#converting-from-tabular-data-to-geospatial-data" id="toc-converting-from-tabular-data-to-geospatial-data" class="nav-link" data-scroll-target="#converting-from-tabular-data-to-geospatial-data">Converting from tabular data to geospatial data</a></li>
   <li><a href="#mapping-the-dataset" id="toc-mapping-the-dataset" class="nav-link" data-scroll-target="#mapping-the-dataset">Mapping the dataset</a></li>
-  <li><a href="#obtain-population-data-from-us-census-bureau" id="toc-obtain-population-data-from-us-census-bureau" class="nav-link" data-scroll-target="#obtain-population-data-from-us-census-bureau">Obtain population data from US Census Bureau</a></li>
+  <li><a href="#obtain-population-data-from-the-us-census-bureau" id="toc-obtain-population-data-from-the-us-census-bureau" class="nav-link" data-scroll-target="#obtain-population-data-from-the-us-census-bureau">Obtain population data from the US Census Bureau</a></li>
   <li><a href="#explore-your-data-spatially" id="toc-explore-your-data-spatially" class="nav-link" data-scroll-target="#explore-your-data-spatially">Explore your data spatially</a></li>
   <li><a href="#aggregate-school-locations-in-county-boundary-and-compare-with-county-population" id="toc-aggregate-school-locations-in-county-boundary-and-compare-with-county-population" class="nav-link" data-scroll-target="#aggregate-school-locations-in-county-boundary-and-compare-with-county-population">Aggregate school locations in county boundary and compare with county population</a></li>
   <li><a href="#ensuring-safe-drinking-water" id="toc-ensuring-safe-drinking-water" class="nav-link" data-scroll-target="#ensuring-safe-drinking-water">ENSURING SAFE DRINKING WATER</a></li>
@@ -4857,7 +4857,7 @@ vertical-align: -.125em;
 <h1>Lead Testing in NYS School Drinking Water</h1>
 <section id="overview" class="level2">
 <h2 class="anchored" data-anchor-id="overview">Overview</h2>
-<p>This use case explores the risks of exposure to lead via drinking water. Lead contamination is a serious issue that poses severe health risks and requires remedial action. In this lesson, we will analyze data on lead levels in <a href="https://health.data.ny.gov/Health/Lead-Testing-in-School-Drinking-Water-Sampling-and/rkyy-fsv9/data">NY State schools</a> collected from 2016, 2017, 2018 and 2019 and compare it with population characteristics at county level in NYS to understand its impact. No “safe” levels of lead have been established, but we will discuss what level of lead can be detected. The lesson examines the sources of lead exposure and its adverse effects. The review also discusses the importance of data transparency, public participation, visualizing contamination as maps/graphs, and estimating population risks to address water quality issues.</p>
+<p>This use case explores the risks of exposure to lead via drinking water. Lead contamination is a serious issue that poses severe health risks and requires remedial action. In this lesson, we will analyze data on lead levels in <a href="https://health.data.ny.gov/Health/Lead-Testing-in-School-Drinking-Water-Sampling-and/rkyy-fsv9/data">NY State schools</a> collected from 2016, 2017, 2018, and 2019 and compare it with population characteristics at the county level in New York State (NYS) to understand its impact. No “safe” levels of lead have been established, but we will discuss what level of lead can be detected. The lesson examines the sources of lead exposure and its adverse effects. The review also discusses the importance of data transparency, public participation, visualizing contamination as maps/graphs, and estimating population risks to address water quality issues.</p>
 </section>
 <section id="learning-objectives" class="level2">
 <h2 class="anchored" data-anchor-id="learning-objectives">Learning Objectives</h2>
@@ -4878,7 +4878,7 @@ vertical-align: -.125em;
 <section id="lead-in-new-york-schools" class="level2 page-columns page-full">
 <h2 class="anchored" data-anchor-id="lead-in-new-york-schools">LEAD IN NEW YORK SCHOOLS</h2>
 <p>New York State (NYS) Lead Testing in School Drinking Water dataset shows the school drinking water lead sampling and results information reported by each NYS public school and Boards of Cooperative Educational Services (BOCES) <a href="https://health.data.ny.gov/Health/Lead-Testing-in-School-Drinking-Water-Sampling-and/rkyy-fsv9/data">(NYS Department of Health)</a>. More information on the NYS dataset sampling is available <a href="https://www.health.ny.gov/environmental/water/drinking/lead/lead_testing_of_school_drinking_water.htm">here</a>.</p>
-<p>Analysis of the dataset reveals that as of 2022, 1,864 schools had lead outlets testing higher than 15 ppb <span class="citation" data-cites="NYS2016">(<a href="#ref-NYS2016" role="doc-biblioref">NYS 2016</a>)</span>. While 527 schools finished their remediation, 1,851 schools reported taking remedial action. There are now 12 schools with outlets exceeding 15 ppb in operation, indicating possible continuous exposure. However, there are gaps in following up and documenting the corrective measures. More transparency is necessary for schools with high exposure to lead to address the hazards of lead contamination and implement improved repeated testing protocols. The New York State Department of Health provides guidelines, rules, and resources pertaining to lead testing and remediation in schools <span class="citation" data-cites="DOH2023">(<a href="#ref-DOH2023" role="doc-biblioref">Health 2023</a>)</span>. However, it seems that there is currently a lack of financial and technical support for schools to handle lead hazards.</p>
+<p>Analysis of the dataset reveals that as of 2022, 1,864 schools had lead outlets testing higher than 15 ppb <span class="citation" data-cites="NYS2016">(<a href="#ref-NYS2016" role="doc-biblioref">NYS 2016</a>)</span>. While 527 schools finished their remediation, 1,851 schools reported taking remedial action. There are now 12 schools with outlets exceeding 15 ppb in operation, indicating possible continuous exposure. However, there are gaps in following up and documenting the corrective measures. More transparency is necessary for schools with high exposure to lead to address the hazards of lead contamination and implement improved repeated testing protocols. The New York State Department of Health provides guidelines, rules, and resources on lead testing and remediation in schools <span class="citation" data-cites="DOH2023">(<a href="#ref-DOH2023" role="doc-biblioref">Health 2023</a>)</span>. However, it seems that there is currently a lack of financial and technical support for schools to handle lead hazards.</p>
 <div class="callout callout-style-default callout-tip callout-titled" style="color: #7d2748;">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -4889,7 +4889,7 @@ Lead in the News
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Thousands of people were exposed to dangerously high lead levels in their drinking water when the <a href="https://www.nrdc.org/stories/flint-water-crisis-everything-you-need-know">Flint water crisis</a> broke out in 2014. A study by Virginia Tech researchers, through their resident-organized sampling to testing data of 252 homes, revealed that lead levels in the city had increased. Over 17% of samples tested higher than the federal “action level” of 15 ppb, which calls for the need for corrective action. More than 40% had lead readings higher than 5 ppb, which the researchers deemed indicative of a “very serious” issue.</p>
+<p>Thousands of people were exposed to dangerously high lead levels in their drinking water when the <a href="https://www.nrdc.org/stories/flint-water-crisis-everything-you-need-know">Flint water crisis</a> broke out in 2014. A study by Virginia Tech researchers, through their resident-organized sampling to testing data of 252 homes, revealed that lead levels in the city had increased <span class="citation" data-cites="NRDC">(<a href="#ref-NRDC" role="doc-biblioref">Council, n.d.</a>)</span>. Over 17% of samples tested higher than the federal “action level” of 15 ppb, which calls for the need for corrective action. More than 40% had lead readings higher than 5 ppb, which the researchers deemed indicative of a “very serious” issue.</p>
 <p>Even years after the crisis began, elevated lead levels remained in Flint’s schools. An article by <a href="https://www.nytimes.com/2019/11/06/us/politics/flint-michigan-schools.html">The New York Times</a> discusses how, in 2019, drinking water samples from 30 Flint school buildings still exhibit excessive lead levels. The elevated levels demonstrate remaining problems with a prolonged impact on children’s health and development. Schools have an obligation to supply their pupils with clean drinking water. The Flint water crisis brought to light the long-term consequences of prolonged exposure to lead, especially for vulnerable groups such as children.</p>
 <p>Lead exposure is cumulative, as noted in the article by the <a href="https://projects.tampabay.com/projects/2018/investigations/school-lead/hillsborough-disclosure/">Tampa Bay Times</a>. The duration of lead exposure in Flint has lasting impacts on the public, not only affecting physical health but also leading to psychological consequences of communities not being able to trust their drinking water <span class="citation" data-cites="brooks2021">(<a href="#ref-brooks2021" role="doc-biblioref">Brooks and Patel 2021</a>)</span>. Rather than waiting for concerns to arise, schools can detect contamination issues early and take corrective action by implementing a lead testing program. Better learning outcomes are made possible by shielding children from lead exposure. The Flint water crisis made clear how crucial it is to conduct proactive lead testing, monitor the situation, and take prompt, corrective action. It also made clear how important it is to be transparent, involve the community, and address barriers to clean drinking water access.</p>
 <p>In 2021, the Biden-Harris administration announced an ambitious <a href="https://www.whitehouse.gov/briefing-room/statements-releases/2021/12/16/fact-sheet-the-biden-harris-lead-pipe-and-paint-action-plan/">Lead Pipe and Paint Action Plan</a>. This comprehensive $15 billion effort intends to promptly replace all lead service lines and pipes that are contaminating drinking water systems across the country. The plan has a provision of providing a lead remediation grant of $9 billion to disadvantaged communities through the Water Infrastructure Improvements for the Nation Act (WIIN) program, including for schools and childcare centers at EPA.</p>
@@ -4897,7 +4897,7 @@ Lead in the News
 </div>
 <section id="read-data" class="level3">
 <h3 class="anchored" data-anchor-id="read-data">Read data</h3>
-<p>To work with the NYS data, first we will read the NYS school lead testing results from 2016 to 2019. The dataset is hosted on a GitHub repository and we will read the dataset by using the dataset url.</p>
+<p>To work with the NYS data, first we will read the NYS school lead testing results from 2016 to 2019. The dataset is hosted on a GitHub repository and we will read the dataset by using the dataset URL.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Dataset url on GitHub repository.</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>data_url<span class="ot">&lt;-</span><span class="st">&quot;https://raw.githubusercontent.com/renastechschool/Python_tutorials/main/Lead_Testing_in_School_Drinking_Water_Sampling_and_Results_Compliance_Year_2016_formated.csv?token=GHSAT0AAAAAACNH7S3BJGTQXNGH4UPQCJI6ZNQB3VA&quot;</span></span>
@@ -4907,14 +4907,14 @@ Lead in the News
 </section>
 <section id="preparing-the-lead-dataset-for-the-analysis" class="level3">
 <h3 class="anchored" data-anchor-id="preparing-the-lead-dataset-for-the-analysis">Preparing the lead dataset for the analysis</h3>
-<p>All datasets require some pre-cleaning and formatting. In the section below, we will format field names. R does not like fields names with spaces, so we need to convert space to an underscore “_”. Also, we need to extract the year from the date field for the next step of our work.</p>
+<p>All datasets require some pre-cleaning and formatting. In the section below, we will format field names. R does not like field names with spaces, so we need to convert space to an underscore “_”. Also, we need to extract the year from the date field for the next step of our work.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># There are empty spaces in the field names which R does not like.</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Replace empty space with &quot;_&quot;.</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(school_lead_df) <span class="ot">&lt;-</span> <span class="fu">names</span>(school_lead_df) <span class="sc">%&gt;%</span> stringr<span class="sc">::</span><span class="fu">str_replace_all</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">s&quot;</span>,<span class="st">&quot;_&quot;</span>)</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the year from date field. We are using Date_Results_Updated for the date.</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the year from the date field. We are using Date_Results_Updated for the date.</span></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>school_lead_df<span class="ot">&lt;-</span>school_lead_df <span class="sc">%&gt;%</span>  <span class="fu">mutate</span>(<span class="at">year=</span><span class="fu">format</span>(<span class="fu">as.Date</span>(Date_Results_Updated, <span class="at">format=</span><span class="st">&quot;%d/%m/%Y&quot;</span>),<span class="st">&quot;%Y&quot;</span>))</span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Data reports lead level by outlets if a outlet lead level is above or under 15ppb.</span></span>
@@ -4928,7 +4928,7 @@ Lead in the News
 <section id="get-familiar-with-the-dataset" class="level3 page-columns page-full">
 <h3 class="anchored" data-anchor-id="get-familiar-with-the-dataset">Get familiar with the dataset</h3>
 <p>Getting familiar with the dataset is the first step of an analysis. To understand the attributes, we will query data by geographic region (county) and different attributes (fields).</p>
-<p>The code below creates a <a href="https://shiny.rstudio.com/">Shiny app</a> which allows users to select a county and specific fields from a data frame (school_lead_df), and then it displays the corresponding data table based on the user’s selections.</p>
+<p>The code below creates a <a href="https://shiny.rstudio.com/">Shiny app</a> that allows users to select a county and specific fields from a data frame (school_lead_df), and then it displays the corresponding data table based on the user’s selections.</p>
 
 <div class="no-row-height column-margin column-container"><div class>
 <div class="callout callout-style-default callout-tip callout-titled" style="color: #5a7a2b;">
@@ -4962,11 +4962,11 @@ Coding Review
 </div>
 <p><br></p>
 </section>
-<section id="converting-from-tabular-data-to-geo-spatial-data" class="level3">
-<h3 class="anchored" data-anchor-id="converting-from-tabular-data-to-geo-spatial-data">Converting from tabular data to geo-spatial data</h3>
-<p>A dataset needs to have a geometry attribute to plot the data on a map or to do different spatial analysis. The NYS dataset has xy coordinates of schools. The xy coordinates will allow us to convert the tabular dataset to a spatial dataset.</p>
-<p>We first need to address that the xy coordinates are not properly formatted. The coordinates are currently stored with school addresses, for example: 31-02 67 AVENUE Queens, NY 11364(40.74779141700003, -73.74551716499997). We need to extract the coordinates (40.74779141700003, -73.74551716499997) and store the value on each side of the comma as a separate field. The first number refers to the y coordinate (latitude), the second number refers to the x coordinate (longitude).</p>
-<p>While converting the data, we also need to know the projection of xy coordinates. XY coordinates can be in different projections systems. Projection information is typically stored in the metadata of a dataset. However, in the NYS dataset there is not any metadata attached to the dataset.</p>
+<section id="converting-from-tabular-data-to-geospatial-data" class="level3">
+<h3 class="anchored" data-anchor-id="converting-from-tabular-data-to-geospatial-data">Converting from tabular data to geospatial data</h3>
+<p>A dataset needs to have a geometry attribute to plot the data on a map or to conduct different spatial analyses. The NYS dataset has xy coordinates of schools. The xy coordinates will allow us to convert the tabular dataset to a spatial dataset.</p>
+<p>We first need to address that the xy coordinates are not properly formatted. The coordinates are currently stored with school addresses, for example: 31-02 67 AVENUE Queens, NY 11364(40.74779141700003, -73.74551716499997). We need to extract the coordinates (40.74779141700003, -73.74551716499997) and store the value on each side of the comma as a separate field. The first number refers to the y coordinate (latitude), and the second number refers to the x coordinate (longitude).</p>
+<p>While converting the data, we also need to know the projection of xy coordinates. XY coordinates can be in different projection systems. Projection information is typically stored in the metadata of a dataset. However, in the NYS dataset, there is not any metadata attached to the dataset.</p>
 <p>The most commonly used geographic coordinate system is the <a href="https://earth-info.nga.mil/index.php?dir=wgs84&amp;action=wgs84">WORLD GEODETIC SYSTEM 1984 (WGS 84)</a>. We will use the WGS84 projection to convert the NYS dataset to spatial data.</p>
 <p><br></p>
 <div class="cell">
@@ -5026,9 +5026,9 @@ Coding Review
 </div>
 <p><br></p>
 </section>
-<section id="obtain-population-data-from-us-census-bureau" class="level3">
-<h3 class="anchored" data-anchor-id="obtain-population-data-from-us-census-bureau">Obtain population data from US Census Bureau</h3>
-<p>We will next pull population datafrom US Census Bureau by using the Census Bureau’s Application Programming Interface (API).</p>
+<section id="obtain-population-data-from-the-us-census-bureau" class="level3">
+<h3 class="anchored" data-anchor-id="obtain-population-data-from-the-us-census-bureau">Obtain population data from the US Census Bureau</h3>
+<p>We will next pull population data from the US Census Bureau by using the Census Bureau’s Application Programming Interface (API).</p>
 <div class="cell" data-context="render">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#|panel: fill</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -5263,6 +5263,9 @@ Coding Review
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-brooks2021" class="csl-entry" role="listitem">
 Brooks, Samantha K, and Sonny S Patel. 2021. <span>“Psychological Consequences of the Flint Water Crisis: A Scoping Review.”</span> <em>Disaster Medicine and Public Health Preparedness</em> 16 (3): 1259–69. <a href="https://doi.org/10.1017/dmp.2021.41">https://doi.org/10.1017/dmp.2021.41</a>.
+</div>
+<div id="ref-NRDC" class="csl-entry" role="listitem">
+Council, National Resource Defense. n.d. <span>“Flint Water Crisis: Everything You Need to Know.”</span> <a href="https://www.nrdc.org/stories/flint-water-crisis-everything-you-need-know#summary">https://www.nrdc.org/stories/flint-water-crisis-everything-you-need-know#summary</a>.
 </div>
 <div id="ref-NIEHS" class="csl-entry" role="listitem">
 Environmental Health Sciences, National Institute of. n.d. <span>“Safe Water and Your Health.”</span> <a href="https://www.niehs.nih.gov/health/topics/agents/water-poll">https://www.niehs.nih.gov/health/topics/agents/water-poll</a>.
