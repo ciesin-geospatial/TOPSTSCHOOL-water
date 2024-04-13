@@ -1,5 +1,5 @@
 # Get the rocker image we want
-FROM rocker/geospatial:latest
+FROM rocker/binder:latest
 
 # copy the lesson contents into the image
 ## WSIM lessons
@@ -13,23 +13,14 @@ ADD lance-modis-nrt-global-flood-mcdwd-f3.qmd /home/rstudio
 ADD /nyc_lead_dev home/rstudio
 
 ## give the rstudio user permissions on these files
-RUN chown -R rstudio /home/rstudio/
+# RUN chown -R rstudio /home/rstudio/
 
 # Add packages not part of rocker/geospatial
 RUN Rscript -e "install.packages('cubelyr')"
 RUN Rscript -e "install.packages('exactextractr')"
 RUN Rscript -e "install.packages('basemaps')"
 RUN Rscript -e "install.packages('shiny')"
-
-# Python Environment
-RUN apt-get update
-RUN apt-get install -y python3
-RUN apt-get install -y python3-pip
-
-RUN pip install exactextract
-RUN pip install geopandas pyproj shapely xarray rioxarray 
-RUN pip install rasterio netcdf4 h5netcdf dask bottleneck 
-RUN pip install numpy pandas nc-time-axis requests
-RUN pip install exactextract
+RUN Rscript -e "install.packages('data.table')"
+RUN Rscript -e "install.packages('kableExtra')"
 
 CMD ["/init"]
