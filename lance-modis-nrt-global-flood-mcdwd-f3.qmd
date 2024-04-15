@@ -37,7 +37,9 @@ After completing this lesson, you should be able to:
 
 -   View the downloaded raster data to quickly preview.
 
--   Classify and place on a map the NRT flood raster data to determine areas with unusual flooding.
+-   Classify and place on a map the NRT flood spatial data to determine areas with unusual flooding.
+
+-   Subset data, perfom zonal statistics using spatial data, and graph analysis results.
 
 ## Introduction
 
@@ -439,23 +441,25 @@ Now that we have only the flooded areas from the NRT Flood data, we can subset t
 #subset the CDL raster where unusual flooding occurred
 cdl_sub3 <- cdl_sub[raster3==3]
 ```
-The [CDL FAQ Webpage](https://www.nass.usda.gov/Research_and_Science/Cropland/sarsfaqs2.php#common.7) lists the categorization, including non-agricultural     categories which we can remove from the analysis:
-`
-Categorization Code   Land Cover
-         "111"       Open Water
-         "112"       Perennial Ice/Snow
-         "121"       Developed/Open Space
-         "122"       Developed/Low Intensity
-         "123"       Developed/Med Intensity
-         "124"       Developed/High Intensity
-         "131"       Barren
-         "141"       Deciduous Forest
-         "142"       Evergreen Forest
-         "143"       Mixed Forest
-         "152"       Shrubland
-         "176"       Grassland/Pasture
-         "190"       Woody Wetlands
-         "195"       Herbaceous Wetlands
+The [CDL FAQ Webpage](https://www.nass.usda.gov/Research_and_Science/Cropland/sarsfaqs2.php#common.7) lists the categorization, including non-agricultural categories which we can remove from the analysis:
+
+Non-Agricultural Categories
+| Categorization Code | Land cover            |
+|---------------------|-----------------------|
+| "111"               | Open water            |
+| "112"               | Perennial Ice/snow   |
+| "121"               | Developed/Open space |
+| "122"               | Developed/Low Intensity |
+| "123"               | Developed/Med Intensity |
+| "124"               | Developed/High Intensity |
+| "131"               | Barren                |
+| "141"               | Deciduous Forest      |
+| "142"               | Evergreen Forest      |
+| "143"               | Mixed Forest          |
+| "152"               | Shrubland             |
+| "176"               | Grassland/Pasture     |
+| "190"               | Woody Wetlands        |
+| "195"               | Herbaceous Wetlands   |
 `
 
 ```{r}
@@ -505,40 +509,25 @@ dataplot$area <- dataplot$Freq * 30 / 10000
 Once the are is calculated, we can plot a bar graph to compare the top 10 CDL Categories found in the NRT Flood zone.
 
 ```{r}
-library(ggplot2)
+#create new title for plot
 title = paste("Hectares of Cropland Category under flood, day", year_day, "in tile", tile_code)
+# Find the max value in the table for a dynamic axis plot 
 max_value <- max(dataplot$area) +3
 
-# plt <- ggplot(dataplot, aes(x = area, y = cdl_matrix)) +
-#   geom_bar(stat = "identity", fill = "skyblue") +
-#   geom_vline(xintercept = seq(0, max_value, by = 5), color = "gray", linetype = "dashed") +
-#   labs(title = title, x = "Hectares (ha)", y = "Categories") +
-#   theme_minimal() +
-#   theme(axis.text.y = element_text(hjust = 1, size = 20),  # Adjust size of y-axis labels
-#         axis.text.x = element_text(size = 20),              # Adjust size of x-axis labels
-#         axis.title = element_text(size = 20),               # Adjust size of axis titles
-#         plot.title = element_text(size = 20),               # Adjust size of plot title
-#         axis.line = element_line(size = 1),               # Adjust size of axis lines
-#         axis.ticks = element_line(size = 1),              # Adjust size of axis ticks
-#         panel.grid.major = element_blank(),                 # Remove major gridlines
-#         panel.grid.minor = element_blank(),                 # Remove minor gridlines
-#         plot.background = element_rect(fill = "white"),     # Set plot background color
-#         panel.background = element_rect(fill = "white"),    # Set panel background color
-#         panel.border = element_rect(color = "black", fill = NA, size = 0.5)) +  # Set panel border
-#   geom_text(aes(label = round(area,1)), hjust = 0.5, size = 6, color = "black") +
-#   xlim(0, max_value)  # Adjust x-axis limits # Adjust size of text labels
-
-plt <- ggplot(dataplot, aes(x = area, y = cdl_matrix)) +
-  geom_bar(stat = "identity", fill = "skyblue") +
-  geom_vline(xintercept = seq(0, max_value, by = 1), color = "gray", linetype = "dashed") +
-  labs(title = title, x = "Hectares (ha)", y = "Categories") +
-  theme_minimal() +
-  theme(axis.line = element_line(size = 1),               # Adjust size of axis lines
-        axis.ticks = element_line(size = 1),              # Adjust size of axis ticks
-        panel.grid.major = element_blank(),                 # Remove major gridlines
-        panel.grid.minor = element_blank(),                 # Remove minor gridlines
-        plot.background = element_rect(fill = "white"),     # Set plot background color
-        panel.background = element_rect(fill = "white"),    # Set panel background color
+# use ggplot to plot the dataplot table with area 
+# in x axis and category name in the y axis  
+plt <- ggplot(dataplot, aes(x = area, y = cdl_matrix)) + 
+  geom_bar(stat = "identity", fill = "skyblue") + # adjust the height and color
+  geom_vline(xintercept = seq(0, max_value, by = 1), 
+    color = "gray", linetype = "dashed") + #create guide lines
+  labs(title = title, x = "Hectares (ha)", y = "Categories") + #add labels to plot
+  theme_minimal() + #set theme
+  theme(axis.line = element_line(size = 1), # Adjust size of axis lines
+        axis.ticks = element_line(size = 1),# Adjust size of axis ticks
+        panel.grid.major = element_blank(),  # Remove major gridlines
+        panel.grid.minor = element_blank(),# Remove minor gridlines
+        plot.background = element_rect(fill = "white"),# Set plot background color
+        panel.background = element_rect(fill = "white"),# Set panel background color
         panel.border = element_rect(color = "black", fill = NA)) +  # Set panel border
   geom_text(aes(label = round(area,1)), color = "black") +
   xlim(0, max_value)  # Adjust x-axis limits # Adjust size of text labels
@@ -557,10 +546,10 @@ Congratulations! Now you should be able to:
 
 -   Plot on a map and classify raster data to determine areas with unusual flooding.
 
--   Subset raster data and perform zonal statistics to plot analysis results.
+-   Use NRT Flood data to subset cropland classification data, perform zonal statistics, and graph results.
 
 ## Lesson 4
 
-In this lesson we explored the LANCE MODIS Near-Rear-Time (NRT) Flood dataset. In our next lesson we will think of water at the local level and focuse on New Nork State School Drinking Water datasets .
+In this lesson we explored the LANCE MODIS Near-Rear-Time (NRT) Flood dataset. In our next lesson we will think of water at the local level and focue on New Nork State School Drinking Water datasets.
 
 [Lesson 4: New York Sate School Water Quality: Exposure to Lead](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/exposure_to_lead_in_schools_nys.html){.btn .btn-primary .btn role="button"}
