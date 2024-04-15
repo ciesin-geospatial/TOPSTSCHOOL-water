@@ -3,7 +3,7 @@ title: "MODIS NRT Global Flood Product"
 author: 
   - "Juan F. Martinez"
   - "Iris Cano"
-date: "February 2, 2024"
+date: "April 14, 2024"
 bibliography: nrt-flood-references.bib
 ---
 
@@ -444,22 +444,23 @@ cdl_sub3 <- cdl_sub[raster3==3]
 The [CDL FAQ Webpage](https://www.nass.usda.gov/Research_and_Science/Cropland/sarsfaqs2.php#common.7) lists the categorization, including non-agricultural categories which we can remove from the analysis:
 
 Non-Agricultural Categories
-| Categorization Code | Land cover            |
-|---------------------|-----------------------|
-| "111"               | Open water            |
-| "112"               | Perennial Ice/snow   |
-| "121"               | Developed/Open space |
-| "122"               | Developed/Low Intensity |
-| "123"               | Developed/Med Intensity |
+
+| Categorization Code | Land cover               |
+|:-------------------:|:-------------------------|
+| "111"               | Open water               |
+| "112"               | Perennial Ice/snow       |
+| "121"               | Developed/Open space     |
+| "122"               | Developed/Low Intensity  |
+| "123"               | Developed/Med Intensity  |
 | "124"               | Developed/High Intensity |
-| "131"               | Barren                |
-| "141"               | Deciduous Forest      |
-| "142"               | Evergreen Forest      |
-| "143"               | Mixed Forest          |
-| "152"               | Shrubland             |
-| "176"               | Grassland/Pasture     |
-| "190"               | Woody Wetlands        |
-| "195"               | Herbaceous Wetlands   |
+| "131"               | Barren                   |
+| "141"               | Deciduous Forest         |
+| "142"               | Evergreen Forest         |
+| "143"               | Mixed Forest             |
+| "152"               | Shrubland                |
+| "176"               | Grassland/Pasture        |
+| "190"               | Woody Wetlands           |
+| "195"               | Herbaceous Wetlands      |
 `
 
 ```{r}
