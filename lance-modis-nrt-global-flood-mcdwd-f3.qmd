@@ -436,10 +436,10 @@ breaks3 <- c(0,3)
 plot(raster3, breaks=breaks3, col="red",downsample=20)
 ```
 
-Now that we have only the flooded areas from the NRT Flood data, we can subset the CDL data. 
+Now that we have only the flooded areas from the NRT Flood data, we can subset the CDL data.  
 ```{r}
 #subset the CDL raster where unusual flooding occurred
-cdl_sub3 <- cdl_sub[raster3==3]
+cdl_sub3 <- cdl_sub[raster3==3] 
 ```
 The [CDL FAQ Webpage](https://www.nass.usda.gov/Research_and_Science/Cropland/sarsfaqs2.php#common.7) lists the categorization, including non-agricultural categories which we can remove from the analysis:
 
