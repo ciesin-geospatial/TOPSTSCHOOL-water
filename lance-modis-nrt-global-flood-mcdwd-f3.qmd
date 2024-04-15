@@ -109,7 +109,7 @@ For this exercise, we will be using the MCDWD L3 F3 product: [LANCE NRT Flood](h
 
 First, install and load the R packages required for this exercise:
 
-```{r eval=FALSE}
+```{r}
 packages_to_check <- c("stars", "httr", "jsonlite", "tmap", "basemaps", "sp", "sf", "ggplot2")
 
 # Check and install packages
@@ -203,7 +203,7 @@ api_key <- paste("Bearer", api_key)
 headers <- c(Authorization = api_key)
 
 # Make GET request
-response <- httr::GET(url, httr::add_headers(.headers=headers))
+response <- GET(url, add_headers(.headers=headers))
 
 ```
 
@@ -217,12 +217,12 @@ response
 Out of the response from the server, we'll check if the response was a success with `if (http_status(response)$category == "Success")`. If this statement is true, then the content will be assigned to the variable `data` in JSON format, which is then parsed to a data frame using `data_parsed <- jsonlite::fromJSON(data)`. The data frame contains `data_parsed$content`, a column with content. We filter the content by tile code using the command `content_items <- data_parsed$content[grepl(tile_code, data_parsed$content$name, ignore.case = TRUE), ]` and add the results to a data frame.
 
 ```{r}
-if (httr::http_status(response)$category == "Success") {
+if (http_status(response)$category == "Success") {
   # Read the JSON content into a data frame
-  df <- httr::content(response, as = "parsed", simplifyVector = TRUE)
+  df <- content(response, as = "parsed", simplifyVector = TRUE)
   df <- df$content
 } else {
-  print("Request failed with status code", httr::http_status(response)$status_code)
+  print("Request failed with status code", http_status(response)$status_code)
 }
 names(df)
 ```
@@ -249,8 +249,8 @@ print(download_link)
 Use the `read_stars()` function from the `stars` R Library to read the geoTiff raster. The raster is assigned to the `raster_df` variable. This is a web-derived layer that is in the Geographic Coordinate System (GCS) WGS84 - World Geodetic System 1984 EPSG:4326 (EPSG number 4326). We can assign the Coordinate Reference System (CRS) to the stars object:
 
 ```{r}
-raster_df <- stars::read_stars(download_link)
-sf::st_crs(raster_df) <- sf::st_crs(4326)
+raster_df <- read_stars(download_link)
+st_crs(raster_df) <- st_crs(4326)
 ```
 
 ### Visualizing NRT Flood Data
@@ -298,9 +298,9 @@ The `basemap_stars()` function from the `stars` package allows us to access Esri
 #define basemap using a the raster as a bounding box
 bm_m <- basemaps::basemap_stars(raster_df, map_service = "esri", map_type = "world_imagery")
 #The `st_rgb` function lets us turn the RGB stars item into a single image
-bm_m <- stars::st_rgb(bm_m)
+bm_m <- st_rgb(bm_m)
 #
-bm_m <- sf::st_transform(bm_m, 4326)
+bm_m <- st_transform(bm_m, 4326)
 ```
 ### Plot basemap and NRT Flood data
 
@@ -308,27 +308,27 @@ Generate a plot from the tmap library using the `tm_shape()` function. We will p
 
 ```{r}
 ## tmap mode set to "plot"
-tmap::tmap_mode("plot")
+tmap_mode("plot")
 
 ## tmap mode can also be set to "view"
 #tmap_mode("view")
 
 #create an object the plots the basemap and the NRT flood raster
 #with the tmap library, call the tm_shape() function for the basemap
-tm_plot <-  tmap::tmap_options(max.raster = c(plot = 50000, view = 50000))+
-  tmap::tm_shape(bm_m)+
+tm_plot <-  tmap_options(max.raster = c(plot = 50000, view = 50000))+
+  tm_shape(bm_m)+
   #the basemap bm_m is treated as a raster
-  tmap::tm_raster()+
+  tm_raster()+
   #create a new tmap shape for the NRT flood raster with style as "cat," meaning categorical.
-  tmap::tm_shape(raster_df, style="cat")+
+  tm_shape(raster_df, style="cat")+
   #add the classification styling to the raster including colors, title, class breaks and labels
-  tmap::tm_raster( palette = c(colors),
+  tm_raster( palette = c(colors),
   title = title, 
   breaks = class_breaks,
   labels = labels )+
   #style the plot
-  tmap::tm_layout(legend.outside = TRUE) +
-  tmap::tm_graticules(lines=FALSE)
+  tm_layout(legend.outside = TRUE) +
+  tm_graticules(lines=FALSE)
  
  #view Plot
  tm_plot
@@ -344,7 +344,7 @@ west <- -124 #negative numbers are used for West
 east <- -120 #negative numbers are used for West
 
 # Create a bounding box
-bbox_subset <- sf::st_bbox(c(xmin = west, ymin = south, xmax = east, ymax = north), crs = 4326)
+bbox_subset <- st_bbox(c(xmin = west, ymin = south, xmax = east, ymax = north), crs = 4326)
 
 ```
 
@@ -363,26 +363,26 @@ bm_m <- sf::st_transform(bm_m, 4326)
 
 ```{r}
 ## tmap mode set to "plot"
-tmap::tmap_mode("plot")
+tmap_mode("plot")
 
 ## tmap mode can also be set to "view"
 #tmap_mode("view")
 
 #create an object the plots the basemap and the NRT flood raster
 #with the tmap library, call the tm_shape() function for the basemap
-tm_plot <- tmap::tmap_options(max.raster = c(plot = 50000, view = 50000))+
-  tmap::tm_shape(bm_m, raster.downsample=TRUE)+
-  tmap::tm_raster()+
+tm_plot <- tmap_options(max.raster = c(plot = 50000, view = 50000))+
+  tm_shape(bm_m, raster.downsample=TRUE)+
+  tm_raster()+
   #create a new tmap shape for the NRT flood raster with style as "cat," meaning categorical.
-  tmap::tm_shape(raster_df, style="cat", raster.downsample=TRUE)+
+  tm_shape(raster_df, style="cat", raster.downsample=TRUE)+
   #add the classification styling to the raster
-  tmap::tm_raster( palette = c(colors),
+  tm_raster( palette = c(colors),
   title = title, 
   breaks = class_breaks,
   labels = labels )+
   #style the plot
-  tmap::tm_layout(legend.outside = TRUE) +
-  tmap::tm_graticules(lines=FALSE)
+  tm_layout(legend.outside = TRUE) +
+  tm_graticules(lines=FALSE)
  
  
 #View the plot:
@@ -402,7 +402,7 @@ For this part of the exercise, we will use the package `stars`, discussed in the
 
 ```{r}
 #Read CDL GeoTIFF
-cdl<- stars::read_stars("2022_30m_cdls.tif")
+cdl<- read_stars("2022_30m_cdls.tif")
 #plot the raster and downsample by 100 as the resolution of the raster is high 
 plot(cdl, downsample=100)
 ```
@@ -413,12 +413,12 @@ This raster is provided with a 30-meter resolution for the entire contiguous U.S
 #subset the NRT Floor raster with the bounding box
 raster_sub <- raster_df[bbox_subset]
 #warp the raster NRT flood raster to match the CDL raster CRS.
-raster_sub <- stars::st_warp(raster_sub, crs=5070, use_gdal=FALSE,method = "near")
+raster_sub <- st_warp(raster_sub, crs=5070, use_gdal=FALSE,method = "near")
 #subset CDL raster with the subset NRT flood raster
 cdl_sub <- cdl[raster_sub]
 #because of the high resolution, a stars proxy object was made
 #make a stars object from a stars proxy object to directly read the data
-cdl_sub <- stars::st_as_stars(cdl_sub)
+cdl_sub <- st_as_stars(cdl_sub)
 #plot the resulting CDL subset
 plot(cdl_sub, downsample=100)
 ```
