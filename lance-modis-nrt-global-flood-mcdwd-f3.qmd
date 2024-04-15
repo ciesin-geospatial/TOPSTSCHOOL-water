@@ -108,7 +108,7 @@ For this exercise, we will be using the MCDWD L3 F3 product: [LANCE NRT Flood](h
 First, install and load the R packages required for this exercise:
 
 ```{r eval=FALSE}
-packages_to_check <- c("stars", "httr", "jsonlite", "tmap", "basemaps", "sp", "sf")
+packages_to_check <- c("stars", "httr", "jsonlite", "tmap", "basemaps", "sp", "sf", "ggplot2")
 
 # Check and install packages
 for (package_name in packages_to_check) {
@@ -129,7 +129,7 @@ for (package_name in packages_to_check) {
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Coding Review
 
-This lesson uses the [stars](https://r-spatial.github.io/stars/), [httr](https://httr.r-lib.org/), [jsonlite](https://cran.r-project.org/package=jsonlite), [tmap](https://cran.r-project.org/package=tmap), and [basemaps](https://cran.r-project.org/package=basemaps) packages. If you'd like to learn more about the functions used in this lesson you can use the help guides on their package websites.
+This lesson uses the [stars](https://r-spatial.github.io/stars/), [httr](https://httr.r-lib.org/), [jsonlite](https://cran.r-project.org/package=jsonlite), [tmap](https://cran.r-project.org/package=tmap), [basemaps](https://cran.r-project.org/package=basemaps), and [ggplot2](https://ggplot2.tidyverse.org/) packages. If you'd like to learn more about the functions used in this lesson you can use the help guides on their package websites.
 :::
 :::
 
@@ -242,38 +242,16 @@ download_link <- subset_df$downloadsLink
 print(download_link)
 ```
 
-```{r}
-# Make the GET request to the download link with the headers
-# response2 <- GET(download_link, add_headers(headers))
-```
-
-```{r}
-# response2
-```
-
 ## Read the Data
 
-Use the "read_stars()" function from the "stars" R Library to read the geoTiff raster. The raster is assigned to the "raster_df" variable. This is a web-derived layer that is in the Geographic Coordinate System (GCS) WGS84 (EPSG number 4326). We can assign the Coordinate Reference System (CRS) to the stars object:
+Use the `read_stars()` function from the `stars` R Library to read the geoTiff raster. The raster is assigned to the `raster_df` variable. This is a web-derived layer that is in the Geographic Coordinate System (GCS) WGS84 - World Geodetic System 1984 EPSG:4326 (EPSG number 4326). We can assign the Coordinate Reference System (CRS) to the stars object:
 
 ```{r}
 raster_df <- stars::read_stars(download_link)
 sf::st_crs(raster_df) <- sf::st_crs(4326)
 ```
 
-Set the Coordinate Reference System (CRS) to a new raster "my_raster" to plot it in a map. For example, Web Mercator EPSG:3857. Use the st_transform() function:
-
-```{r}
-# raster_df4326 <- sf::st_transform(raster_df, 4326)
-# raster_df5070 <- sf::st_transform(raster_df, 5070)
-# raster_df32610 <- sf::st_transform(raster_df, 32610)
-# raster_warp <- st_transform(raster_df, crs = 32610, resampling_method = "bilinear")
-# raster_reprojected <- st_warp(raster_df, crs = 3857, use_gdal=FALSE, method = "near")
-
-```
-
-Now the raster data should be stored as a variable "my_raster" with the CRS set to Web Mercator EPSG:3857
-
-# \## Visualizing NRT Flood Data
+### Visualizing NRT Flood Data
 
 Plot the raster to quickly view it. `downsample` allows faster rendering for viewing:
 
@@ -297,57 +275,34 @@ NRT Flood data has 5 classifications:
 
 [^4]: Value 2 (Recurring flood) is not populated in the beta release.
 
-To view the data in this classification, we'll need to create a classified legend; however, the NRT Flood data is stored in decimal numbers (aka floating-point). Create class breaks dividing the data by the following breaks, and corresponding colors and labels:
+To view the data in this classification, we'll need to create a classified legend; however, the NRT Flood data is stored in decimal numbers (aka floating-point). Create class breaks dividing the data by the following breaks, and corresponding colors and labels. Finally, add a title for the plot that includes the year and day, `year_day`, and the `tile_code`:
 
 ```{r}
-class_breaks <- c(-Inf, 0.1, 1.1, 2.1, 3.1)
+#class_breaks for the table plot categorization 
+class_breaks <- c( 0, 1, 2, 3, Inf)
+#colors for the plot breaks 
 colors <- c( "gray", "blue", "yellow", "red")
-
+#labels for the plot breaks
 labels = c("0: No Water", "1: Surface Water", "2: Recurring flood", "3: Flood (unusual)")
-
-```
-
-Add a title for the plot that includes the year, day of year, and tile code:
-
-```{r}
 title = paste("Near Real-Time Flood F3", year_day, tile_code)
+
 ```
 
 ### Generate a basemap from Esri Imagery
 
-To generate a basemap that shows the location of our raster, we must first create a bounding box to match `raster_df`.
+The `basemap_stars()` function from the `stars` package allows us to access Esri imagery layers. To generate a basemap that shows the location of our raster, we must first can deifne the bounding box with the `raster_df`. Choose "world_imagery" as our background and assign it to the object `bm_m`. the `st_rgb` function combines the basemap RGB image into a single file. Finally, `st_transform` transform the CRS into WGS84. 
 
 ```{r}
-# bbox <-  sf::st_bbox(raster_df)
-# Convert the bbox to an sf object with EPSG:5070 CRS
-#bbox <- st_as_sfc(bbox, crs = st_crs("EPSG:5070"))
-#bbox <- st_warp(bbox, crs = 3857, method = "bilinear", use_gdal=FALSE)
-# Transform the bbox to EPSG:4326
-# bbox <- st_transform(bbox, crs = st_crs("EPSG:3857"))
-# bbox <-  sf::st_bbox(bbox)
-```
-
-The `basemap_stars()` function from the `stars` library allows us to access Esri imagery layers. We choose "world_imagery" as our background and assign it to the object `bm_m`.
-
-```{r}
+#define basemap using a the raster as a bounding box
 bm_m <- basemaps::basemap_stars(raster_df, map_service = "esri", map_type = "world_imagery")
-#bm_m <- st_transform(bm_m, crs = st_crs("EPSG:5070"))
-```
-
-The `st_rgb` function lets us turn the RGB stars item into a single image
-
-```{r}
+#The `st_rgb` function lets us turn the RGB stars item into a single image
 bm_m <- stars::st_rgb(bm_m)
+#
 bm_m <- sf::st_transform(bm_m, 4326)
 ```
-
-```{r}
-#plot(bbox, downsample=5)
-```
-
 ### Plot basemap and NRT Flood data
 
-Generate a plot from the tmap library using the `tm_shape()` function. We will plot the basemap and the raster_df items.
+Generate a plot from the tmap library using the `tm_shape()` function. We will plot the basemap and the raster_df items in one plot. 
 
 ```{r}
 ## tmap mode set to "plot"
@@ -358,11 +313,13 @@ tmap::tmap_mode("plot")
 
 #create an object the plots the basemap and the NRT flood raster
 #with the tmap library, call the tm_shape() function for the basemap
-tm_plot <- tmap::tm_shape(bm_m)+
+tm_plot <-  tmap::tmap_options(max.raster = c(plot = 50000, view = 50000))+
+  tmap::tm_shape(bm_m)+
+  #the basemap bm_m is treated as a raster
   tmap::tm_raster()+
   #create a new tmap shape for the NRT flood raster with style as "cat," meaning categorical.
   tmap::tm_shape(raster_df, style="cat")+
-  #add the classification styling to the raster
+  #add the classification styling to the raster including colors, title, class breaks and labels
   tmap::tm_raster( palette = c(colors),
   title = title, 
   breaks = class_breaks,
@@ -375,15 +332,7 @@ tm_plot <- tmap::tm_shape(bm_m)+
  tm_plot
 ```
 
-View the plot:
-
-```{r}
-
-```
-
-To observe a location closer, we can create a new bounding box using latitude and longitude values, clip the data and replot on a map.
-
-Select from the map four corners in degrees including North/South, East/West information. We use these coordinates to create a matrix of points that represent four corners:
+To observe a location closer, we can create a new bounding box using latitude and longitude values, clip the data and replot on a map. Select from the map four corners in degrees including North/South, East/West information. We use these coordinates to create a matrix of points that represent four corners. We can create a bounding box from these corners. The corners are first placed in the GCS WGS84 to match out raster.
 
 ```{r}
 # Define the NWES coordinates
@@ -392,41 +341,8 @@ south <- 36 #negative values are used for south
 west <- -124 #negative numbers are used for West
 east <- -120 #negative numbers are used for West
 
-# Create a matrix with the corner coordinates
-# corners <- matrix(c(west, south, east, south, east, north, west, north), ncol = 2, byrow = TRUE)
 # Create a bounding box
 bbox_subset <- sf::st_bbox(c(xmin = west, ymin = south, xmax = east, ymax = north), crs = 4326)
-
-```
-
-We can create a bounding box from these corners. The corners are first placed in a Geographic Coordinate System (GCS) WGS84:
-
-```{r}
-# Create a SpatialPolygons object representing a bounding box
-# bbox_subset <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(corners)), ID = "bbox")), proj4string = sp::CRS("+proj=longlat +datum=WGS84"))
-
-
-# bbox_subset <- sp::SpatialPolygons(
-#   list(sp::Polygons(
-#     list(sp::Polygon(corners)), ID = "bbox")), 
-#     proj4string = sp::CRS("+init=epsg:4326"))
-
-#bbox_subset <- sp::spTransform(bbox_subset, sp::CRS("+init=epsg:3857"))
-# bbox_subset <- sf::st_as_sfc(bbox_subset)
-#bbox_subset <- sf::st_bbox(raster_dfa)
-#bbox_subset <- sf::st_as_sfc(bbox_subset)
-# polygon <- st_transform(polygon, 32610)
-# bbox_subset <- st_transform(bbox_subset, 3857)
-# bbox_subset <- sf::st_bbox(bbox_subset)
-```
-
-Finally, these points are projected to a Projected Coordinate System (PCS) 3857 to match our raster:
-
-```{r}
-
-# Transform to projected coordinate system (e.g., EPSG:3857)
-# bbox_subset <- sp::spTransform(bbox_subset, sp::CRS("+init=epsg:3857"))
-# bbox_poly <- sf::st_as_sfc(bbox_subset)
 
 ```
 
@@ -438,8 +354,10 @@ We redo the same process as above to plot the data with a basemap but with a dif
 bm_m <- basemaps::basemap_stars(bbox_subset, map_service = "esri", map_type = "world_imagery")
 #combine RGB bands of the bsemap
 bm_m <- stars::st_rgb(bm_m)
+#transform to CRS 4326
 bm_m <- sf::st_transform(bm_m, 4326)
 ```
+
 
 ```{r}
 ## tmap mode set to "plot"
@@ -450,10 +368,11 @@ tmap::tmap_mode("plot")
 
 #create an object the plots the basemap and the NRT flood raster
 #with the tmap library, call the tm_shape() function for the basemap
-tm_plot <- tmap::tm_shape(bm_m)+
+tm_plot <- tmap::tmap_options(max.raster = c(plot = 50000, view = 50000))+
+  tmap::tm_shape(bm_m, raster.downsample=TRUE)+
   tmap::tm_raster()+
   #create a new tmap shape for the NRT flood raster with style as "cat," meaning categorical.
-  tmap::tm_shape(raster_df, style="cat")+
+  tmap::tm_shape(raster_df, style="cat", raster.downsample=TRUE)+
   #add the classification styling to the raster
   tmap::tm_raster( palette = c(colors),
   title = title, 
@@ -469,23 +388,24 @@ tm_plot
 
 ```
 
-## Zonal Statistics fo Flood Zones
+## Zonal Statistics of Flood Zones
 
 The NRT flood data can be compared to the Cropland Data Layer (CDL), which provides agricultural categories based on the Farm Service Agency (FSA) Common Land Unit (CLU) Program and is produced by the U.S. Department of Agriculture National Agricultural Statistics Service (NASS)[@nass2023].
 
-To quantify how many acres of crop lands may be affected by the flooding identified in the NRT Flood data, we can explore the dataset by using the [Cropland Collaborative Research Outcomes System (CroplandCROS)](https://croplandcros.scinet.usda.gov/), and we can download the data from the NASS website at <https://www.nass.usda.gov/Research_and_Science/Cropland/Release/index.php>
+To quantify how many acres of each crop land may be affected by the flooding identified in the NRT Flood data, we can explore the dataset by using the [Cropland Collaborative Research Outcomes System (CroplandCROS)](https://croplandcros.scinet.usda.gov/), and we can download the data from the [NASS website](https://www.nass.usda.gov/Research_and_Science/Cropland/Release/index.php)
 
 Download the latest CDL year of data available from the link above.
 
-For this part of the exercise, we will use the package *stars*, discussed in the previous lesson, and the function `read_stars()` to read the CDL raster as a stars object.
+For this part of the exercise, we will use the package `stars`, discussed in the previous lesson, and the function `read_stars()` to read the CDL raster as a stars object.
 
 ```{r}
 #Read CDL GeoTIFF
 cdl<- stars::read_stars("2022_30m_cdls.tif")
+#plot the raster and downsample by 100 as the resolution of the raster is high 
 plot(cdl, downsample=100)
 ```
 
-This raster is provided with a 30 meter resolution for the entire contiguous U.S.! Additionally the CRS is the North American Datum of 1983 (NAD83) / Albers Conical Equal Area (AEA) projection. We can subset this raster with the NRT flood raster, but we must first crop it with the bounding box `bbox_subset` we created previously, and warp the raster from the CRS EPSG:4326 to EPSG:5070:
+This raster is provided with a 30-meter resolution for the entire contiguous U.S.! Additionally, the CRS is the North American Datum of 1983 (NAD83) / Albers Conical Equal Area (AEA) EPSG:5070 projection. We can subset stars objects with other stars objects if they are the same CRS. We will first subset the NRT Flood raster and project the data into the same CRS sd the CDL raster. We can subset this raster with the NRT flood raster, but we must first crop it with the bounding box `bbox_subset` we created previously, and use the `warp()` function to change the raster from the CRS WGS84 EPSG:4326 to NAD83 EPSG:5070:
 
 ```{r}
 #subset the NRT Floor raster with the bounding box
@@ -497,85 +417,11 @@ cdl_sub <- cdl[raster_sub]
 #because of the high resolution, a stars proxy object was made
 #make a stars object from a stars proxy object to directly read the data
 cdl_sub <- stars::st_as_stars(cdl_sub)
+#plot the resulting CDL subset
 plot(cdl_sub, downsample=100)
 ```
 
-```{r}
-# # Create a bounding box object using st_bbox()
-# bbox <- st_bbox(c(xmin=west, ymin=south, xmax=east, ymax=north), crs = 4326)
-# # Convert the bounding box to a simple feature geometry (polygon)
-# polygon <- st_as_sfc(bbox_subset)
-# logical <- as.logical(polygon)
-# ras_ras <- as(raster_df, "Raster")
-# # Transform the polygon to CRS 4326 (WGS84)
-# #polygon_4326 <- st_transform(polygon, crs = 4326)
-# #subset raster by bounding box
-# raster_warp <- st_warp(raster_df, use_gdal = FALSE, dest=raster_df)
-# raster_dfd <- stars::st_within(raster_df,bbox_subset)
-
-# #subset raster by bounding box
-# raster_dfd <- raster_warp[polygon]
-# raster_dfdc <- st_crop(raster_df, polygon)
-
-# bbox_subset <- sf::st_bbox(bbox_subset)
-# stars::st_set_bbox(raster_dfd, bbox_subset)
-
-# st_test <- raster_dfd[raster_dfd!=NA]
-# st_set_bbox(raster_dfd, bbox_subset)
-
-# stars::sf_set_bbox(raster_dfd, bbox_subset)
-
-# # Update the extent of raster_df to reflect the new bounding box
-# extent(raster_dfd) <- extent(bbox_subset)
-
-# # Plot the raster
-# plot(cdl_4326, downsample=30, reset=FALSE)
-
-
-
-# #create an object the plots the basemap and the NRT flood raster
-# #with the tmap library, call the tm_shape() function for the basemap
-# tm_plot <- tmap::tm_shape(raster_df, style="cat")+
-#   #add the classification styling to the raster
-#   tmap::tm_raster( palette = c(colors),
-#   title = title, 
-#   breaks = class_breaks,
-#   labels = labels )+
-#   tmap::tm_shape(polygon)+
-#   tm_fill("red", alpha = 0.3) +
-#   tm_borders(lwd = 2, col = "red") +
-#   #style the plot
-#   tmap::tm_layout(legend.outside = TRUE) +
-#   tmap::tm_graticules(lines=FALSE)
- 
-# tm_plot
-
-# st_crs(raster_df)
-
-```
-
-```{r}
-# bbox_subset <- SpatialPolygons(list(Polygons(list(Polygon(corners)), ID = "bbox")), 
-#                                  proj4string = CRS("+proj=longlat +datum=WGS84"))
-# raster_dfd <- st_crop(raster_df,bbox_subset)
-# plot(raster_df, downsample=30)
-```
-
-We can subset stars objects with other stars objects if they are the same coordinate reference system (CRS). We will first subset the NRT Flood raster and project the data into the same CRS that the CDL data has.
-
-```{r}
-# #subset raster by bounding box
-# raster_df_subset <- raster_df[bbox_subset]
-# #transform to a different CRS
-# raster_df_subset <- st_transform(raster_df_subset, crs = st_crs(cdl))
-
-```
-
-```{r}
-# plot(raster_df_subset, downsample=50)
-```
-
-We are only interested in the areas that are showing as Flooded (unusual), therefore, we want to exclude other variables. We make a copy of the `raster_sub` variable and set variables that are not 3 as `NA`.
+We are only interested in the areas that are showing as category 3, Flooded (unusual); therefore, we want to exclude other variables. We make a copy of the `raster_sub` variable and set variables that are not 3 as `NA`.
 
 ```{r}
 #make copy of variable
@@ -584,21 +430,44 @@ raster3 <- raster_sub
 raster3[raster3 != 3] <- NA
 #single break for plotting
 breaks3 <- c(0,3)
+#plot the subset areas 
 plot(raster3, breaks=breaks3, col="red",downsample=20)
 ```
 
-Now that we have only the flooded areas from the NRT Flood data, we can subset the CDL data.
-
+Now that we have only the flooded areas from the NRT Flood data, we can subset the CDL data. 
 ```{r}
-#cdl was raster proxy, so we convert it to a general stars object.
-# cdl_sub <- stars::st_as_stars(cdl)
 #subset the CDL raster where unusual flooding occurred
 cdl_sub3 <- cdl_sub[raster3==3]
+```
+The [CDL FAQ Webpage](https://www.nass.usda.gov/Research_and_Science/Cropland/sarsfaqs2.php#common.7) lists the categorization, including non-agricultural     categories which we can remove from the analysis:
+`
+Categorization Code   Land Cover
+         "111"       Open Water
+         "112"       Perennial Ice/Snow
+         "121"       Developed/Open Space
+         "122"       Developed/Low Intensity
+         "123"       Developed/Med Intensity
+         "124"       Developed/High Intensity
+         "131"       Barren
+         "141"       Deciduous Forest
+         "142"       Evergreen Forest
+         "143"       Mixed Forest
+         "152"       Shrubland
+         "176"       Grassland/Pasture
+         "190"       Woody Wetlands
+         "195"       Herbaceous Wetlands
+`
 
-plot(cdl_sub3,downsample=100)
+```{r}
+#list of non-agricultural Categories
+nonag_cat <- list("Perennial Ice/Snow", "Developed/Open Space", "Developed/Low Intensity", "Developed/Med Intensity","Developed/High Intensity", "Barren", "Deciduous Forest", "Evergreen Forest","Mixed Forest","Shrubland","Grassland/Pasture","Woody Wetlands", "Herbaceous Wetlands")
+#exclude non-agricultural categories
+for (category in nonag_cat){
+  cdl_sub3[cdl_sub3 == category ] <- NA
+}
 ```
 
-We want to create a table out the remaining CDL raster data, but we first have to extract it from the stars object and convert it to a matrix. The matrix is then converted to a table.
+Next, we can create a table out the remaining CDL raster data, but we first have to extract it from the stars object and convert it to a matrix. The matrix can then converted to a table and sorted.
 
 ```{r}
 # Convert the stars object to a matrix
@@ -606,6 +475,7 @@ cdl_matrix <- as.matrix(cdl_sub3)
 
 # Count the number of pixels for each category
 cdl_counts <- table(cdl_matrix)
+
 #Sort the `cdl_counts` table by descending order.
 cdl_counts<- sort(cdl_counts, decreasing = TRUE)
 
@@ -636,26 +506,41 @@ Once the are is calculated, we can plot a bar graph to compare the top 10 CDL Ca
 
 ```{r}
 library(ggplot2)
-title = paste("Hectares of Cropland Category under flood, day", year_day)
-max_value <- max(dataplot$area)+10
+title = paste("Hectares of Cropland Category under flood, day", year_day, "in tile", tile_code)
+max_value <- max(dataplot$area) +3
+
+# plt <- ggplot(dataplot, aes(x = area, y = cdl_matrix)) +
+#   geom_bar(stat = "identity", fill = "skyblue") +
+#   geom_vline(xintercept = seq(0, max_value, by = 5), color = "gray", linetype = "dashed") +
+#   labs(title = title, x = "Hectares (ha)", y = "Categories") +
+#   theme_minimal() +
+#   theme(axis.text.y = element_text(hjust = 1, size = 20),  # Adjust size of y-axis labels
+#         axis.text.x = element_text(size = 20),              # Adjust size of x-axis labels
+#         axis.title = element_text(size = 20),               # Adjust size of axis titles
+#         plot.title = element_text(size = 20),               # Adjust size of plot title
+#         axis.line = element_line(size = 1),               # Adjust size of axis lines
+#         axis.ticks = element_line(size = 1),              # Adjust size of axis ticks
+#         panel.grid.major = element_blank(),                 # Remove major gridlines
+#         panel.grid.minor = element_blank(),                 # Remove minor gridlines
+#         plot.background = element_rect(fill = "white"),     # Set plot background color
+#         panel.background = element_rect(fill = "white"),    # Set panel background color
+#         panel.border = element_rect(color = "black", fill = NA, size = 0.5)) +  # Set panel border
+#   geom_text(aes(label = round(area,1)), hjust = 0.5, size = 6, color = "black") +
+#   xlim(0, max_value)  # Adjust x-axis limits # Adjust size of text labels
 
 plt <- ggplot(dataplot, aes(x = area, y = cdl_matrix)) +
   geom_bar(stat = "identity", fill = "skyblue") +
-  geom_vline(xintercept = seq(0, max_value, by = 5), color = "gray", linetype = "dashed") +
+  geom_vline(xintercept = seq(0, max_value, by = 1), color = "gray", linetype = "dashed") +
   labs(title = title, x = "Hectares (ha)", y = "Categories") +
   theme_minimal() +
-  theme(axis.text.y = element_text(hjust = 1, size = 20),  # Adjust size of y-axis labels
-        axis.text.x = element_text(size = 20),              # Adjust size of x-axis labels
-        axis.title = element_text(size = 20),               # Adjust size of axis titles
-        plot.title = element_text(size = 20),               # Adjust size of plot title
-        axis.line = element_line(size = 1),               # Adjust size of axis lines
+  theme(axis.line = element_line(size = 1),               # Adjust size of axis lines
         axis.ticks = element_line(size = 1),              # Adjust size of axis ticks
         panel.grid.major = element_blank(),                 # Remove major gridlines
         panel.grid.minor = element_blank(),                 # Remove minor gridlines
         plot.background = element_rect(fill = "white"),     # Set plot background color
         panel.background = element_rect(fill = "white"),    # Set panel background color
-        panel.border = element_rect(color = "black", fill = NA, size = 0.5)) +  # Set panel border
-  geom_text(aes(label = round(area,1)), hjust = 0.5, size = 6, color = "black") +
+        panel.border = element_rect(color = "black", fill = NA)) +  # Set panel border
+  geom_text(aes(label = round(area,1)), color = "black") +
   xlim(0, max_value)  # Adjust x-axis limits # Adjust size of text labels
 
 plt
@@ -671,6 +556,8 @@ Congratulations! Now you should be able to:
 -   Create a GET HTTP request to download near-real-time data.
 
 -   Plot on a map and classify raster data to determine areas with unusual flooding.
+
+-   Subset raster data and perform zonal statistics to plot analysis results.
 
 ## Lesson 4
 
