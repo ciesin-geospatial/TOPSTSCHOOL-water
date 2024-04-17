@@ -1,10 +1,6 @@
-
-
-
+library(shiny)
 
 source("nyc_lead_prep.R", local = TRUE)
-
-library(shiny)
 
 state_list<-datasets::state.abb
 
@@ -13,49 +9,78 @@ list_of_counties<-school_lead_df %>% pull(County) %>% unique()
 # ui
 nyc_ui <- fluidPage(
     ## first ui element
-    fluidRow(column(2),
-             column(10, h2("Element 1")),
-             column(2)),
+  fluidRow(
+    column(
+      12,
+      align = 'center',
+      h3(style = "color: #325d88; text-align: center; font-weight: bold; font-style: italic; font-family: Arial",
+         "Section 1")
+    )),
     fluidRow(column(2),
              column(4, selectInput("county1", label = "Select a county",
                                    choices = list_of_counties, selected = "Bronx")),
              column(4, selectInput("fields1", label = "Select fields",
                                    choices = lead_data_all_fields, 
-                                   selected = "County", multiple = TRUE)),
+                                   selected = c("County",
+                                                "School",
+                                                "lead_summary_by_school"), multiple = TRUE)),
              column(2)),
     fluidRow(column(1),
              column(10, DT::dataTableOutput("table")),
              column(1)),
              
     ## second ui element
-    fluidRow(column(2),
-             column(10, h2("Element 2")),
-             column(2)),
-    fluidRow(style = "padding-bottom: 30px;background-color:#f1f2f3;",
-             column(3, selectInput("county2", 
-                                   label = "Select a county",
-                                   choices = list_of_counties, 
-                                   selected = "All counties"))),
+  fluidRow(
+    column(
+      12,
+      align = 'center',
+      h3(style = "color: #325d88; text-align: center; font-weight: bold; font-style: italic; font-family: Arial",
+         "Section 2")
+    )),
+    fluidRow(column(
+      12,
+      align = 'center',
+      selectInput(
+        "county2",
+        label = "Select a County",
+        choices = list_of_counties,
+        selected = "All counties"
+      )
+    )), 
     fluidRow(column(1),
              column(10,leafletOutput("map")),
              column(1)),
     
     #third ui element
-    fluidRow(column(2),
-             column(10, h2("Element 3")),
-             column(2)),
-    fluidRow(style = "padding-bottom: 20px;background-color:#f1f2f3;",
-             select_state,select_fields1, select_fields2, select_classification_method),
-    
-    fluidRow(column(6,"", plotOutput("plot1")),
-             column(6,"", plotOutput("plot2"))),
-    fluidRow(column(6,"", leafletOutput("map1")),
-             column(6,"", leafletOutput("map2"))),
+  fluidRow(column(
+    12,
+    align = 'center',
+    h3(style = "color: #325d88; text-align: center; font-weight: bold; font-style: italic; font-family: Arial",
+       "Section 3")
+  )),
+  fluidRow(
+    column(3),
+    column(3, align = 'center', select_state),
+    column(3, align = 'center', select_classification_method),
+    column(3)),
+  fluidRow(
+    column(3),
+    column(3, align = 'center', select_fields1),
+    column(3, align = 'center', select_fields2),
+    column(3)),
+  fluidRow(column(6, "", plotOutput("plot1")),
+           column(6, "", plotOutput("plot2"))),
+  fluidRow(column(6, "", leafletOutput("map1")),
+           column(6, "", leafletOutput("map2"))), 
 
     #fourth ui element
-    fluidRow(column(2),
-             column(10, h2("Element 4")),
-             column(2)),
+  fluidRow(
+    column(
+      12,
+      align = 'center',
+      h3(style = "color: #325d88; text-align: center; font-weight: bold; font-style: italic; font-family: Arial",
+         "Section 4")
+    )),
     fluidRow(style = "padding-bottom: 20px;background-color:#f1f2f3;",
              select_state,select_county),
     
@@ -63,18 +88,26 @@ nyc_ui <- fluidPage(
              column(7,"", leafletOutput("map3"))),
 
     #fifth ui element
-    fluidRow(column(2),
-             column(10, h2("Element 5")),
-             column(2)),
+  fluidRow(
+    column(
+      12,
+      align = 'center',
+      h3(style = "color: #325d88; text-align: center; font-weight: bold; font-style: italic; font-family: Arial",
+         "Section 5")
+    )),
     fluidRow(style = "padding-bottom: 20px;background-color:#f1f2f3;",
              select_state,select_fields1,select_fields3, select_classification_method),
     
     fluidRow(column(6,"", leafletOutput("map4")),
              column(6,"", leafletOutput("map5"))),
     #sixth ui element
-    fluidRow(column(2),
-             column(10, h2("Element 6")),
-             column(2)),
+  fluidRow(
+    column(
+      12,
+      align = 'center',
+      h3(style = "color: #325d88; text-align: center; font-weight: bold; font-style: italic; font-family: Arial",
+         "Section 6")
+    )),
     fluidRow(style = "padding-bottom: 20px;background-color:#f1f2f3;",
              select_state,out_map_field, select_classification_method),
     fluidRow(style = "padding-bottom: 20px;background-color:#f1f2f3;",
@@ -102,8 +135,11 @@ server <- function(input, output) {
         
         tmap<-tm_basemap(leaflet::providers$Esri.WorldImagery)+
             tm_shape(school_loc(), name="school locations") +
-            tm_dots(id="",col="County",palette="magma",
-                    popup.vars=c("School name: "="School" ),
+            tm_dots(id="",col="#0096FF",
+                    popup.vars=c("School Name: "="School",
+                                 "Summary: "="lead_summary_by_school",
+                                 "Outlets (n): "="Number_of_Outlets"
+                                 ),
                     legend.show = FALSE)
         tmap_leaflet(tmap)
     })

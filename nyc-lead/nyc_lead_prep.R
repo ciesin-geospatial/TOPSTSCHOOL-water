@@ -91,22 +91,22 @@ lead_field_list<-c("school_count","outlets_under_15_ppb","outlets_above_15_ppb")
 lead_data_all_fields<-names(school_lead_df ) |> unique()
 out_map_field_list<-c(field_list,lead_field_list)
 
-select_state<-column(3, selectInput("state", label = "Select a state",
-                                    choices = state_list, selected = "NY"))
-select_county<-column(3, selectInput("county", label = "Select a county",
-                                     choices = list_of_counties, selected = "Bronx"))
-select_fields1<-column(3, selectInput("field1", label = "Select a field for map (left)",
-                                      choices = field_list, selected = "total_white"))
-select_fields2<-column(3, selectInput("field2", label = "Select a field for maps (right)",
-                                      choices = field_list, selected = "white_5_17"))
-select_classification_method<-column(3, selectInput("classification", label = "Classification method",
-                                                    choices = classification_methods, selected = "jenks"))
-select_fields3<-column(3, selectInput("field3", label = "Select a field",
-                                      choices = lead_field_list, selected = "school_count"))
-select_fields4<-  column(4, selectInput("fields", label = "Select fields",
-                                        choices = lead_data_all_fields, selected = "County",multiple = TRUE))
-out_map_field<-column(4, selectInput("fields_map", label = "Select fields",
-                                     choices = out_map_field_list, selected = "school_count"))
+select_state<-selectInput("state", label = "Select a state",
+                                    choices = state_list, selected = "NY")
+select_county<-selectInput("county", label = "Select a county",
+                                     choices = list_of_counties, selected = "Bronx")
+select_fields1<-selectInput("field1", label = "Select a field for map (left)",
+                                      choices = field_list, selected = "total_white")
+select_fields2<-selectInput("field2", label = "Select a field for maps (right)",
+                                      choices = field_list, selected = "white_5_17")
+select_classification_method<-selectInput("classification", label = "Classification method",
+                                                    choices = classification_methods, selected = "jenks")
+select_fields3<-selectInput("field3", label = "Select a field",
+                                      choices = lead_field_list, selected = "school_count")
+select_fields4<-selectInput("fields", label = "Select fields",
+                                        choices = lead_data_all_fields, selected = "County",multiple = TRUE)
+out_map_field<-selectInput("fields_map", label = "Select fields",
+                                     choices = out_map_field_list, selected = "school_count")
 
 theme<-theme(axis.text=element_text(size=12, face="bold"),
              axis.title=element_text(size=13, face="bold"),
