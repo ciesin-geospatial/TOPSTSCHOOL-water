@@ -375,11 +375,12 @@ This confirms the widespread distribution of high deficit values (all the bright
 
 ## County Choropleths
 
-Now that we've inspected the raw data we can make a choropleth out of the mean deficit return period data.
+Now that we've inspected the raw data we can make a choropleth out of the mean deficit return period data. We previously demonstrated more complex maps using *ggplot2*, *sf*, and *stars*, but you can also make quick plots of *sf* objects with the base plotting function. By default *sf* will make a map for every column listed in the dataset. In this case we only want to look at the monthly means so we will just plot columns 11 through 23. You can make simple alterations to the color palette and position of the legend, but custom map titles and legend titles are not easily accomplished with multi-panel maps (multiple maps in one) like the one pictured below. 
 
 ```{r warning=FALSE, message=FALSE}
 # plot the data for a check using only the 12 monthly summaries in columns 11 through 23
 plot(cali_counties[c(11:23)],
+     # the palette we've been using
      pal = c(
     '#9B0039',
     # -50 to -40
@@ -394,9 +395,12 @@ plot(cali_counties[c(11:23)],
     '#FFF4C7',
     # -3 to 0
     '#FFFFFF'), 
+    # the breaks we want
     breaks = c(-61, -50, -40, -20, -10,-5,-3, 5), 
-    key.pos = 1)
-title("Deficit Return Period", cex.main = 2, line =-77, adj =0)
+    # where we're placing the legend
+    key.pos = 1, 
+    # how thick we want the legend to be
+    key.width = 0.3)
 ```
 
 Due to the widespread water deficits in the raw data, the mean values do not appear much different from the raw deficit raster layer, however, thematic (also called choropleth) maps can make it easier for users to survey the landscape by visualizing familiar geographies (like counties) that place themselves and their lived experiences alongside the data.
