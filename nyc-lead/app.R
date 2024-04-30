@@ -1,9 +1,8 @@
 library(shiny)
 
+load(file.path(getwd(),"nyc_lead_dats.RData"))
 source("nyc_lead_prep.R", local = TRUE)
 source('nyc_ui.R', local = TRUE)
-
-load(file.path(getwd(),"nyc_lead_dats.RData"))
 
 link_web <- tags$a(shiny::icon("globe"), href = "https://ciesin-geospatial.github.io/TOPSTSCHOOL/", target = "_blank")
 link_git <- tags$a(shiny::icon("github"), href = "https://github.com/ciesin-geospatial/TOPSTSCHOOL", target = "_blank")
@@ -217,12 +216,13 @@ server <- function(input, output) {
     output$map4 <- renderLeaflet({
      
       tmap <- tm_basemap(leaflet::providers$Esri.WorldImagery) +
-        tmap::tm_shape(county_with_school, name = "county boundaries") +
+        tmap::tm_shape(county_with_school, name = "county Boundaries") +
         tm_polygons(
           col = input$field4,
           style = input$class2,
           n = 6,
-          palette = "YlOrRd")
+          palette = "YlOrRd",
+          popup.vars = c("County: " = "county.x"))
       
       tmap_leaflet(tmap, in.shiny = TRUE)
       
@@ -231,13 +231,13 @@ server <- function(input, output) {
     
     output$map5 <- renderLeaflet({
       tmap <- tm_basemap(leaflet::providers$Esri.WorldImagery) +
-        tmap::tm_shape(county_with_school, name = "county boundaries") +
+        tmap::tm_shape(county_with_school, name = "county Boundaries") +
         tm_polygons(
           col = input$field5,
           style = input$class2,
           n = 6,
-          palette = "YlOrRd"
-        )
+          palette = "YlOrRd",
+          popup.vars = c("County: " = "county.x"))
       tmap_leaflet(tmap, in.shiny = TRUE)
       
     })
@@ -245,29 +245,30 @@ server <- function(input, output) {
     # sixth server element----
     output$map6 <- renderLeaflet({
       tmap <- tm_basemap(leaflet::providers$Esri.WorldImagery) +
-        tmap::tm_shape(county_with_school, name = "county boundaries") +
+        tmap::tm_shape(county_with_school, name = "County Boundaries") +
         tm_polygons(
           col = input$fields_map,
           style = input$class3,
           n = 6,
-          palette = "YlOrRd"
-        )
+          palette = "YlOrRd",
+          popup.vars = c("County: " = "county.x"))
       tmap_leaflet(tmap, in.shiny = TRUE)
     })
     
     map_expr <-
       reactive({
         tmap <- tm_basemap(leaflet::providers$Esri.WorldImagery) +
-          tmap::tm_shape(county_with_school, name = "county boundaries") +
+          tmap::tm_shape(county_with_school, name = "County Boundaries") +
           tm_polygons(
             col = input$fields_map,
             style = input$class3,
             n = 6,
             palette = "YlOrRd",
-            title = input$legendtitle
+            title = input$legendtitle,
+            popup.vars = c("County: " = "county.x")
           ) +
-          tm_scale_bar(position = c("center", "bottom")) + tm_compass(position =
-                                                                        c("right", "top")) +
+          tm_scale_bar(position = c("center", "bottom")) + 
+          tm_compass(position = c("right", "top")) +
           tm_layout(
             legend.position = c("left", "bottom"),
             main.title = input$title,

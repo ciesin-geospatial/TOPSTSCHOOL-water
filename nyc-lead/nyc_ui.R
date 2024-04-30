@@ -1,36 +1,20 @@
 nyc_ui <- 
   bslib::nav_panel(
     "NYC School Lead Explorer",
-      fluidPage(
-        # make input labels bold and different color from written text/narrative
-        tags$head(
-          tags$style(HTML(
-            ".control-label{
+    fluidPage(
+      # make input labels bold and different color from written text/narrative
+      tags$head(tags$style(
+        HTML(
+          ".control-label{
                                font-weight:bold;
                                color: #325d88;
-                               }
-             "))),
-        # fluidRow(
-        #   column(
-        #     12,
-        #     style = "padding-top: 50px; padding-bottom: 0px;",
-        #     h6(style = "text-align: right; font-family: Roboto",
-        #        "Authors: Hasim Engin & Joshua Brinks")
-        #   )),
-        # fluidRow(
-        #   column(
-        #     12,
-        #     style = "padding-bottom: 0px;",
-        #     h6(style = "text-align: right; font-family: Roboto",
-        #        "Last Updated: April 29, 2024")
-        #   )),
-        fluidRow(
-          column(
-            12,
-            style = "padding-bottom: 0px;",
-            h3(style = "color: #353a40; font-weight: bold; font-style: font-family: Roboto",
-               "Introduction")
-          )),
+            }
+            ul{margin-left: 30px}
+             "
+        )
+      )),
+      h2(style = "padding-top: 50px; color: #3e3f3a; font-style: font-family: Roboto",
+         "Introduction"),
         bslib::card(
           fluidRow(
             shiny::markdown(
@@ -38,16 +22,16 @@ nyc_ui <-
               "Welcome to the interactive TOPS-SCHOOL NYC Lead Data Explorer. This Shiny app was developed ",
               "by Hasim Engin and Joshua Brinks with support from the NASA Transform To Open Science (TOPS) SCHOOL initiative.", 
               "You might want to use the glue::glue function when ",
-              "there is a lot of text that would bleed over the edge of the script making the app."
-            ))
+              "there is a lot of text that would bleed over the edge of the script making the app.")),
+              
+            shiny::markdown("Are there objectives for this explorer? You can use markdown to make a list:"),
+            shiny::markdown("     * First
+                            * Second
+                            * Third")
         )), 
-  ## first ui element
-  fluidRow(
-    column(
-      12,
-      h3(style = "color: #353a40; font-weight: bold; font-style: font-family: Roboto",
-         "Raw Data Explorer")
-    )),
+  # first ui element----
+  h2(style = "color: #3e3f3a; font-style: font-family: Roboto",
+         "Raw Data Explorer"),
   bslib::card(
     fluidRow(shiny::markdown(
       glue::glue(
@@ -86,20 +70,16 @@ nyc_ui <-
              column(10, DT::dataTableOutput("table")),
              column(1))
   ), 
-  
   # second ui element----
-  fluidRow(column(
-    12,
-    align = 'center',
-    h3(style = "color: #353a40;  font-weight: bold; font-style: font-family: Roboto",
-       "School Explorer")
-  )),
-  bslib::card(fluidRow(shiny::markdown(
-    glue::glue(
-      "What does this thing do? You might want to use the glue::glue function when ",
-      "there is a lot of text that would bleed over the edge of the script making the app."
-    )
-  )),
+  h2(style = "color: #3e3f3a;  font-style: font-family: Roboto",
+     "School Explorer"), 
+  bslib::card(
+    fluidRow(shiny::markdown(
+      glue::glue(
+        "What does this thing do? You might want to use the glue::glue function when ",
+        "there is a lot of text that would bleed over the edge of the script making the app."
+      )
+    )), 
   fluidRow(column(
     12,
     align = 'center',
@@ -115,12 +95,8 @@ nyc_ui <-
            column(1))), 
   
   # third ui element----
-  fluidRow(column(
-    12,
-    align = 'center',
-    h3(style = "color: #353a40;  font-weight: bold; font-style: font-family: Roboto",
-       "County Demographics")
-  )),
+h2(style = "color: #3e3f3a;  font-style: font-family: Roboto",
+       "County Demographics"),
   bslib::card(
     fluidRow(
       shiny::markdown(glue::glue(
@@ -143,26 +119,23 @@ nyc_ui <-
                        choices = field_list, selected = "white_5_17")),
     column(3)),
   fluidRow(
-    column(4),
-    column(4, align = 'center', 
-           selectInput("class1", 
-                       label = "Classification Method",
-                       choices = classification_methods, 
-                       selected = "jenks")),
-    column(4)),
-  fluidRow(column(1),
-           column(5, "", leafletOutput("map1")),
-           column(5, "", leafletOutput("map2")),
-           column(1))), 
+    column(2),
+    column(8, align = 'center', 
+           shinyWidgets::radioGroupButtons(
+             inputId = "class1",
+             label = "Classification Method", 
+             choices = classification_methods,
+             status = "primary"
+           )),
+    column(2)),
+  fluidRow(
+    column(6, "", leafletOutput("map1")),
+    column(6, "", leafletOutput("map2"))
+  )), 
   
   #fourth ui element
-  fluidRow(
-    column(
-      12,
-      align = 'center',
-      h3(style = "color: #353a40;  font-weight: bold; font-style: font-family: Roboto",
-         "County Lead Summaries")
-    )),
+h2(style = "color: #3e3f3a;  font-style: font-family: Roboto",
+         "County Lead Summaries"),
   bslib::card(
     fluidRow(
       shiny::markdown(glue::glue(
@@ -181,13 +154,8 @@ nyc_ui <-
            column(1))),
   
   #fifth ui element
-  fluidRow(
-    column(
-      12,
-      align = 'center',
-      h3(style = "color: #353a40;  font-weight: bold; font-style: font-family: Roboto",
-         "Demographic Comparisons")
-    )),
+  h2(style = "color: #3e3f3a;  font-style: font-family: Roboto",
+         "Demographic Comparisons"),
   bslib::card(
     fluidRow(
       shiny::markdown(glue::glue(
@@ -212,46 +180,53 @@ nyc_ui <-
         selected = "school_count")),
     column(3)),
   fluidRow(
-    column(4),
-    column(4,
-      align = 'center',
-      selectInput(
-        "class2",
-        label = "Classification Method",
-        choices = classification_methods,
-        selected = "jenks")),
-    column(4)), 
+    column(2),
+    column(8, align = 'center', 
+           shinyWidgets::radioGroupButtons(
+             inputId = "class2",
+             label = "Classification Method", 
+             choices = classification_methods,
+             status = "primary"
+           )),
+    column(2)), 
   
   fluidRow(column(1),
            column(5,"", leafletOutput("map4")),
            column(5,"", leafletOutput("map5")),
            column(1))),
   #sixth ui element
-  fluidRow(
-    column(
-      12,
-      align = 'center',
-      h3(style = "color: #353a40;  font-weight: bold; font-style: font-family: Roboto",
-         "Download A Map!")
-    )),
+  h2(style = "color: #3e3f3a;  font-style: font-family: Roboto",
+         "Download A Map!"),
   bslib::card(
     fluidRow(
       shiny::markdown(glue::glue(
         "What does this thing do? You might want to use the glue::glue function when ",
         "there is a lot of text that would bleed over the edge of the script making the app."
       ))),
-  fluidRow(column(3),
-           column(3, align = 'center',
-                  selectInput("fields_map", 
-                       label = "Select fields",
-                       choices = out_map_field_list, 
-                       selected = "school_count")),
-           column(3, align = 'center',
-           selectInput("class3", 
-                       label = "Classification Method",
-                       choices = classification_methods, 
-                       selected = "jenks")),
-           column(3)),
+    fluidRow(column(4),
+             column(
+               4,
+               align = 'center',
+               selectInput(
+                 "fields_map",
+                 label = "Select fields",
+                 choices = out_map_field_list,
+                 selected = "school_count"
+               )
+             ),
+             column(4)),
+    fluidRow(column(2),
+             column(
+               8,
+               align = 'center',
+               shinyWidgets::radioGroupButtons(
+                 inputId = "class3",
+                 label = "Classification Method",
+                 choices = classification_methods,
+                 status = "primary"
+               )
+             ),
+             column(2)), 
   fluidRow(column(2),
            column(4, align = 'center', textInput("title", "Add Map Title", "")),
            column(4, align = 'center', textInput("legendtitle", "Add Legend Title", "")),
@@ -264,4 +239,17 @@ nyc_ui <-
   fluidRow(column(1),
            column(10,"", leafletOutput("map6")),
            column(1))
-)))
+),
+h2(style = "color: #3e3f3a; font-style: font-family: Roboto",
+   "Conclusion"),
+bslib::card(
+  fluidRow(
+    shiny::markdown(
+      glue::glue(
+        "Congratulations! We changed science")),
+    
+    shiny::markdown("What did we learn? A lot of things."),
+    shiny::markdown("     * First
+                            * Second
+                            * Third")
+  )), ))

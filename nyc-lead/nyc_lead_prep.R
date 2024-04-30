@@ -11,7 +11,7 @@ library(tidycensus)
 library(DT)
 library(datasets)
 library(shinyWidgets)
-library (mapview)
+library(mapview)
 
 # this changes prepairing all the datasets for following sections
 # quarto require all inputs in shiny application to be in the same chink and 
@@ -22,21 +22,33 @@ library (mapview)
 
 ### ===== selection by dropdowns ===========###
 
-state_list<-datasets::state.abb
-list_of_counties<-school_lead_df |> pull(County) |> unique()
-list_of_counties<-append("All Counties", sort(list_of_counties))
-field_list<-c("total_white","total_black","total_asian","total_hispanic",
-              "white_5_17","black_5_17","hispanic_5_17","asian_5_17")
-classification_methods<-c("sd", "equal", "pretty", "quantile", "jenks")
-lead_field_list<-c("school_count","outlets_under_15_ppb","outlets_above_15_ppb")
-lead_data_all_fields<-names(school_lead_df ) |> unique()
-out_map_field_list<-c(field_list,lead_field_list)
+state_list <- datasets::state.abb
+list_of_counties <- school_lead_df |> dplyr::pull(County) |> unique()
+list_of_counties <- append("All Counties", sort(list_of_counties))
+field_list <-
+  c("total_white",
+    "total_black",
+    "total_asian",
+    "total_hispanic",
+    "white_5_17",
+    "black_5_17",
+    "hispanic_5_17",
+    "asian_5_17")
+classification_methods <-
+  c("sd", "equal", "pretty", "quantile", "jenks")
+lead_field_list <-
+  c("school_count",
+    "outlets_under_15_ppb",
+    "outlets_above_15_ppb")
+lead_data_all_fields <- names(school_lead_df) |> unique()
+out_map_field_list <- c(field_list, lead_field_list)
 
-theme<-theme(axis.text=element_text(size=12, face="bold"),
-             axis.title=element_text(size=13, face="bold"),
-             plot.title=element_text(size=13, face="bold"),
-             panel.background = element_rect(fill = "lightblue",colour = "grey")
-)
+theme <-
+  ggplot2::theme(
+    axis.text = ggplot2::element_text(size = 12, face = "bold"),
+    axis.title = ggplot2::element_text(size = 13, face = "bold"),
+    plot.title = ggplot2::element_text(size = 13, face = "bold"),
+    panel.background = ggplot2::element_rect(fill = "lightblue", colour = "grey"))
 
 
 #----
