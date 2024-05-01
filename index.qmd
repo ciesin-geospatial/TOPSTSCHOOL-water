@@ -22,7 +22,7 @@ Module 1: Water datasets and use cases cover:
 -   **Moderate Resolution Imaging Spectroradiometer (MODIS) Near Real-Time (NRT) flood data:** Lessons in data acquisition and analysis of recent water anomalies.
     -   [Lesson 3: Acquiring and Exploring MODIS NRT Flood Data](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/lance-modis-nrt-global-flood-mcdwd-f3.html)
 -   **Lead in New York State Schools:** Exploring lead contamination data and US Census data and lessons in data cleaning and visualization, with a discerning eye towards data limitations.
-    -   [Lesson 4: NYC School Water Quality: Exposure to Lead Data](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/exposure_to_lead_in_schools_nys.html)
+    -   [Lesson 4: NYC School Water Quality: Exposure to Lead Data](https://topstschool.shinyapps.io/nyc-lead/)
 -   **Conclusion:** Module wrap-up and knowledge check.
     -   [Lesson 5: Conclusion - Coming soon...]()
 
