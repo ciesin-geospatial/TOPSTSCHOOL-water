@@ -12,7 +12,7 @@ library(DT)
 library(datasets)
 library(shinyWidgets)
 library(mapview)
-
+library(bslib)
 # this changes prepairing all the datasets for following sections
 # quarto require all inputs in shiny application to be in the same chink and 
 # the chunk should be context="data"
