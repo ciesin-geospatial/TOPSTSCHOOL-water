@@ -31,6 +31,8 @@ school_theme <- bslib::bs_theme(
   "navbar-bg" = "#325d88",
   "navbar-fg" = "#c7d3e0")
 
+basemap<-leaflet::providers$OpenStreetMap.Mapnik
+
 ui <-
   bslib::page(
     theme = school_theme,
@@ -69,7 +71,7 @@ server <- function(input, output) {
     output$map<-renderLeaflet({
         
         tmap<-
-          tm_basemap(leaflet::providers$Esri.WorldImagery)+
+          tm_basemap(basemap)+
             tm_shape(school_loc(), name="School Locations") +
             tm_dots(id="",
                     col="#0096FF",
@@ -98,7 +100,7 @@ server <- function(input, output) {
           size = 5,
           hjust = 0.7,
           position = position_stack(0.9)) + 
-        guides(fill = FALSE) +
+        guides(fill = "none") +
         labs(
           x = "",
           y = " ",
@@ -122,7 +124,7 @@ server <- function(input, output) {
           size = 5,
           hjust = 0.7,
           position = position_stack(0.9)) + 
-        guides(fill = FALSE) +
+        guides(fill = "none") +
         labs(
           x = "",
           y = " ",
@@ -134,7 +136,7 @@ server <- function(input, output) {
     
     output$map1<-renderLeaflet({
       
-      tmap<-tm_basemap(leaflet::providers$Esri.WorldImagery)+
+      tmap<-tm_basemap(basemap)+
         tmap::tm_shape(county_census, name="NYS Counties") +
         tm_polygons(col=input$field2,style=input$class1, palette="RdYlGn")+
         tm_view(bbox = sf::st_bbox(county_census))
@@ -144,7 +146,7 @@ server <- function(input, output) {
     
     output$map2<-renderLeaflet({
       
-      tmap<-tm_basemap(leaflet::providers$Esri.WorldImagery)+
+      tmap<-tm_basemap(basemap)+
         tmap::tm_shape(county_census, name="NYS counties") +
         tm_polygons(col=input$field3,style=input$class1, n=6,palette="RdYlGn")+
         tm_view(bbox = sf::st_bbox(county_census))
@@ -164,7 +166,7 @@ server <- function(input, output) {
                    y = Count, fill = lead_summary_by_school)) +
         geom_bar(stat = "identity") +
         geom_text(aes(label = prc), size = 5,
-                  position = position_stack(0.9)) + guides(fill = FALSE) +
+                  position = position_stack(0.9)) + guides(fill = "none") +
         scale_fill_manual(values = c("green3", "red", "grey")) +
         labs(
           x = "",
@@ -190,7 +192,7 @@ server <- function(input, output) {
     
     output$map3 <- renderLeaflet({
       tmap <- 
-        tm_basemap(leaflet::providers$Esri.WorldImagery) +
+        tm_basemap(basemap) +
         tm_shape(county_census, name = "NY Counties")+
         tm_borders("darkgrey", lwd = 2) +
         tm_shape(selected_county()) +
@@ -215,7 +217,7 @@ server <- function(input, output) {
     # get total population from census 2020
     output$map4 <- renderLeaflet({
      
-      tmap <- tm_basemap(leaflet::providers$Esri.WorldImagery) +
+      tmap <- tm_basemap(basemap) +
         tmap::tm_shape(county_with_school, name = "county Boundaries") +
         tm_polygons(
           col = input$field4,
@@ -230,7 +232,7 @@ server <- function(input, output) {
     
     
     output$map5 <- renderLeaflet({
-      tmap <- tm_basemap(leaflet::providers$Esri.WorldImagery) +
+      tmap <- tm_basemap(basemap) +
         tmap::tm_shape(county_with_school, name = "county Boundaries") +
         tm_polygons(
           col = input$field5,
@@ -244,7 +246,7 @@ server <- function(input, output) {
     
     # sixth server element----
     output$map6 <- renderLeaflet({
-      tmap <- tm_basemap(leaflet::providers$Esri.WorldImagery) +
+      tmap <- tm_basemap(basemap) +
         tmap::tm_shape(county_with_school, name = "County Boundaries") +
         tm_polygons(
           col = input$fields_map,
@@ -257,7 +259,7 @@ server <- function(input, output) {
     
     map_expr <-
       reactive({
-        tmap <- tm_basemap(leaflet::providers$Esri.WorldImagery) +
+        tmap <- tm_basemap(basemap) +
           tmap::tm_shape(county_with_school, name = "County Boundaries") +
           tm_polygons(
             col = input$fields_map,
