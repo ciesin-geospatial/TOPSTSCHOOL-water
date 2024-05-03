@@ -120,6 +120,8 @@ Specifying a temporal range of interest will make the file size smaller and ther
 keeps<-seq(lubridate::ymd("2000-12-01"),
            lubridate::ymd("2014-12-01"), 
            by = "year")
+#change data type to POSIXct
+keeps <- as.POSIXct(keeps)
 # filter the dataset using the vector of dates
 wsim_gldas_anoms <- dplyr::filter(wsim_gldas_anoms, time %in% keeps)
 # re-check the basic info
