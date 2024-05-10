@@ -33,7 +33,8 @@ This lesson uses the [`stars`](https://r-spatial.github.io/stars/), [`sf`](https
 
 ## Load Data
 
-We’ll begin with the **WSIM-GLDAS Composite Anomaly Twelve-Month Return Period** (an anomaly is defined as a rare observation) file from SEDAC and we will subset it spatially to the Continental United States (CONUSA). This will reduce our memory footprint. We can further reduce our memory overhead by reading in just the `'deficit'`—that is, the variable we want to analyze— from the WSIM-GLDAS Composite Anomaly Twelve-Month Return Period file, rather than reading the entire NetCDF with all of its attributes.
+We’ll begin with the **WSIM-GLDAS Composite Anomaly Twelve-Month Return Period** Composite Anomaly Twelve-Month Return Period file from SEDAC. We will spatially subset the data to cover only the Continental United States (CONUSA) which will help to minimize our memory footprint. We can further reduce our memory overhead by reading in just the variable we want to analyze. In this instance we can read in just the `deficit` attribute from the WSIM-GLDAS Composite Anomaly Twelve-Month Return Period file, rather than reading the entire NetCDF with all of its attributes.
+
 
 ```{r warning=FALSE}
 # read in the wsim-gldas layer from SEDAC
@@ -42,7 +43,7 @@ wsim_gldas <- stars::read_stars("composite_12mo.nc", proxy = FALSE, sub = 'defic
 print(wsim_gldas)
 ```
 
-For this exercise, we want to explore droughts in the continental United States for the years 2000-2014. In the 12-month return period dataset, each monthly time step is an average of the previous 12 months. (This is called a moving average.) Therefore, if we wish to view a snapshot of drought for a given calendar year we need to use the December timestep which would include the 12 months of only that calendar year. We can create a data set of annualized monthly averages starting with December 2000 and ending in December 2014 using the `ymd()` function of the *lubridate* package and the `filter()` function of the *dplyr* package as demonstrated below.
+For this exercise, we want to explore droughts in the continental United States for the years 2000-2014. In the 12-month return period dataset, each monthly time step is a moving average, or an average of the previous 12 months. Therefore, if we wish to view a snapshot of drought for a given calendar year we need to use the December timestep which would include the 12 months of only that calendar year. We can create a data set of annualized monthly averages starting with December 2000 and ending in December 2014 using the `ymd()` function of the *lubridate* package and the `filter()` function of the *dplyr* package as demonstrated below.
 
 ```{r warning=FALSE}
 # generate a vector of dates for subsetting
@@ -150,7 +151,7 @@ ggplot2::ggplot(usa)+
     axis.ticks.y=ggplot2::element_blank())
 ```
 
-This visualization shows that there were several significant drought events (as indicated by return-period values) throughout 2000-2014. The southeast in 2000, the southwest in 2002, the majority of the western 3rd in 2007, Texas-Oklahoma in 2011, Montana-Wyoming-Colorado in 2012, and the entirety of the California coast in 2014. The droughts of 2012 and 2011 are particularly severe and widespread with return periods greater than 50 years covering multiple states. Based on historical norms, we should only expect droughts this strong every 50-60 years!
+This visualization shows that there were several significant drought events (as indicated by return-period values) throughout 2000-2014. Significant drought events included the southeast in 2000, the southwest in 2002, the majority of the western 3rd in 2007, Texas-Oklahoma in 2011, Montana-Wyoming-Colorado in 2012, and the entirety of the California coast in 2014. The droughts of 2012 and 2011 are particularly severe and widespread with return periods greater than 50 years covering multiple states. Based on historical norms, we should only expect droughts this strong every 50-60 years!
 
 ## Monthly Time Series
 
@@ -160,6 +161,8 @@ We can get a more detailed look at these drought events by using the 1-month com
 ## Drought in the News
 
 The California drought of 2012-2014 was the worst in 1,200 years [@WHOI2014]. This drought caused problems for homeowners, and even conflicts between farmers and wild salmon! Governor Jerry Brown declared a drought emergency and called on residents to reduce water intake by 20%. Water use went up by 8% in May of 2014 compared to 2013, in places like coastal California and Los Angeles. Due to the water shortages, the state voted to fine water-wasters up to $500 dollars. The drought also affected residents differently based on economic status. For example, in El Dorado County, located in a rural area east of Sacramento, residents were taking bucket showers and rural residents reported wells, which they rely on for fresh water, were drying up. The federal government eventually announced a $9.7 million emergency drought aid for those areas [@Sanders2014].
+
+Additionally, there were thousands of adult salmon struggling to survive in the Klamath River in Northern California, where water was running low and warm due to the diversion of river flow into the Central Valley, an agricultural area that grows almond trees. Almonds are one of California’s most important crops, with the state producing 80% of the world’s almonds. However, salmon, which migrate upstream, could get a disease called gill rot, which flourishes in warm water and already killed tens of thousands of Chinook in 2002. This disease was spreading through the salmon population again due to this water allocation, affecting local Native American tribes that rely on the fish [@Bland2014].
 
 :::
 
@@ -265,7 +268,7 @@ A [data frame](https://www.rdocumentation.org/packages/base/versions/3.6.2/topic
 :::
 :::
 
-We explore the data further by creating a frequency distribution (also called a histogram) of the deficit anomalies for any given spatial extent; here we are still looking at the distributions in California. We extract the data from the raster time series and create a data frame of values that are easier to manipulate into a histogram. [R data frames](https://www.w3schools.com/r/r_data_frames.asp) are data displayed in table format, which can be plotted on graphs or charts.
+We can explore the data further by creating a frequency distribution (also called a histogram) of the deficit anomalies for any given spatial extent; here we are still looking at the distributions in California. We extract the data from the raster time series and create a data frame of values that are easier to manipulate into a histogram. [R data frames](https://www.w3schools.com/r/r_data_frames.asp) are data displayed in table format, which can be plotted on graphs or charts.
 
 ```{r}
 # extract the raster values into a dataframe
@@ -286,15 +289,16 @@ ggplot2::ggplot(deficit_hist, ggplot2::aes(deficit))+
   ggplot2::theme_minimal()
 ```
 
-This starts to quantify what our eyes were telling us with the time series maps. Whereas the map shows where the deficits occur, the frequency distribution indicates the number of raster cells for each return period of the deficit range. The number of raster cells under a 60-year deficit (return period) is very high in most months, far exceeding any other value in the range.
+The histograms  start to quantify what we saw in the time series maps. Whereas the map shows where the deficits occur, the frequency distribution indicates the number of raster cells for each return period of the deficit range. The number of raster cells under a 60-year deficit (return period) is very high in most months, far exceeding any other value in the range.
 
 ## Zonal Summaries
 
-The previous section describeser into the 2014 California drought, examining the state as a whole. Although we have a sense of what’s happening in different cities or counties by looking at the maps, the maps do not provide quantitative summaries of those local areas.
+The previous section describes the 2014 California drought, examining the state as a whole. Although we have a sense of what’s happening in different cities or counties by looking at the maps, the maps do not provide quantitative summaries of those local areas.
 
-Zonal statistics are one way to summarize the cells of a raster layer that lie within the boundary of another data layer (which may be in either raster or vector format). . For example, aggregating deficit return periods with another raster depicting land cover type or a vector boundary (shapefile) of countries, states, or counties, will produce descriptive statistics by that new layer. These statistics include: sum, mean, median, standard deviation, and range.
+Zonal statistics are one way to summarize the cells of a raster layer that lie within the boundary of another data layer (which may be in either raster or vector format). For example, aggregating deficit return periods with another raster depicting land cover type or a vector boundary (shapefile) of countries, states, or counties, will produce descriptive statistics by that new layer. These statistics include: sum, mean, median, standard deviation, and range.  
 
-For this lesson, we begin by calculating the mean deficit return period by California counties. First we retrieve a vector data set of California counties from the geoBoundaries API. Since geoBoundaries does not attribute which counties belong to which states, we utilize a spatial operation called intersect in order to select only those counties in California.
+For this lesson, we begin by calculating the mean deficit return period by California counties. First, we retrieve a vector data set of California counties from the geoBoundaries API. Since geoBoundaries does not attribute which counties belong to which states, we utilize a spatial operation called intersect in order to select only those counties in California.
+
 
 ```{r}
 # get the adm2 (county) level data for the USA

@@ -9,7 +9,7 @@ bibliography: wsim-gldas-references.bib
 
 ## Overview
 
-In this lesson, you will acquire the data set called **Water Security Indicator Model - Global Land Data Assimilation System(WSIM-GLDAS)** from the [NASA Socioeconomic Data and Applications Center (SEDAC)](https://sedac.ciesin.columbia.edu/) website and will also retrieve a global administrative boundary data set called [geoBoundaries](https://www.geoboundaries.org/api.html) data directly from an application programming interface (API). You will learn how to subset the data for a region of interest and save the result data as a new file.
+In this lesson, you will acquire the data set called **Water Security Indicator Model - Global Land Data Assimilation System (WSIM-GLDAS)** from the [NASA Socioeconomic Data and Applications Center (SEDAC)](https://sedac.ciesin.columbia.edu/) website and will also retrieve a global administrative boundary data set called [geoBoundaries](https://www.geoboundaries.org/api.html) data directly from an application programming interface (API). You will learn how to subset the data for a region of interest and save the result data as a new file.
 
 ## Learning Objectives
 
@@ -25,7 +25,7 @@ After completing this lesson, you should be able to:
 
 The water cycle is the constant process of circulation of water on, above, and under the Earth's surface [@NOAA2019]. Human activities produce greenhouse gas emissions, land use changes, dam and reservoir development, and groundwater extraction which have affected the natural water cycle in recent decades [@intergovernmentalpanelonclimatechange2023]. The influence of these human activities on the water cycle have consequential impacts on oceanic, groundwater, and land processes, influencing phenomena such as droughts and floods [@Zhou2016].
 
-Precipitation deficits can lead to drought, characterized by prolonged periods of little to no rainfall and resulting water shortages. Droughts often trigger environmental stresses and can create cycles of reinforcement, impacting both ecosystems and people [@Rodgers2023]. For example, while California frequently experiences drought, the combination of prolonged dry spells and sustained high temperatures prevented the replenishment of cool fresh water to the Klamath river, which led to severe water shortages in 2003 and again from 2012 to 2014. Additonally, the Central Valley is an agricultural area that grows almonds, one of California’s most important crops, with the state producing 80% of the world’s almonds. These severe droughts, coupled with competition for  limited fresh water resources, resulted in declining populations of [Chinook salmon](https://www.fisheries.noaa.gov/species/chinook-salmon) due to heat stress and gill rot disease disrupting the food supply for Klamath basin tribal groups [@guillen2002; @Bland2014].
+Precipitation deficits, or periods of below average rainfall, can lead to drought, which is characterized by prolonged periods of little to no rainfall and resulting water shortages. Droughts often trigger environmental stresses and can create cycles of reinforcement, impacting both ecosystems and people [@Rodgers2023]. For example, while California frequently experiences drought, the combination of prolonged dry spells and sustained high temperatures prevented the replenishment of cool fresh water to the Klamath river, which led to severe water shortages in 2003 and again from 2012 to 2014. These shortages affect agricultural areas like the Central Valley,  which grows almonds, one of California’s most important crops, with the state producing 80% of the world’s almonds. These severe droughts, coupled with competition for limited fresh water resources, resulted in declining populations of [Chinook salmon](https://www.fisheries.noaa.gov/species/chinook-salmon) due to heat stress and gill rot disease disrupting the food supply for Klamath basin tribal groups [@guillen2002; @Bland2014].
 
 ![](images/watercycle_rc.png)[^1]
 
@@ -35,13 +35,13 @@ Precipitation deficits can lead to drought, characterized by prolonged periods o
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Data Science Review
 
-A [raster](https://docs.qgis.org/2.18/en/docs/gentle_gis_introduction/raster_data.html) is a type of geographic data in image format which has numerical information stored in each pixel. (Rasters are often referred to as grids because of their regularly-shaped matrix data structure.) Rasters can store many types of information, and they usually have dimensions that include latitude, longitude, and time. NetCDF is one format for raster data; others include Geotiff, ASCII and many more. Several raster formats like NetCDF can store multiple raster layers, or a "raster stack," which can useful for storing and analyzing a series of rasters.
+A [raster](https://docs.qgis.org/2.18/en/docs/gentle_gis_introduction/raster_data.html) dataset is a type of geographic data in digital image format which has numerical information stored in each pixel. (Rasters are often referred to as grids because of their regularly-shaped matrix data structure.) Rasters can store many types of information, and they usually have dimensions that include latitude, longitude, and time. NetCDF is one format for raster data; others include Geotiff, ASCII and many more. Several raster formats like NetCDF can store multiple raster layers, or a “raster stack,” which can be useful for storing and analyzing a series of rasters.
+
 :::
 :::
 
-The **Water Security (WSIM-GLDAS) Monthly Grids, v1 (1948 - 2014)** dataset can be download from the [NASA SEDAC](https://sedac.ciesin.columbia.edu/data/set/water-wsim-gldas-v1) website [@isciences2022]. The dataset abstract describes these data saying that WSIM-GLDAS “identifies and characterizes surpluses and deficits of freshwater, and the parameters determining these anomalies, at monthly intervals over the period January 1948 to December 2014.”
+The **Water Security (WSIM-GLDAS) Monthly Grids, v1 (1948 - 2014)** The Water Security (WSIM-GLDAS) Monthly Grids, v1 (1948 - 2014) dataset “identifies and characterizes surpluses and deficits of freshwater, and the parameters determining these anomalies, at monthly intervals over the period January 1948 to December 2014” [@isciences2022]. The dataset can be downloaded from the [NASA SEDAC](https://sedac.ciesin.columbia.edu/data/set/water-wsim-gldas-v1) website. Downloads of the WSIM-GLDAS data are organized by a combination of thematic variables (composite surplus/deficit, temperature, PETmE, runoff, soil moisture, precipitation) and integration periods (a temporal aggregation) (1, 3, 6, 12 months). Each variable-integration combination consists of a NetCDF raster (.nc) file ( with a time dimension that contains a raster layer for each of the 804 months between January, 1948 and December, 2014. Some variables also contain multiple attributes each with their own time series. Hence, this is a large file that can take a lot of time to download and may cause computer memory issues on certain systems. This is considered BIG data.
 
-Downloads are organized by a combination of thematic variables (composite surplus/deficit, temperature, PETmE, runoff, soil moisture, precipitation) and integration periods (a temporal aggregation) (1, 3, 6, 12 months). Each variable-integration combination consists of a **NetCDF raster** (.nc) file ( with a time dimension that contains a raster layer for each of the 804 months between January, 1948 and December, 2014. Some variables also contain multiple attributes each with their own time series. Hence, this is a large file that can take a lot of time to download and may cause computer memory issues on certain systems. This is considered BIG data.
 
 ## Acquiring the Data
 
@@ -51,7 +51,7 @@ Downloads are organized by a combination of thematic variables (composite surplu
 The **Water Security (WSIM-GLDAS) Monthly Grids dataset** used in this lesson is hosted by [NASA's Socioeconomic Data and Applications Center (SEDAC](https://sedac.ciesin.columbia.edu/)), one of several [Distributed Active Archive Centers (DAACs)](https://www.earthdata.nasa.gov/eosdis/daacs). SEDAC hosts a variety of data products including geospatial population data, human settlements and infrastructure, exposure and vulnerability to climate change, and satellite-based data on land use, air, and water quality. In order to download data hosted by SEDAC, you are required to have a free NASA EarthData account. You can create an account here: [NASA EarthData](https://urs.earthdata.nasa.gov/users/new).
 :::
 
-For this lesson, we will work with the WSIM-GLDAS data set **Composite Anomaly Twelve-Month Return Period** NetCDF file. This represents the variable "Composite Anomaly" for the integration period of twelve-month. Let's download the file directly from the SEDAC website. The [data set documentation](https://sedac.ciesin.columbia.edu/downloads/docs/water/water-wsim-gldas-v1-documentation.pdf) describes the composite variables as key features of WSIM-GLDAS which combine “the return periods of multiple water parameters into composite indices of overall water surpluses and deficits [@isciences2022a]”. The composite anomaly files represent these model outputs in terms of the rarity of their return period, or how often they occur. Please go ahead and download the file.
+For this lesson, we will work with the **WSIM-GLDAS data set Composite Anomaly Twelve-Month Return Period NetCDF** file. This represents the variable “Composite Anomaly” for the integration period of twelve-months, in this instance an anomaly is defined as a rare observation. We begin with the twelve-month aggregation because this aggregation is a snapshot of anomalies for the entire year, so it’s useful to get an initial understanding of that year; once we identify outliers in the data, we can take a closer look at the 3-month or 1-month return periods for an in-depth analysis of the data. Let’s download the file directly from the SEDAC website. The [data set documentation](https://sedac.ciesin.columbia.edu/downloads/docs/water/water-wsim-gldas-v1-documentation.pdf) describes the composite variables as key features of WSIM-GLDAS which combine “the return periods of multiple water parameters into composite indices of overall water surpluses and deficits [@isciences2022a]”. The composite anomaly files represent these model outputs in terms of the rarity of their return period, or how often they occur. Please go ahead and download the file.
 
 -   First, go to the SEDAC website at <https://sedac.ciesin.columbia.edu/>. You can explore the website by themes, data sets, or collections. We will use the search bar at the top to search for "water security wsim". Find and click on the Water Security (WSIM-GLDAS) Monthly Grids, v1 (1948–2014) data set. Take a moment to review the dataset's overview and documentation pages.
 
@@ -113,7 +113,7 @@ wsim_gldas_anoms <- stars::read_stars("composite_12mo.nc", sub = 'deficit', prox
 
 ## Time Selection
 
-Specifying a temporal range of interest will make the file size smaller and therefore more manageable. We’ll select every year for the range 2000-2014. This can be accomplished by generating a sequence for every year between December 2000 and December 2014, and then passing that list of dates to `filter`.
+Specifying a temporal range of interest will make the file size smaller and therefore more manageable. We’ll select every year for the range 2000-2014. This can be accomplished by generating a sequence for every year between December 2000 and December 2014, and then passing that list of dates, in the form of a vector, using the function `filter`.
 
 ```{r}
 # generate a vector of dates for subsetting
@@ -146,11 +146,11 @@ Although we have now reduced the data to a single attribute with a restricted ti
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Data Science Review
 
-[GeoJSON](https://geojson.org/) is a format for encoding, storing and sharing geographic data. It's commonly used in web mapping applications to represent geographic features with their associated attributes. GeoJSON files are easily readable by both humans and computers, making them a popular choice for sharing geographic data over the internet.
+[GeoJSON](https://geojson.org/) is a format for encoding, storing and sharing geographic data as vector data, i.e., points, lines and polygons. It’s commonly used in web mapping applications to represent geographic features and  their associated attributes. GeoJSON files are easily readable by both humans and computers, making them a popular choice for sharing geographic data over the internet.
 :::
 :::
 
-We can spatially crop the raster stack with a few different methods. Options include using a bounding box in which the outer geographic coordinates (xmin, ymin, xmax, ymax) are specified, or using another raster object, or a vectorized boundary like a shapefile or GeoJSON to set the clipping extent.
+We can spatially crop the raster stack with a few different methods. Options include using a bounding box in which the outer geographic coordinates (xmin, ymin, xmax, ymax) are specified, or using another raster object, or a vector boundary like a shapefile or GeoJSON to set the clipping extent.
 
 ::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
