@@ -474,7 +474,7 @@ Non-Agricultural Categories
 
 ```{r}
 #list of non-agricultural Categories
-nonag_cat <- list("Perennial Ice/Snow", "Developed/Open Space", "Developed/Low Intensity", "Developed/Med Intensity","Developed/High Intensity", "Barren", "Deciduous Forest", "Evergreen Forest","Mixed Forest","Shrubland","Grassland/Pasture","Woody Wetlands", "Herbaceous Wetlands")
+nonag_cat <- list("Open Water", "Perennial Ice/Snow", "Developed/Open Space", "Developed/Low Intensity", "Developed/Med Intensity","Developed/High Intensity", "Barren", "Deciduous Forest", "Evergreen Forest","Mixed Forest","Shrubland","Grassland/Pasture","Woody Wetlands", "Herbaceous Wetlands")
 #exclude non-agricultural categories
 for (category in nonag_cat){
   cdl_sub[cdl_sub == category ] <- NA

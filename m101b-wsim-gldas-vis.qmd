@@ -613,6 +613,6 @@ This figure really illustrates the human impact of the 2014 drought. Nearly 100%
 
 In this lesson we explored the California drought of 2014. In our next lesson, we will examine near real-time flood data in California using the MODIS data product.
 
-[Lesson 2: Moderate Resolution Imaging Spectroradiometer (MODIS) Near-Real Time (NRT) flood data](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m102-lance-modis-nrt-global-flood.html){.btn .btn-primary .btn role="button"}
+[Lesson 2: Moderate Resolution Imaging Spectroradiometer (MODIS) Near-Real Time (NRT) flood data](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m102-lance-modis-nrt-global-flood.html){.btn .btn-primary .btn role="button"} 
 
 # References
