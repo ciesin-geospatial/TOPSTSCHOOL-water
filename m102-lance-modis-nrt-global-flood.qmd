@@ -107,6 +107,11 @@ The MODIS Near Real-Time (NRT) Flood dataset offers multiple products, each acco
 
 For this exercise, we will be using the MCDWD L3 F3 product: [LANCE NRT Flood](https://nrt3.modaps.eosdis.nasa.gov/archive/allData/61/MCDWD_L3_F3_NRT/)
 
+If in **2i2c**, clear objects from the current workspace:
+```{r}
+rm(list = ls())
+```
+
 First, install and load the R packages required for this exercise:
 
 ```{r}
