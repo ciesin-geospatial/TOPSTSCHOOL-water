@@ -20,15 +20,15 @@ website:
     search: true
     left:
       - text: "Home"
-        url: https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/index.html
+        url: https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/index.html
       - text: "Lessons"
         menu:
           - text: "WSIM Data Acquisition and Processing"
-            url: https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/wsim-gldas-acquisition.html
+            url: https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/wsim-gldas-acquisition.html
           - text: "WSIM Data Visualization and Exploration"
-            url: https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/wsim-gldas-vis.html
+            url: https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/wsim-gldas-vis.html
           - text: "MODIS NRT Flood Data Acquisition Exploration"
-            url: https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/lance-modis-nrt-global-flood-mcdwd-f3.html
+            url: https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/lance-modis-nrt-global.html
           - text: "Interactive NYC School Lead Data Explorer"
             url: https://topstschool.shinyapps.io/nyc-lead/
     tools:

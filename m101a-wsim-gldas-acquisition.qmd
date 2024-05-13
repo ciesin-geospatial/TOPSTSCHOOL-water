@@ -250,7 +250,7 @@ plot(sf::st_geometry(texas),
 
 At this point, you may want to ask, does the data look plausible? That is, are the values being rendered in your map of interest? This simple check is helpful to make sure your subsetting has worked as expected. (You will want to use other methods to systematically evaluate the data.) If the results are acceptable, the subsetted dataset may be written to disk as a NetCDF file, and saved for future modules.
 
-You can download this subset if you are running this script locally. **Not for 2i2c**:
+You can download this subset if you are running this script locally. **Not for 2i2c. For 2i2c, click on the `output` folder and download the `wsim_gldas_tex.nc` file provided.**:
 
 ```{r}
 ## Use this chunk to download locally. Not for 2i2c
@@ -262,13 +262,13 @@ The size of the pre-processed dataset is 1.6 MB compared to the original dataset
 
 If you want to share an image of the plot that you created you can save it to your computer as a .png file. You can open the `png()` device, producing the plot, and closing the device with `dev.off()`.
 
-You can download this imageif you are running this script locally. **Not for 2i2c**:
+You can download this image if you are running this script locally. **Not for 2i2c. For 2i2c, click on the `output` folder and download the `wsim_map_plot.png` image provided.**:
 
 ```{r eval=FALSE}
 # ## Use this chunk to download locally. Not for 2i2c
 # # Save the map plot as a PNG file
 # # Specify file name and dimensions 
-# png("output/map_plot.png", width = 4, height = 4, units="in", res=300)  
+# png("output/wsim_map_plot.png", width = 4, height = 4, units="in", res=300)  
 # wsim_gldas_anoms_tex |>
 #   dplyr::slice(index = 15, along = "time") |>
 #   plot(reset = FALSE, breaks = c(0, -5, -10, -20, -30, -50))
