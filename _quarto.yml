@@ -30,7 +30,7 @@ website:
           - text: "MODIS NRT Flood Data Acquisition Exploration"
             url: https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/lance-modis-nrt-global-flood-mcdwd-f3.html
           - text: "Interactive NYC School Lead Data Explorer"
-            url: https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/exposure_to_lead_in_schools_nys.html
+            url: https://topstschool.shinyapps.io/nyc-lead/
     tools:
       - icon: github
         menu:

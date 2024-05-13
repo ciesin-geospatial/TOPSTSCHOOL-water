@@ -18,13 +18,13 @@ The SCHOOL Modules do not intend to teach all-encompassing earth science lessons
 Module 1: Water datasets and use cases cover:
 
 -   **Water Security Indicator Model - Global Land Data Assimilation System (WSIM-GLDAS):** Exploring water anomalies using a historical dataset.
-    -   [Lesson 1: Acquiring and Pre-Processing WSIM-GLDAS](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/wsim-gldas-acquisition.html)
-    -   [Lesson 2: Advanced Visualizations with WSIM-GLDAS](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/wsim-gldas-vis.html)
+    -   [Lesson 1a: Acquiring and Pre-Processing WSIM-GLDAS](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m101a-wsim-gldas-acquisition.html)
+    -   [Lesson 1b: Advanced Visualizations with WSIM-GLDAS](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m101bwsim-gldas-vis.html)
 -   **Moderate Resolution Imaging Spectroradiometer (MODIS) Near Real-Time (NRT) flood data:** Lessons in data acquisition and analysis of recent water anomalies.
-    -   [Lesson 3: Acquiring and Exploring MODIS NRT Flood Data](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/lance-modis-nrt-global-flood-mcdwd-f3.html)
+    -   [Lesson 2: Acquiring and Exploring MODIS NRT Flood Data](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m102-lance-modis-nrt-global-flood-mcdwd-f3.html)
 -   **Lead in New York State Schools:** Exploring lead contamination data and US Census data and lessons in data cleaning and visualization, with a discerning eye towards data limitations.
-    -   [Lesson 4: NYC School Water Quality: Exposure to Lead Data](https://topstschool.shinyapps.io/nyc-lead/)
+    -   [Lesson 3: NYC School Water Quality: Exposure to Lead Data](https://topstschool.shinyapps.io/nyc-lead/)
 -   **Conclusion:** Module wrap-up and knowledge check.
-    -   [Lesson 5: Conclusion - Coming soon...]()
+    -   [Lesson 4: Conclusion - Coming soon...]()
 
 This course was made possible thanks to the work of our NASA Transform to Open Science (TOPS) team, our SCHOOL Open Science team, open science Subject Matter Experts (SMEs), and the SCHOOL Development team!
