@@ -16,15 +16,17 @@ understand an Open Science workflow including accessing and citing open
 data. The three datasets and vignettes cover:
 
 - **WSIM-GLDAS:** Exploring water anomalies using a historical dataset.
-  - [Lesson 1: Acquiring and Pre-Processing
-    WSIM-GLDAS](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/wsim-gldas-acquisition.html)
-  - [Lesson 2: Advanced Visualizations with
-    WSIM-GLDAS](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/wsim-gldas-vis.html)
+  - [Lesson 1a: Acquiring and Pre-Processing
+    WSIM-GLDAS](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m101a-wsim-gldas-acquisition.html)
+  - [Lesson 1b: Advanced Visualizations with
+    WSIM-GLDAS](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m101b-wsim-gldas-vis.html)
 - **MODIS Near Real Time flood data:** Lessons in data acquisition and
   analysis of recent water anomalies.
-  - [Lesson 3: Acquiring and Exploring MODIS NRT Flood
-    Data](https://ciesin-geospatial.github.io/TOPSTSCHOOL-module-1-water/lance-modis-nrt-global-flood-mcdwd-f3.html)
+  - [Lesson 2: Acquiring and Exploring MODIS NRT Flood
+    Data](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m102-lance-modis-nrt-global-flood.html)
 - **Lead in New York State Schools:** Exploring lead contamination data
   and US Census data and lessons in data cleaning and visualization,
   with a discerning eye towards data limitations.
-  - [Lesson 4: Interactive Exploration of NYC Lead Data]()
+  - [Lesson 3: NYC School Water Quality: Exposure to Lead Data](https://topstschool.shinyapps.io/nyc-lead/)
+
+This course was made possible thanks to the work of our NASA Transform to Open Science (TOPS) team, our SCHOOL Open Science team, open science Subject Matter Experts (SMEs), and the SCHOOL Development team!
