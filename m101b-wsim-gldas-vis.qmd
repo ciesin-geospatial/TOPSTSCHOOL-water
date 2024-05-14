@@ -3,7 +3,7 @@ title: "Water Security Indicator Model - Global Land Data Assimilation System (W
 author: 
   - "Joshua Brinks"
   - "Elaine Famutimi"
-date: "April 6, 2024"
+date: "May 14, 2024"
 bibliography: "references/wsim-gldas-references.bib"
 ---
 
@@ -34,6 +34,18 @@ This lesson uses the [`stars`](https://r-spatial.github.io/stars/), [`sf`](https
 ## Load Data
 
 We'll begin with the **WSIM-GLDAS Composite Anomaly Twelve-Month Return Period** Composite Anomaly Twelve-Month Return Period file from SEDAC. We will spatially subset the data to cover only the Continental United States (CONUSA) which will help to minimize our memory footprint. We can further reduce our memory overhead by reading in just the variable we want to analyze. In this instance we can read in just the `deficit` attribute from the WSIM-GLDAS Composite Anomaly Twelve-Month Return Period file, rather than reading the entire NetCDF with all of its attributes.
+
+```{r include=FALSE, warning=FALSE}
+# read in the wsim-gldas layer from SEDAC
+wsim_gldas <- aws.s3::s3read_using(FUN = stars::read_stars, 
+                                   proxy = FALSE, 
+                                   sub = 'deficit',
+                                   object = "water-module/composite_12mo.nc",
+                                   bucket = "s3://tops-school",
+                                   opts = list(region = "us-west-2"))
+# check the basic info.
+print(wsim_gldas)
+```
 
 ```{r warning=FALSE}
 # read in the wsim-gldas layer from SEDAC
@@ -167,11 +179,28 @@ Additionally, there were thousands of adult salmon struggling to survive in the 
 In order to limit the amount of computing memory required for the operation, we will first clear items from the in-memory workspace and then reload a smaller composite file, we'll start by removing the 12-month composite object.
 
 ```{r}
-# remove the large wsim object from the environemnt
+# remove the large wsim object from the environment
 rm(wsim_gldas)
 ```
 
-Now let's load into the in-memory workspace the composite 1-month file from SEDAC.
+Now let's load the composite 1-month file from SEDAC into the workspace.
+
+```{r include = FALSE}
+# clear the memory
+#gc()
+# read in the 1 month wsim-gldas data
+wsim_gldas_1mo <- aws.s3::s3read_using(
+  FUN = stars::read_stars,
+  proxy = FALSE,
+  sub = 'deficit',
+  object = "water-module/composite_1mo.nc",
+  bucket = "s3://tops-school",
+  opts = list(region = "us-west-2")
+)
+
+# check the basic info
+print(wsim_gldas_1mo)
+```
 
 ```{r}
 # clear the memory
@@ -327,9 +356,28 @@ The [terra](https://cran.r-project.org/web/packages/terra/index.html) R package 
 
 We will perform our zonal statistics using the `exactextractr` package [@Baston2023]. It is the fastest, most accurate, and most flexible zonal statistics tool for the R programming language, but it currently has no default methods for the `stars` package, so we'll switch to `terra` for this portion of the lesson.
 
+```{r include = FALSE}
+# you have to save the nc file to disk first if you want use terra::sds
+aws.s3::save_object(
+  object = "water-module/composite_1mo.nc",
+  bucket = "s3://tops-school",
+  region = "us-west-2",
+  file = "data/composite_1mo.nc")
+```
+
+Read the data back in with *terra*.
+
 ```{r}
+# remove the previous 1 month object
+rm(wsim_gldas_1mo)
+
 # create a terra collection with the wsim-gldas 1 month file from SEDAC
 wsim_gldas_1mo<-terra::sds("data/composite_1mo.nc")
+```
+
+Subset the data along the time dimension.
+
+```{r}
 # pull out just the deficit layer
 wsim_gldas_1mo<-wsim_gldas_1mo["deficit"]
 # create a sequence of dates to keep
@@ -423,6 +471,20 @@ Load in the population density layers.
 ```{r}
 # read in GPW with terra
 pop_dens<-terra::rast("data/gpw_v4_population_density_rev11_2015_15_min.tif")
+# check the basic information
+print(pop_dens)
+```
+```{r include = FALSE}
+# read in GPW with terra
+# terra needs the file locally
+aws.s3::save_object(
+  object = "water-module/gpw_v4_population_density_rev11_2015_15_min.tif",
+  bucket = "s3://tops-school",
+  region = "us-west-2",
+  file = "data/gpw_v4_population_density_rev11_2015_15_min.tif"
+)
+
+pop_dens <- terra::rast("data/gpw_v4_population_density_rev11_2015_15_min.tif")
 # check the basic information
 print(pop_dens)
 ```
@@ -602,6 +664,13 @@ ggplot2::ggplot(pop_by_rp,
 ```
 
 This figure really illustrates the human impact of the 2014 drought. Nearly 100% of the population was under a 60+ year deficit in January followed by 66% in May and approximately 40% for the remainder of the summer. That is a devastating drought!
+
+```{r include=FALSE}
+# clean up the files we downloaded onto the 2i2c server
+file.remove(c("data/gpw_v4_population_density_rev11_2015_15_min.tif",
+              "data/composite_1mo.nc",
+              "data/composite_12mo.nc"))
+```
 
 ## Congratulations! In this Lesson You Learned How To...
 

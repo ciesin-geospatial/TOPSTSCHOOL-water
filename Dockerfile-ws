@@ -22,5 +22,6 @@ RUN Rscript -e "install.packages('basemaps')"
 RUN Rscript -e "install.packages('shiny')"
 RUN Rscript -e "install.packages('data.table')"
 RUN Rscript -e "install.packages('kableExtra')"
+RUN Rscript -e "install.packages('aws.s3')"
 
 CMD ["/init"]
