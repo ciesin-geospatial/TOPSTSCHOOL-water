@@ -27,9 +27,9 @@ The water cycle is the process of circulation of water on, above, and under the 
 
 Precipitation deficits, or periods of below-average rainfall, can lead to drought, characterized by prolonged periods of little to no rainfall and resulting water shortages. Droughts often trigger environmental stresses and can create cycles of reinforcement impacting ecosystems and people [@Rodgers2023]. For example, California frequently experiences drought but the combination of prolonged dry spells and sustained high temperatures prevented the replenishment of cool fresh water to the Klamath River, which led to severe water shortages in 2003 and again from 2012 to 2014. These shortages affect agricultural areas like the Central Valley, which grows almonds, one of California’s most important crops, with the state producing 80% of the world’s almonds. These severe droughts, coupled with competition for limited freshwater resources, resulted in declining populations of [Chinook salmon](https://www.fisheries.noaa.gov/species/chinook-salmon) due to heat stress and gill rot disease disrupting the food supply for Klamath basin tribal groups [@guillen2002; @Bland2014].
 
-![](docs/images/watercycle_rc.png)[^1]
+![](https://airs.jpl.nasa.gov/rails/active_storage/disk/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDVG9JYTJWNVNTSXBNVEF3T1dJM1pUZ3RPREV6TVMwME1HSXdMVGhtWlRBdE9ETTNaR1JpWXpoa05qTmxCam9HUlZRNkVHUnBjM0J2YzJsMGFXOXVTU0p2YVc1c2FXNWxPeUJtYVd4bGJtRnRaVDBpWkdWMFlXbHNYemd5TmpRd01qVXdORE5mTVRKbE5HWTJZemd4TlY5dkxtcHdaeUk3SUdacGJHVnVZVzFsS2oxVlZFWXRPQ2NuWkdWMFlXbHNYemd5TmpRd01qVXdORE5mTVRKbE5HWTJZemd4TlY5dkxtcHdad1k3QmxRNkVXTnZiblJsYm5SZmRIbHdaVWtpRDJsdFlXZGxMMnB3WldjR093WlVPaEZ6WlhKMmFXTmxYMjVoYldVNkNteHZZMkZzIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2tleSJ9fQ==--c028dfbe50788578439e16f1de6fa2656174d67b/detail_8264025043_12e4f6c815_o.jpg)[^1]
 
-[^1]: Photo Credit, Dennis Cain/NWS.
+[^1]: Photo Credit, NASA/JPL.
 
 ::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
@@ -41,7 +41,7 @@ A [raster](https://docs.qgis.org/2.18/en/docs/gentle_gis_introduction/raster_dat
 
 The **Water Security (WSIM-GLDAS) Monthly Grids, v1 (1948 - 2014)** The Water Security (WSIM-GLDAS) Monthly Grids, v1 (1948 - 2014) dataset "identifies and characterizes surpluses and deficits of freshwater, and the parameters determining these anomalies, at monthly intervals over the period January 1948 to December 2014" [@isciences2022]. The dataset can be downloaded from the [NASA SEDAC](https://sedac.ciesin.columbia.edu/data/set/water-wsim-gldas-v1) website. Downloads of the WSIM-GLDAS data are organized by a combination of thematic variables (composite surplus/deficit, temperature, PETmE, runoff, soil moisture, precipitation) and integration periods (a temporal aggregation) (1, 3, 6, 12 months). Each variable-integration combination consists of a NetCDF raster (.nc) file ( with a time dimension that contains a raster layer for each of the 804 months between January, 1948 and December, 2014. Some variables also contain multiple attributes each with their own time series. Hence, this is a large file that can take a lot of time to download and may cause computer memory issues on certain systems. This is considered BIG data.
 
-::: {.callout-note}
+::: callout-note
 ## Knowledge Check
 
 1.  How would you best describe the water cycle?
@@ -49,13 +49,11 @@ The **Water Security (WSIM-GLDAS) Monthly Grids, v1 (1948 - 2014)** The Water Se
     b.  Low precipitation combined with record temperatures.
     c.  The circulation of water on and above Earth’s surface.
     d.  A cycle that happens due to drought.
-
 2.  What human interventions affect the water cycle? (select all that apply)
     a.  Greenhouse gas emissions
     b.  Land use changes
     c.  Dam and reservoir development
     d.  Groundwater overexploitation
-
 3.  What is a precipitation deficit?
     a.  A period of rainfall below the average.
     b.  A prolonged period of little to no rainfall.
@@ -85,7 +83,7 @@ For this lesson, we will work with the **WSIM-GLDAS data set Composite Anomaly T
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Data Science Review
 
-This lesson uses the [`stars`](https://r-spatial.github.io/stars/), [`sf`](https://r-spatial.github.io/sf/), [`lubridate`](https://lubridate.tidyverse.org/), and [cubelyr](https://cran.r-project.org/web/packages/cubelyr/index.html) packages. 
+This lesson uses the [`stars`](https://r-spatial.github.io/stars/), [`sf`](https://r-spatial.github.io/sf/), [`lubridate`](https://lubridate.tidyverse.org/), and [cubelyr](https://cran.r-project.org/web/packages/cubelyr/index.html) packages.
 
 The `stars` package in R helps you work with large and complex spatial data, making it easier to analyze and visualize maps and satellite images. The `sf` package lets you handle and analyze spatial data in a simple way, allowing you to work with maps and geographic information seamlessly. The `lubridate` package makes it really easy to handle dates and times in R, so you can effortlessly convert, manipulate, and perform calculations with them. The `cubelyr` package helps you create and analyze multidimensional data cubes, making it easier to explore complex datasets and discover patterns.
 
@@ -164,23 +162,24 @@ wsim_gldas_anoms |>
 
 Although we have now reduced the data to a single attribute with a restricted time of interest, we can take it a step further and limit the spatial extent to a country or state of interest.
 
-::: {.callout-note}
+::: callout-note
 ## Knowledge Check
-1. Which of these best describe a raster dataset?
-    a. A type of geographic data in digital image format.
-    b. A table or list of numbers.
-    c. A geographic region of interest.
-    d. An attribute with a time period of interest.
-2. Which of the following is true about the information that rasters can store? (select all that apply)
-    a. Attributes (thematic content)
-    b. Dimensions (information expressing spatial or temporal extent information)
-    c. Geographic coordinates
-    d. A list of numbers
-3. In the R programming language, what does the term vector refer to?
-    a. A grid of geographic data.
-    b. A collection or list of numbers.
-    c. A geographic region of interest.
-    d. An attribute with a time period of interest.
+
+1.  Which of these best describe a raster dataset?
+    a.  A type of geographic data in digital image format.
+    b.  A table or list of numbers.
+    c.  A geographic region of interest.
+    d.  An attribute with a time period of interest.
+2.  Which of the following is true about the information that rasters can store? (select all that apply)
+    a.  Attributes (thematic content)
+    b.  Dimensions (information expressing spatial or temporal extent information)
+    c.  Geographic coordinates
+    d.  A list of numbers
+3.  In the R programming language, what does the term vector refer to?
+    a.  A grid of geographic data.
+    b.  A collection or list of numbers.
+    c.  A geographic region of interest.
+    d.  An attribute with a time period of interest.
 :::
 
 ## Spatial Selection
@@ -328,23 +327,24 @@ You can download this image if you are running this script locally. **Not for 2i
 
 Once you run this code you can find the file in the file location... This allows you to share your findings.
 
-::: {.callout-note}
+::: callout-note
 ## Knowledge Check
-1. There are several options for spatially subsetting (or clipping)  a raster/raster stack to a region of interest. What method was used in this lesson?
-    a. Using a vector of dates.
-    b. Using another raster object.
-    c. Specifying a bounding box. 
-    d. Using a vector boundary dataset.
-2. When running into memory issues, what is something you can do to reduce the computational load?
-    a. Work with one time frame or region at a time.
-    b. Save it as a new file.
-    c. Subset the data to a region of interest/time frame. 
-    d. Find other data to work with. 
-3. What is the importance of subsetting data?
-    a. Freeing up space.
-    b. Analyzing a certain time or area of interest.
-    c. Making code run faster.
-    d. All of the above.
+
+1.  There are several options for spatially subsetting (or clipping) a raster/raster stack to a region of interest. What method was used in this lesson?
+    a.  Using a vector of dates.
+    b.  Using another raster object.
+    c.  Specifying a bounding box.
+    d.  Using a vector boundary dataset.
+2.  When running into memory issues, what is something you can do to reduce the computational load?
+    a.  Work with one time frame or region at a time.
+    b.  Save it as a new file.
+    c.  Subset the data to a region of interest/time frame.
+    d.  Find other data to work with.
+3.  What is the importance of subsetting data?
+    a.  Freeing up space.
+    b.  Analyzing a certain time or area of interest.
+    c.  Making code run faster.
+    d.  All of the above.
 :::
 
 ## In this Lesson, You Learned...
