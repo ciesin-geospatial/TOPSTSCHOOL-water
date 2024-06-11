@@ -26,7 +26,7 @@ get_census_data<- function(state_abr){
     separate(NAME, c("county","state"),",")
   return (county_population)}
 
-get_data<-"https://raw.githubusercontent.com/ciesin-geospatial/TOPSTSCHOOL-module-1-water/main/Lead_Testing_in_School_Drinking_Water_Sampling_and_Results_Compliance_Year_2016.csv"
+get_data<-"https://raw.githubusercontent.com/ciesin-geospatial/TOPSTSCHOOL-module-1-water/main/m103-nyc-lead/Lead_Testing_in_School_Drinking_Water_Sampling_and_Results_Compliance_Year_2016.csv"
 school_lead_df<-readr::read_csv(url(get_data))
 
 # extract xy coordinates
@@ -75,4 +75,4 @@ save(county_census,
      school_lead_df,
      school_locations, 
      county_with_school, 
-     file = file.path(getwd(),"nyc-lead","nyc_lead_dats.RData"))
+     file = file.path(getwd(), "nyc_lead_dats.RData"))

@@ -29,13 +29,14 @@ nyc_ui <-
                          "Lead contamination is a serious issue that poses severe health risks and requires remedial action. ",
                          "In this lesson, we will analyze data on lead levels in [NY State schools](https://health.data.ny.gov/Health/Lead-Testing-in-School-Drinking-Water-Sampling-and/rkyy-fsv9/data) ", 
                          "collected from 2016, 2017, 2018, and 2019 and compare it with population characteristics at the county level in New York State (NYS) to understand its impact. ",
-                         "No 'safe' levels of lead have been established, but we will discuss what level of lead can be detected. The lesson examines the sources of lead exposure and its adverse effects. ",
+                         "No 'safe' levels of lead have been established, but we will discuss what level of lead can be detected. The lesson examines the sources of lead exposure and its adverse effects; ",
+                         "we will also discuss the importance of data transparency, public participation, visualizing contamination as maps/graphs, and estimating population risks to address water quality issues. ",
                          "The review also discusses the importance of data transparency, public participation, visualizing contamination as maps/graphs, and estimating population risks to address water quality issues.
 
             ## Learning Objectives
             
-            -   Learn about lead as a drinking water contaminant and its health impacts.
-            -   Visualize lead contamination data geographically and statistically.
+            -   Learn about NYS lead as a drinking water contaminant and its health impacts.
+            -   Visualize NYS lead contamination data geographically and statistically.
             -   Discuss the importance of safe drinking water in the context of lead contamination.
             -   Understand and apply open data principles in the context of lead contamination data.
             -   Explore different data classification methods (equal, quantile, natural breaks, standard deviation). 
@@ -46,15 +47,15 @@ nyc_ui <-
             Access to clean and safe drinking water is significant to ensure public health [@NIEHS]. ",
             "Drinking water contaminants may have both short-term and long-term negative health impacts. ", 
             "One such contaminant that can have detrimental effects is lead, which is particularly harmful to a child's development [@levallois2018]. ",
-            "Children's central nervous systems and cognitive function have been linked to harm from lead exposure, even at low levels [@lanphear2005]. ",
+            "Exposure to lead, even at low levels, has been linked to harmful effects on children’s central nervous systems and cognitive function [@lanphear2005]. ",
             "Therefore, it is essential to address lead-contaminated water in schools and homes.
             
             Lead exposure has no safe threshold; therefore, safety depends on ensuring that lead levels in water are below the legal thresholds set by the World Health Organization (WHO) and the US Environmental Protection Agency (EPA) [@EPA2024]. ",
-            "According to guidelines issued by the WHO, lead concentrations in drinking water should not exceed 10 ppb (Parts Per Billion) [@WHO2022], and 15 ppb is the action level set by the EPA [@EPA2024].
+            "According to guidelines issued by the WHO, lead concentrations in drinking water should not exceed 10 Parts Per Billion (ppb) [@WHO2022], while the EPA set an action level of  15 ppb [@EPA2024].
             
             It is crucial to highlight that the degree of lead able to be detected depends upon many variables [@schock1990]. ",
             "The main source of lead in drinking water is the corrosion of lead-containing plumbing materials [@EPA2024]. ",
-            "Older plumbing systems with lead pipes and solder may leak lead into drinking water, particularly in regions with acidic water [@EPA2024]. ",
+            "Older plumbing systems with lead pipes and solders may leak lead into drinking water, particularly in regions with acidic water [@EPA2024]. ",
             "Furthermore, runoff from contaminated soil and industrial discharges can also introduce lead into water systems. ",
             "Developing effective preventive and remedial strategies requires understanding the factors that contribute to lead contamination.
 
@@ -67,12 +68,12 @@ nyc_ui <-
   bslib::card(
     fluidRow(shiny::markdown(
       glue::glue(
-        "New York State (NYS) Lead Testing in School Drinking Water dataset shows the school drinking water lead sampling and results information ",
-        "reported by each NYS public school and Boards of Cooperative Educational Services (BOCES) [(NYS Department of Health)](https://health.data.ny.gov/Health/Lead-Testing-in-School-Drinking-Water-Sampling-and/rkyy-fsv9/data). ",
+        "The New York State (NYS) Lead Testing in School Drinking Water dataset shows the 'school drinking water lead sampling and results information ",
+        "reported by each NYS public school and Boards of Cooperative Educational Services (BOCES)' [(NYS Department of Health)](https://health.data.ny.gov/Health/Lead-Testing-in-School-Drinking-Water-Sampling-and/rkyy-fsv9/data). ",
         "More information on the NYS dataset sampling is available [here](https://www.health.ny.gov/environmental/water/drinking/lead/lead_testing_of_school_drinking_water.htm).
             
         Analysis of the dataset reveals that as of 2022, 1,864 schools had lead outlets testing higher than 15 ppb [@NYS2016]. While 527 schools finished their remediation, 1,851 schools reported taking remedial action. ",
-        "There are now 12 schools with outlets exceeding 15 ppb in operation, indicating possible continuous exposure. However, there are gaps in following up and documenting the corrective measures. 
+        "There are now 12 schools with outlets exceeding 15 ppb in operation, indicating possible continuous exposure. However, there are also gaps in following up and documenting the corrective measures that have been completed. 
         
         More transparency is necessary for schools with high exposure to lead to address the hazards of lead contamination and implement improved repeated testing protocols. ",
         "The New York State Department of Health provides guidelines, rules, and resources on lead testing and remediation in schools [@DOH2023]. ",
@@ -89,20 +90,17 @@ nyc_ui <-
 
         ```             
         All datasets require some pre-cleaning and formatting. The shinyapp will format field names. ",
-        "R does not like field names with spaces, so we need to convert space to an underscore \"_\". Also, we need to extract the year from the date field for the next step of our work.
+        "R does not like field names with spaces, so we need to convert space to an underscore '_'. Also, we need to extract the year from the date field for the next step of our work.
         Please refer to the GitHub Repo for an in-depth look at the shiny app. 
         
-        A [Shiny app](https://shiny.rstudio.com/) is a web application framework for R programming ",
-        "language that allows you to create interactive web applications directly from R code. ",
-        "It's part of the RStudio ecosystem and is widely used for creating interactive data visualizations, dashboards, and web-based tools without needing to know HTML, CSS, or JavaScript.
+        A [Shiny app](https://shiny.rstudio.com/) is a web application framework for the R programming language that allows you to create interactive web applications directly from R code. It is part of the RStudio ecosystem and is widely used for creating interactive data visualizations, dashboards, and web-based tools without needing to know HTML, CSS, or JavaScript.
         
-        The code in the [SCHOOL Module 1 Water Repo](https://github.com/ciesin-geospatial/TOPSTSCHOOL-module-1-water/tree/main) ",
-        "creates a [Shiny app](https://shiny.rstudio.com/) that allows users to select a county and specific fields from the Lead in Schools data frame, and then it displays the corresponding data table based on the user's selections.
+        The code in the [SCHOOL Module 1 Water Repo](https://github.com/ciesin-geospatial/TOPSTSCHOOL-water/tree/main) ",
+        "creates a [Shiny app](https://shiny.rstudio.com/) that allows users to select a county and specific fields from a data frame (school_lead_df), the app then displays the corresponding data table based on the user's selections.
+
         Getting familiar with the dataset is the first step of an analysis. 
         
-        To understand the attributes, we will query data by geographic region (county) and different attributes (fields).
-        
-                         "
+        To understand the attributes, we will query the data by geographic region (county) and by different attributes (fields)."
       )
     )),
     fluidRow(
@@ -142,7 +140,7 @@ nyc_ui <-
   bslib::card(
     fluidRow(shiny::markdown(
       glue::glue(
-        " A dataset needs to have a geometry attribute to plot the data on a map or to conduct different spatial analyses. ",
+        "A dataset needs a geometry attribute to plot the data on a map or to complete different spatial analyses. ",
         "The NYS dataset has **xy coordinates of schools**. The xy coordinates will allow us to convert the tabular dataset to a spatial dataset.
         
         We first need to address that the xy coordinates are not properly formatted. The coordinates are currently stored with school addresses, for example: 31-02 67 AVENUE Queens, NY 11364(40.74779141700003, -73.74551716499997). 
@@ -151,7 +149,7 @@ nyc_ui <-
         
         The first number refers to the **y coordinate (latitude)**, and the second number refers to the **x coordinate (longitude)**.
         
-        While converting the data, we also need to know the projection of xy coordinates. ",
+        While converting the data, we also need to know the projection of the xy coordinates. ",
         "XY coordinates can be in different projection systems. Projection information is typically stored in the metadata of a dataset. However, in the NYS dataset, there is not any metadata attached to the dataset.
         
         The most commonly used geographic coordinate system is the [WORLD GEODETIC SYSTEM 1984 (WGS 84)](https://earth-info.nga.mil/index.php?dir=wgs84&action=wgs84). We will use the WGS84 projection to convert the NYS dataset to spatial data.
@@ -293,8 +291,7 @@ h2(style = "color: #3e3f3a;  font-style: font-family: Roboto",
         
         Don't forget to add a legend title to let the viewers understand what the map means.
         
-        Finaly, download the map as an image (in .png)
-        "
+        Finaly, download the map as an image (in .png)"
       ))),
     fluidRow(column(4),
              column(
@@ -340,10 +337,10 @@ bslib::card(
     shiny::markdown(
       glue::glue(
         "Access to safe drinking water is a fundamental human right and a pillar of public health [@li2023]. ",
-        "However, the cases discussed underscore the critical need to address the risk of lead contamination. ",
-        "From New York to Flint, Michigan, these examples serve as reminders of the need for action, supported by transparent and accessible data.
+        "However, the cases discussed in the lesson underscore the critical need to address the risk of lead contamination. ",
+        "From New York to Flint, Michigan, these examples serve as reminders of the need for action supported by transparent and accessible data.
         
-        A balance is needed between short and long-term action - promptly addressing risks in the short term by closing down contaminated water sources, improving monitoring, and transparency in reporting water quality issues [@EPA2024]. ",
+        A balance is needed between short and long-term action for instance, promptly addressing risks in the short term by closing down contaminated water sources, improving monitoring, and transparency in reporting water quality issues [@EPA2024]. ",
         "In the long term, managing the costs of major infrastructure changes required to prevent such crises and exposures, such as replacing lead service lines and school plumbing [@EPA2024]. ", 
         "Community collaboration, precise surveillance databases, and flexible adaptation strategies are critical in ensuring access to safe drinking water.
         
@@ -363,16 +360,12 @@ bslib::card(
         "The elevated levels demonstrate remaining problems with a prolonged impact on children's health and development. ",
         "Schools have an obligation to supply their pupils with clean drinking water. The Flint water crisis brought to light the long-term consequences of prolonged exposure to lead, especially for vulnerable groups such as children.
          
-        Lead exposure is cumulative, as noted in the article by the [Tampa Bay Times](https://projects.tampabay.com/projects/2018/investigations/school-lead/hillsborough-disclosure/). ",
-        "The duration of lead exposure in Flint has lasting impacts on the public, not only affecting physical health but also leading to psychological consequences of communities not being able to trust their drinking water [@brooks2021]. ",
-        "Rather than waiting for concerns to arise, schools can detect contamination issues early and take corrective action by implementing a lead testing program.",
-        "Better learning outcomes are made possible by shielding children from lead exposure. 
+        Lead exposure is cumulative, as noted in an article by the [Tampa Bay Times](https://projects.tampabay.com/projects/2018/investigations/school-lead/hillsborough-disclosure/). ",
+        "The duration of lead exposure in Flint has lasting impacts on the public, not only affecting physical health but also leading to psychological consequences of communities unable to trust their drinking water [@brooks2021]. ",
+        "Rather than waiting for concerns to arise, schools can detect contamination issues early and take corrective action by implementing a lead testing program. Better learning outcomes are made possible by shielding children from lead exposure. The Flint water crisis made it clear how crucial it is to conduct proactive lead testing, monitor the situation, and take prompt corrective action. It also highlighted the importance of transparency, community involvement, and addressing barriers to accessing clean drinking water.
         
-        The Flint water crisis made clear how crucial it is to conduct proactive lead testing, monitor the situation, and take prompt, corrective action. ",
-        "It also made clear how important it is to be transparent, involve the community, and address barriers to clean drinking water access.
-         
         In 2021, the Biden-Harris administration announced an ambitious [Lead Pipe and Paint Action Plan](https://www.whitehouse.gov/briefing-room/statements-releases/2021/12/16/fact-sheet-the-biden-harris-lead-pipe-and-paint-action-plan/). ",
-        "This comprehensive $15 billion effort intends to promptly replace all lead service lines and pipes that are contaminating drinking water systems across the country. ",
+        "This comprehensive $15 billion effort intends to promptly replace all lead service lines and pipes contaminating drinking water systems across the country. ",
         "The plan has a provision of providing a lead remediation grant of $9 billion to disadvantaged communities through the Water Infrastructure Improvements for the Nation Act (WIIN) program, including for schools and childcare centers at EPA.
             
         
@@ -384,7 +377,7 @@ bslib::card(
         -   Read into R to analyze a dataset.
         -   Convert survey dataset to spatial data using xy coordinates.
         -   Plot locations on a map.
-        -   Obtain population data from US Census Bureau by using census API.
+        -   Download population data from the US Census Bureau using the census API.
         -   Aggregate a dataset to a boundary.
         -   Create your own map."))
   )), ))

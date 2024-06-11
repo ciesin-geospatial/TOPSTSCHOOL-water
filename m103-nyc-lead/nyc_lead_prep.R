@@ -17,7 +17,7 @@ library(bslib)
 # quarto require all inputs in shiny application to be in the same chink and 
 # the chunk should be context="data"
 # this section will not be visible to user
-# However each part of the process will be viisble to user in their respective section
+# However each part of the process will be visble to user in their respective section
 
 
 ### ===== selection by dropdowns ===========###
