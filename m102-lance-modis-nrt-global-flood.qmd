@@ -35,7 +35,7 @@ After completing this lesson, you should be able to:
 
 -   Download near-real-time raster data using the application programming interfaces (APIs) with the GET HTTP request method [@wilsjame].
 
--   View the downloaded raster data to quickly preview.
+-   Preview the downloaded raster data.
 
 -   Classify and place on a map the NRT flood spatial data to determine areas with unusual flooding.
 
@@ -43,35 +43,35 @@ After completing this lesson, you should be able to:
 
 ## Introduction
 
-Atmospheric circulation, water evaporation, and their interactions with land surfaces can impact a region's rainfall variability. For example, California's winter is correlated to ocean evaporation near the west coast and eastern North Pacific, and ocean evaporation is a strong factor in increased flooding in the region [@wei2016]. Additionally, drought in the region is associated to high pressure systems off the U.S. west coast, with studies finding that the high pressure system is linked to the Pacific sea surface temperature anomalies, and exacerbated by high evaporation over land due to high temperatures.
+Atmospheric circulation, water evaporation, and their interactions with land surfaces can impact a region’s rainfall variability. For example, California’s winter is correlated with ocean evaporation near the West Coast and eastern North Pacific, and ocean evaporation is a strong factor in increased flooding in the region [@wei2016]. Additionally, drought in the region is associated with high-pressure systems off the U.S. West Coast, with studies finding that the high-pressure system is linked to the Pacific sea surface temperature anomalies, and exacerbated by high evaporation over land due to high temperatures [@wang2014; @hartmann2015; @seager2015].
 
-It is critical to understand the water cycle and how flooding events develop, particularly as climate change intensifies extreme weather events, because the impacts of flooding can be a risk to human life, and can disrupt infrastructure, agriculture, and natural habitats.
+It is critical to understand the water cycle and how flooding events develop, particularly as climate change intensifies extreme weather events because the impacts of flooding can be a risk to human life and can disrupt infrastructure, agriculture, and natural habitats.
 
 ![](docs/images/FL_Flood_Aerials-8641.jpg)[^2]
 
 [^2]: Photo Credit, California Department of Water Resources.
 
-The **MODIS/Aqua+Terra Global Flood Product L3 Near Real Time (NRT) 250m Global Flood Product (MCDWD_L3_NRT) (beta)** provides daily maps of flooding globally. The product is provided over 3 compositing periods (1-day, 2-day, and 3-day) to minimize the impact of clouds and more rigorously identify flood water (the best composite will depend on the cloudiness for a particular event) [@lin2019]
+The **MODIS/Aqua+Terra Global Flood Product L3 Near Real Time (NRT) 250m Global Flood Product (MCDWD_L3_NRT) (beta)** provides daily maps of flooding globally. The product is provided over 3 compositing periods (1-day, 2-day, and 3-day) to minimize the impact of clouds and more rigorously identify flood water. The best composite will depend on the cloudiness of a particular event [@lin2019].
 
 ## What are MODIS and LANCE?
 
 ### MODIS
 
-The Moderate Resolution Imaging Spectroradiometer (MODIS) is a NASA Earth Observing System (EOS) satellite-based sensor system that creates data products including land surface temperatures, land surface reflectance, radiances, clouds, aerosols, water vapor, active fire, snow cover, sea ice measurements, and other factor information. The MODIS Near Real-Time (NRT) data includes the Flood product which is a daily \~250 m resolution product showing flood and surface water detected from the twice-daily overpass of the MODIS optical sensors.
+The **Moderate Resolution Imaging Spectroradiometer (MODIS)** is part of a NASA Earth Observing System (EOS). The satellite-based sensor system creates data products including land surface temperatures, land surface reflectance, radiances, clouds, aerosols, water vapor, active fire, snow cover, sea ice measurements, and other factor information. The MODIS NRT data includes the Flood product which we will explore in this lesson. The NRT Flood product is a daily \~250 m resolution product showing flood and surface water detected from the twice-daily overpass of the MODIS optical sensors.
 
-The satellite data is readily available shortly after it is acquired by the MODIS instrument on board the Terra and Aqua satellites. This space-based instrument distinguishes 36 spectral bands and groups of wavelengths which helps map the extent of snow and ice caused by winter storms and frigid temperatures. Initially, the water-detecting algorithm is applied to both MODIS observations (Terra and Aqua). Due to cloud and terrain shadows create false positives.
+The satellite data is readily available shortly after it is acquired by the MODIS instrument on board the Terra and Aqua satellites. This space-based instrument distinguishes 36 spectral bands and groups of wavelengths which help map the extent of snow and ice caused by winter storms and frigid temperatures. Initially, the water-detecting algorithm is applied to both MODIS observations (Terra and Aqua) observations because false positives are created due to cloud and terrain shadows.
 
 <img src="https://modis.gsfc.nasa.gov/about/images/modisComponents.jpg" alt="MODIS Components"/>[^3]
 
 [^3]: Photo Credit, NASA GSFC.
 
-To minimize errors, the product is generated with three different ***compositing periods (1-day, 2-day, and 3-day)*** to compare results and decide which product has better coverage for the event. Further, they have to differentiate floods from expected surface water through the use of MODIS Land Water Mask (MOD44W), which uses a decision tree classifier trained with MODIS data to produce a global water mask [@carroll2016].
+To minimize errors, the product is generated with three different ***compositing periods (1-day, 2-day, and 3-day)*** to compare results and decide which product has better coverage for the event. Further, then product differentiates floods from expected surface water through the use of the MODIS Land Water Mask (MOD44W), which uses a decision tree classifier trained with MODIS data to produce a global water mask [@carroll2016].
 
-MODIS adoption aimed to surpass barriers related to satellite data, including cost, delivery timelines, limited formats, and the need for technical expertise. The transition to GFIMS establishes an operational system at FAO, ensuring continuity in meeting NASA data-user needs [@lin2019].
+MODIS adoption aimed to surpass barriers related to satellite data, such as cost, delivery timelines, limited formats, and the need for technical expertise. The transition to a Fire Information for Resource Management System (FIRMS) establishes an operational system at the United Nations Food and Agriculture Organization (UN FAO), ensuring continuity in meeting NASA data-user needs [@lin2019].
 
 ### LANCE
 
-The **Land, Atmosphere Near Real-time Capability for EOS (LANCE)** is a NASA initiative that provides near real-time access to satellite data, including MODIS. It allows users to access the latest data within a few hours of satellite overpass, enabling rapid responses to environmental events such as floods. LANCE is particularly valuable for emergency response teams and researchers who require up-to-date information for monitoring and assessing natural disasters [@LANCE2024].
+The **Land, Atmosphere Near real-time Capability for EOS (LANCE)** is a NASA initiative that provides near real-time access to satellite data, including MODIS. It allows users to access the latest data within a few hours of satellite overpass, enabling rapid responses to environmental events such as floods. LANCE is particularly valuable for emergency response teams and researchers who require up-to-date information for monitoring and assessing natural disasters [@LANCE2024].
 
 LANCE reduces processing time, allowing for timely computation. Users access the data through platforms like Web Map Service (WMS) and Web Coverage Service (WCS), enabling visualization and analysis for informed decision-making. This NRT approach enhances the speed and accessibility of critical information on vegetation conditions [@zhang2022].
 
@@ -97,7 +97,7 @@ The MODIS Near Real-Time (NRT) Flood dataset offers multiple products, each acco
 
 ***MCDWD_F1_L3_NRT (1-Day product)*** This product type is the most basic level and provides binary information about water occurrence. Pixels are classified as either containing water or not, offering a simple way to identify flooded areas.
 
-***MCDWD_F1CS_L3_NRT (1-Day CS)***: F1CS has a cloud shadow mask applied on the version of the MCDWD_F1_L3_NRT product
+***MCDWD_F1CS_L3_NRT (1-Day CS)***: F1CS has a cloud shadow mask applied on the version of the MCDWD_F1_L3_NRT product. A cloud shadow mask identifies areas that are cloud or shadow of cloud and categorizes them separately. This layer is produced because sometimes cloud-shadows can produce false positives in the data product. Thus, the cloud shadow mask can improve some analysis, however, the cloud mask can also produce errors and remove real water [@modisscienceteam2021]. See section 3.4.3 in the [MODIS User Guide](https://www.earthdata.nasa.gov/s3fs-public/2023-01/MCDWD_UserGuide_RevC.pdf).
 
 ***MCDWD_F2_L3_NRT (2-Day)***: F2 provides additional information by categorizing water occurrences into three categories: no water, low-confidence water, and high-confidence water. This classification allows for a more nuanced understanding of the extent of the flood and its associated confidence levels.
 
@@ -108,6 +108,7 @@ The MODIS Near Real-Time (NRT) Flood dataset offers multiple products, each acco
 For this exercise, we will be using the MCDWD L3 F3 product: [LANCE NRT Flood](https://nrt3.modaps.eosdis.nasa.gov/archive/allData/61/MCDWD_L3_F3_NRT/)
 
 If in **2i2c**, clear objects from the current workspace:
+
 ```{r}
 rm(list = ls())
 ```
@@ -115,6 +116,7 @@ rm(list = ls())
 First, install and load the R packages required for this exercise:
 
 ```{r}
+#List the necessary packages and then check if they are installed
 packages_to_check <- c("stars", "httr", "jsonlite", "tmap", "basemaps", "sp", "sf", "ggplot2")
 
 # Check and install packages
@@ -147,7 +149,7 @@ Based on availability, edit the year_day variable YYYY-DD. Example: '2022-01'
 ```{r}
 
 #add the year and date you want to search for (YYYY-DD, 2022-01)
-year_day <- '2024-131'
+year_day <- '2024-163'
 
 ```
 
@@ -184,9 +186,9 @@ print(url)
 
 ## Loading the Data
 
-**NASA Earthdata** access requires a NASA username and token. [How to generate User Token](https://wiki.earthdata.nasa.gov/display/EL/How+to+Generate+a+User+Token).
+**NASA Earthdata** requires a NASA username and token. Go here to learn [How to generate a User Token](https://wiki.earthdata.nasa.gov/display/EL/How+to+Generate+a+User+Token).
 
-Access the NASA Earthdata with the GET function. Replace `USER_TOKEN` with the token you generated:
+Once you have generated a User Token, you can access NASA Earthdata using the GET function. Replace `USER_TOKEN` with the token you generated:
 
 ```{r}
 token <- "USER_TOKEN"
@@ -218,44 +220,44 @@ This code is for use on a local computer, not 2i2. Use to protect your token loc
 headers <- c(Authorization = api_key)
 
 # Make GET request
-response <- GET(url, add_headers(.headers=headers))
+response_content <- GET(url, add_headers(.headers=headers))
 
 ```
 
 Check the response status from the GET function:
 
 ```{r}
-response
+response_content
 ```
 
 Out of the response from the server, we'll check if the response was a success with `if (http_status(response)$category == "Success")`. If this statement is true, then the content will be assigned to the variable `data` in JSON format, which is then parsed to a data frame using `data_parsed <- jsonlite::fromJSON(data)`. The data frame contains `data_parsed$content`, a column with content. We filter the content by tile code using the command `content_items <- data_parsed$content[grepl(tile_code, data_parsed$content$name, ignore.case = TRUE), ]` and add the results to a data frame.
 
 ```{r}
-if (http_status(response)$category == "Success") {
+if (http_status(response_content)$category == "Success") {
   # Read the JSON content into a data frame
-  df <- content(response, as = "parsed", simplifyVector = TRUE)
-  df <- df$content
+  response_content <- content(response_content, as = "parsed", simplifyVector = TRUE)
+  response_content <- response_content$content
 } else {
-  print("Request failed with status code", http_status(response)$status_code)
+  print("Request failed with status code", http_status(response_content)$status_code)
 }
-names(df)
+names(response_content)
 ```
 
 Search the Data Frame and subset the rows that contain `tile_code` in the `downloadsLink` column.
 
 ```{r}
 # Subset rows where the downloadsLink column contains the tile code
-subset_df <- df[grepl(tile_code, df$downloadsLink), ]
+response_content <- response_content[grepl(tile_code, response_content$downloadsLink), ]
 
-subset_df
+response_content
 ```
 
 If there is only 1 row, select the string 'downloadsLink' column:
 
 ```{r}
 
-download_link <- subset_df$downloadsLink
-print(download_link)
+response_content <- response_content$downloadsLink
+print(response_content)
 ```
 
 ## Read the Data
@@ -263,7 +265,9 @@ print(download_link)
 Use the `read_stars()` function from the `stars` R Library to read the geoTiff raster. The raster is assigned to the `raster_df` variable. This is a web-derived layer that is in the Geographic Coordinate System (GCS) WGS84 - World Geodetic System 1984 EPSG:4326 (EPSG number 4326). We can assign the Coordinate Reference System (CRS) to the stars object:
 
 ```{r}
-raster_df <- read_stars(download_link)
+#read the raster data from the download_link
+raster_df <- read_stars(response_content)
+#Set a CRS for the stars object based on the data documentation
 st_crs(raster_df) <- st_crs(4326)
 ```
 
@@ -291,7 +295,7 @@ NRT Flood data has 5 classifications:
 
 [^4]: Value 2 (Recurring flood) is not populated in the beta release.
 
-To view the data in this classification, we'll need to create a classified legend; however, the NRT Flood data is stored in decimal numbers (aka floating-point). Create class breaks dividing the data by the following breaks, and corresponding colors and labels. Finally, add a title for the plot that includes the year and day, `year_day`, and the `tile_code`:
+To view the data in this classification, we’ll need to create a classified legend; however, the NRT Flood data is stored in decimal numbers (aka floating-point). Create class breaks that divide the data using the breaks listed below and their corresponding colors and labels. Finally, add a title for the plot that includes the year and day, `year_day`, and the `tile_code`:
 
 ```{r}
 #class_breaks for the table plot categorization 
@@ -306,7 +310,7 @@ title = paste("Near Real-Time Flood F3", year_day, tile_code)
 
 ### Generate a basemap from Esri Imagery
 
-The `basemap_stars()` function from the `stars` package allows us to access Esri imagery layers. To generate a basemap that shows the location of our raster, we must first can define the bounding box with the `raster_df`. Choose "world_imagery" as our background and assign it to the object `bm_m`. the `st_rgb` function combines the basemap RGB image into a single file. Finally, `st_transform` transform the CRS into WGS84.
+The `basemap_stars()` function from the `stars` package allows us to access Esri imagery layers. To generate a basemap that shows the location of our raster, we must first define the bounding box with the `raster_df`. Choose “world_imagery” as our background and assign it to the object `bm_m`. The `st_rgb` function combines the basemap RGB image into a single file. Finally, `st_transform` transforms the CRS into WGS84.
 
 ```{r}
 #define basemap using a the raster as a bounding box
@@ -334,9 +338,9 @@ tm_plot <-  tmap_options(max.raster = c(plot = 50000, view = 50000))+
   tm_shape(bm_m)+
   #the basemap bm_m is treated as a raster
   tm_raster()+
-  #create a new tmap shape for the NRT flood raster with style as "cat," meaning categorical.
+  #create a new tmap shape for the NRT flood raster with a style as "cat," meaning categorical.
   tm_shape(raster_df, style="cat")+
-  #add the classification styling to the raster including colors, title, class breaks and labels
+  #add the classification styling to the raster including colors, title, class breaks, and labels
   tm_raster( palette = c(colors),
   title = title, 
   breaks = class_breaks,
@@ -349,12 +353,12 @@ tm_plot <-  tmap_options(max.raster = c(plot = 50000, view = 50000))+
  tm_plot
 ```
 
-To observe a location closer, we can create a new bounding box using latitude and longitude values, clip the data and replot on a map. Select from the map four corners in degrees including North/South, East/West information. We use these coordinates to create a matrix of points that represent four corners. We can create a bounding box from these corners. The corners are first placed in the GCS WGS84 to match out raster.
+To observe a location more closely, we can create a new bounding box using latitude and longitude values, clip the data, and replot on a map. First, select from the map four corners in degrees that include North/South and East/West information. We use these coordinates to create a matrix of points representing four corners; the four corners are then used to create a bounding box. The corners are first placed in the GCS WGS84 to match our raster.
 
 ```{r}
 # Define the NWES coordinates
 north <- 40 #negative values are used for South
-south <- 36 #negative values are used for south
+south <- 36 #negative values are used for South
 west <- -124 #negative numbers are used for West
 east <- -120 #negative numbers are used for West
 
@@ -408,9 +412,9 @@ tm_plot
 
 The NRT flood data can be compared to the Cropland Data Layer (CDL), which provides agricultural categories based on the Farm Service Agency (FSA) Common Land Unit (CLU) Program and is produced by the U.S. Department of Agriculture National Agricultural Statistics Service (NASS)[@nass2023].
 
-To quantify how many acres of each crop land may be affected by the flooding identified in the NRT Flood data, we can explore the dataset by using the [Cropland Collaborative Research Outcomes System (CroplandCROS)](https://croplandcros.scinet.usda.gov/), and we can download the data from the [NASS website](https://www.nass.usda.gov/Research_and_Science/Cropland/Release/index.php)
+To quantify how many acres of each cropland may be affected by the flooding identified in the NRT Flood data, we can explore the dataset by using the [Cropland Collaborative Research Outcomes System (CroplandCROS)](https://croplandcros.scinet.usda.gov/), and we can download the data from the [NASS website](https://www.nass.usda.gov/Research_and_Science/Cropland/Release/index.php)
 
-Download the latest CDL year of data available from the link above.
+Download the latest CDL year of data available from the NASS website.
 
 For this part of the exercise, we will use the package `stars`, discussed in the previous lesson, and the function `read_stars()` to read the CDL raster as a stars object.
 
@@ -421,29 +425,29 @@ cdl<- read_stars("data/2022_30m_cdls.tif")
 plot(cdl, downsample=100)
 ```
 
-This raster is provided with a 30-meter resolution for the entire contiguous U.S.! Additionally, the CRS is the North American Datum of 1983 (NAD83) / Albers Conical Equal Area (AEA) EPSG:5070 projection. We can subset stars objects with other stars objects if they are the same CRS. We will first subset the NRT Flood raster and project the data into the same CRS as the CDL raster. We can subset this raster with the NRT flood raster, but we must first crop it with the bounding box `bbox_subset` we created previously, and use the `warp()` function to change the raster from the CRS WGS84 EPSG:4326 to NAD83 EPSG:5070:
+This raster is provided with a 30-meter resolution for the entire contiguous U.S.! Additionally, the coordinate reference system(CRS) is the North American Datum of 1983 (NAD83) / Albers Conical Equal Area (AEA) EPSG:5070 projection. We can subset a stars objects with other stars objects if they have the same CRS. We will first subset the NRT Flood raster and project the data into the same CRS as the CDL raster. We can subset this raster with the NRT flood raster, but we must first crop it with the bounding box `bbox_subset`we created previously. We will then use the `warp()` function to change the raster from the CRS WGS84 EPSG:4326 to NAD83 EPSG:5070:
 
 ```{r}
 #subset the NRT Floor raster with the bounding box
-raster_sub <- raster_df[bbox_subset]
+raster_df <- raster_df[bbox_subset]
 #warp the raster NRT flood raster to match the CDL raster CRS.
-raster_sub <- st_warp(raster_sub, crs=5070, use_gdal=FALSE,method = "near")
+raster_df <- st_warp(raster_df, crs=5070, use_gdal=FALSE,method = "near")
 #subset CDL raster with the subset NRT flood raster
-cdl_sub <- cdl[raster_sub]
+cdl <- cdl[raster_df]
 #because of the high resolution, a stars proxy object was made
 #make a stars object from a stars proxy object to directly read the data
-cdl_sub <- st_as_stars(cdl_sub)
+cdl <- st_as_stars(cdl)
 #plot the resulting CDL subset
-plot(cdl_sub, downsample=100)
+plot(cdl, downsample=100)
 ```
 
 We are only interested in the areas that are showing as category 3, Flooded (unusual); therefore, we want to exclude other variables. We make a copy of the `raster_sub` variable and set variables that are not 3 as `NA`.
 
 ```{r}
 #make copy of variable
-raster3 <- raster_sub
+#raster3 <- raster_sub
 #set variables as NA
-raster3[raster3 != 3] <- NA
+raster_df[raster_df != 3] <- NA
 
 ```
 
@@ -451,7 +455,7 @@ Now that we have only the flooded areas from the NRT Flood data, we can subset t
 
 ```{r}
 #subset the CDL raster where unusual flooding occurred
-cdl_sub <- cdl_sub[raster3==3] 
+cdl <- cdl[raster_df==3] 
 ```
 
 The [CDL FAQ Webpage](https://www.nass.usda.gov/Research_and_Science/Cropland/sarsfaqs2.php#common.7) lists the categorization, including non-agricultural categories which we can remove from the analysis:
@@ -482,28 +486,28 @@ Non-Agricultural Categories
 nonag_cat <- list("Open Water", "Perennial Ice/Snow", "Developed/Open Space", "Developed/Low Intensity", "Developed/Med Intensity","Developed/High Intensity", "Barren", "Deciduous Forest", "Evergreen Forest","Mixed Forest","Shrubland","Grassland/Pasture","Woody Wetlands", "Herbaceous Wetlands")
 #exclude non-agricultural categories
 for (category in nonag_cat){
-  cdl_sub[cdl_sub == category ] <- NA
+  cdl[cdl == category ] <- NA
 }
 ```
 
-Next, we can create a table out the remaining CDL raster data, but we first have to extract it from the stars object and convert it to a matrix. The matrix can then converted to a table and sorted.
+Next, we can create a table out of the remaining CDL raster data, but we first have to extract it from the stars object and convert it to a matrix. The matrix can then be converted to a table and sorted.
 
 ```{r}
 # Convert the stars object to a matrix
-cdl_matrix <- as.matrix(cdl_sub)
+cdl <- as.matrix(cdl)
 
 # Count the number of pixels for each category
-cdl_counts <- table(cdl_matrix)
+cdl <- table(cdl)
 
 #Sort the `cdl_counts` table by descending order.
-cdl_counts<- sort(cdl_counts, decreasing = TRUE)
+cdl<- sort(cdl, decreasing = TRUE)
 
 ```
 
 Select the top 10 CDL categories counted.
 
 ```{r}
-top_10 <- cdl_counts[1:10]
+top_10 <- cdl[1:10]
 #print top 10
 print(top_10)
 ```
@@ -521,7 +525,8 @@ According to the NASS CDL data documentation, each of the CDL's pixels represent
 dataplot$area <- dataplot$Freq * 30 / 10000
 ```
 
-Once the are is calculated, we can plot a bar graph to compare the top 10 CDL Categories found in the NRT Flood zone.
+Once the area is calculated, we can plot a bar graph to compare the top 10 CDL Categories found in the NRT Flood zone.
+
 
 ```{r}
 #create new title for plot
@@ -531,7 +536,7 @@ max_value <- max(dataplot$area) +3
 
 # use ggplot to plot the dataplot table with area 
 # in x axis and category name in the y axis  
-plt <- ggplot(dataplot, aes(x = area, y = cdl_matrix)) + 
+plt <- ggplot(dataplot, aes(x = area, y = cdl)) + 
   geom_bar(stat = "identity", fill = "skyblue") + # adjust the height and color
   geom_vline(xintercept = seq(0, max_value, by = 1), 
     color = "gray", linetype = "dashed") + #create guide lines
@@ -550,7 +555,7 @@ plt <- ggplot(dataplot, aes(x = area, y = cdl_matrix)) +
 plt
 ```
 
-Congratulations! Now you should be able to:
+Congratulations! We were able to download and explore NASA NRT Flood data to pick an area of interest in the contiguous U.S. and determine how much cropland may be affect by floods. Now you should be able to:
 
 -   Navigate the LANCE data website and determine what data is available.
 
@@ -564,6 +569,6 @@ Congratulations! Now you should be able to:
 
 ## Lesson 3
 
-In this lesson we explored the LANCE MODIS Near-Rear-Time (NRT) Flood data set. In our next lesson we will think of water at the local level and focus on New York State School Drinking Water data sets.
+In this lesson, we explored the LANCE MODIS Near-Rear-Time (NRT) Flood dataset. In our next lesson, we will think of water at the local level and focus on New York State School Drinking Water data.
 
-[Lesson 3: New York Sate School Water Quality: Exposure to Lead](https://topstschool.shinyapps.io/nyc-lead/){.btn .btn-primary .btn role="button"}
+[Lesson 3: New York State School Water Quality: Exposure to Lead](https://topstschool.shinyapps.io/nyc-lead/){.btn .btn-primary .btn role="button"}

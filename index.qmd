@@ -17,6 +17,13 @@ The SCHOOL Modules do not intend to teach all-encompassing earth science lessons
 
 Module 1: Water datasets and use cases cover:
 
+::: {.callout-tip style="color: #5a7a2b;"}
+## Coding Review
+
+This lesson uses the [R](https://www.r-project.org/about.html) language and environment. R is a popular language used for statistical computing and graphics.
+:::
+
+
 -   **Water Security Indicator Model - Global Land Data Assimilation System (WSIM-GLDAS):** Exploring water anomalies using a historical dataset.
     -   [Lesson 1: Acquiring, Pre-Processing, and Advanced Visualizations with WSIM-GLDAS](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m101-wsim-gldas.html)
 -   **Moderate Resolution Imaging Spectroradiometer (MODIS) Near Real-Time (NRT) flood data:** Lessons in data acquisition and analysis of recent water anomalies.
