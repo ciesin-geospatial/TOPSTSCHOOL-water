@@ -16,7 +16,7 @@ In this lesson, you will acquire the dataset called **Water Security Indicator M
 After completing this lesson, you should be able to:
 
 -   Retrieve WSIM-GLDAS data from SEDAC.
--   Retrieve Administrative Boundaries using the geoBoundaries API.
+-   Retrieve Administrative Boundary using the geoBoundaries API.
 -   Subset WSIM-GLDAS data for a region and time period of interest.
 -   Visualize geospatial data to highlight precipitation deficit patterns.
 -   Write a pre-processed NetCDF-formatted file to disk.
@@ -30,7 +30,7 @@ The water cycle is the process of circulation of water on, above, and under the 
 
 Precipitation deficits, or periods of below-average rainfall, can lead to drought, characterized by prolonged periods of little to no rainfall and resulting water shortages. Droughts often trigger environmental stresses and can create cycles of reinforcement impacting ecosystems and people [@Rodgers2023]. For example, California frequently experiences drought but the combination of prolonged dry spells and sustained high temperatures prevented the replenishment of cool fresh water to the Klamath River, which led to severe water shortages in 2003 and again from 2012 to 2014. These shortages affect agricultural areas like the Central Valley, which grows almonds, one of California's most important crops, with the state producing 80% of the world's almonds. These severe droughts, coupled with competition for limited freshwater resources, resulted in declining populations of [Chinook salmon](https://www.fisheries.noaa.gov/species/chinook-salmon) due to heat stress and gill rot disease disrupting the food supply for Klamath basin tribal groups [@guillen2002; @Bland2014].
 
-![](docs/images/watercycle_rc.jpg)[^1]
+![](docs\images\watercycle_rc.jpg)[^1]
 
 [^1]: Photo Credit, NASA/JPL.
 
@@ -52,11 +52,11 @@ The **Water Security (WSIM-GLDAS) Monthly Grids, v1 (1948 - 2014)** The Water Se
     b.  Low precipitation combined with record temperatures.
     c.  The circulation of water on and above Earth's surface.
     d.  A cycle that happens due to drought.
-2.  What human interventions affect the water cycle (select all that apply)?
-    a.  Greenhouse gas emissions.
-    b.  Land use changes.
-    c.  Dam and reservoir development.
-    d.  Groundwater over-exploitation.
+2.  What human interventions affect the water cycle? (select all that apply)
+    a.  Greenhouse gas emissions
+    b.  Land use changes
+    c.  Dam and reservoir development
+    d.  Groundwater overexploitation
 3.  What is a precipitation deficit?
     a.  A period of rainfall below the average.
     b.  A prolonged period of little to no rainfall.
@@ -74,7 +74,13 @@ The **Water Security (WSIM-GLDAS) Monthly Grids dataset** used in this lesson is
 
 For this lesson, we will work with the **WSIM-GLDAS dataset Composite Anomaly Twelve-Month Return Period NetCDF** file. This contains water deficit, surplus, and combined "Composite Anomaly" variables with an integration period of 12 months. Integration period represents the time period at which the anomaly values are averaged over. The 12-month integration averages water deficits (droughts), surpluses (floods), and combined (presence of droughts and floods) over a 12-month period ending with the month specified. We begin with the 12-month aggregation because this is a snapshot of anomalies for the entire year making it useful to get an understanding of a whole year; once we identify time periods of interest in the data, we can take a closer look using the 3-month or 1-month integration periods.
 
-When working on your local system you can directly download WSIM-GLDAS from the SEDAC website, however, we are working in the cloud so we will connect to the TOPS-SCHOOL S3 data bucket. The [dataset documentation](https://sedac.ciesin.columbia.edu/downloads/docs/water/water-wsim-gldas-v1-documentation.pdf) describes the composite variables as key features of WSIM-GLDAS that combine "the return periods of multiple water parameters into composite indices of overall water surpluses and deficits [@isciences2022a]". The composite anomaly files present the data in terms of how often they occur; or a "return period." For example, a deficit return period of 25 signifies a drought so severe that we would only expect it to happen once every 25 years. Please go ahead and download the file.
+We'll start by downloading the file directly from the SEDAC website. The [dataset documentation](https://sedac.ciesin.columbia.edu/downloads/docs/water/water-wsim-gldas-v1-documentation.pdf) describes the composite variables as key features of WSIM-GLDAS that combine "the return periods of multiple water parameters into composite indices of overall water surpluses and deficits [@isciences2022a]". The composite anomaly files present the data in terms of how often they occur; or a "return period." For example, a deficit return period of 25 signifies a drought so severe that we would only expect it to happen once every 25 years. Please go ahead and download the file.
+
+-   First, go to the SEDAC website at <https://sedac.ciesin.columbia.edu/>. You can explore the website by themes, datasets, or collections. We will use the search bar at the top to search for "water security wsim". Find and click on the Water Security (WSIM-GLDAS) Monthly Grids, v1 (1948--2014) dataset. Take a moment to review the dataset's overview and documentation pages.
+
+-   When you're ready, click on the Data Download tab. You will be asked to sign in using your NASA EarthData account.
+
+-   Find the Composite Class, and click on the Variable **Composite Anomaly Twelve-Month Return Period**.
 
 ## Reading the Data
 
@@ -90,7 +96,7 @@ Make sure they are installed before you begin working with the code in this docu
 :::
 :::
 
-Next install and load the R packages required for this exercise. The packages we're using today are listed below, but we are using the TOPS-SCHOOL Docker image for our analysis so the cloud environment we're using today is already set up with everything we need.
+Once you have downloaded the WSIM-GLDAS file to your local computer, install and load the R packages required for this exercise. You can do this by defining the list of packages and assigning them to the new variable called "packages_to_check". Next we loop (iterate) through each of the packages in the list to see if they are already installed. If they are we continue to the next item, and if they aren't then we go ahead and install them.
 
 ```{r eval=FALSE}
 install.packages('stars')
@@ -105,42 +111,36 @@ install.packages('ggplot2')
 install.packages('kableExtra')
 ```
 
-First we will connect to our TOPS-SCHOOL cloud storage "bucket" to download the WSIM-GLDAS file. If you were working on a local system you would use the SEDAC website to download the files.
-
-```{r}
-# read in the 12 month integration WSIM-GLDAS file with stars
-aws.s3::save_object(
-  object = "water-module/composite_12mo.nc",
-  bucket = "s3://tops-school",
-  region = "us-west-2",
-  file = "data/composite_12mo.nc"
-)
-```
+Once you've completed the download and placed the `composite_12mo.nc` file into your working directory and read the file with the `stars::read_stars()` function.
 
 Reading the file with the *argument* `proxy = TRUE` allows you to inspect the basic elements of the file without reading the whole file into memory. Multidimensional raster datasets can be extremely large and bring your computing environment to a halt if you have memory limitations.
 
 ```{r}
-wsim_gldas <- stars::read_stars("data/composite_12mo.nc", proxy = TRUE)
-
-print(wsim_gldas)
+# read in the 12 month integration WSIM-GLDAS file with stars
+wsim_gldas_anoms <- stars::read_stars("data/composite_12mo.nc", proxy = TRUE)
 ```
 
 Now we can use the *print* command to view basic information. The output tells us we have 5 attributes (deficit, deficit_cause, surplus, surplus_cause, both) and 3 dimensions. The first 2 dimensions are the spatial extents (x/y--longitude/latitude) and time is the 3rd dimension.
 
 This means that the total number of individual raster layers in this NetCDF is 4020 (5 attributes x 804 time steps/months). Again, BIG data.
 
+```{r}
+# check the basic info
+print(wsim_gldas_anoms)
+```
+
 ## Attribute Selection
 
-The WSIM-GLDAS data is quite large with many variables available. We can manage this large file by selecting a single variable; in this case "deficit" (drought). Now we'll read the data back in; this time with `proxy = FALSE` and only selecting the deficit layer.
+We can manage this large file by selecting a single variable; in this case "deficit" (drought). Read the data back in; this time with `proxy = FALSE` to read the data into actual memory, but only selecting the deficit layer to make it more manageable.
 
-```{r eval=FALSE}
+```{r}
 # read in just the deficit layer using proxy = false
-wsim_gldas <- stars::read_stars("data/composite_12mo.nc", sub = 'deficit', proxy = FALSE)
+wsim_gldas_anoms <- stars::read_stars("data/composite_12mo.nc", sub = 'deficit', proxy = FALSE)
 ```
 
 ## Time Selection
 
-Specifying a temporal range of interest will make the file size smaller and more manageable. We'll select every year for the range 2000-2014. This can be accomplished by generating a sequence for every year between December 2000 and December 2014, and then passing that list of dates, in the form of a vector, using the function `filter`. Remember, we're using the 12-month integration of WSIM-GLDAS. This means that each time step listed averages the deficit over the 12 prior months. Therefore, if we only select a sequence of December months spanning 2000-2014, each resulting layer will represent the average deficit for that year.
+Specifying a temporal range of interest will make the file size smaller and even more manageable. We'll select every year for the range 2000-2014. This can be accomplished by generating a sequence for every year between December 2000 and December 2014, and then passing that list of dates, in the form of a vector, using the function `filter`. Remember, we're using the 12-month integration of WSIM-GLDAS. This means that each time step listed averages the deficit over the 12 prior months. Therefore, if we only select a sequence of December months spanning 2000-2014, each resulting layer will represent the average deficit for that year.
 
 ```{r}
 # generate a vector of dates for subsetting
@@ -150,15 +150,15 @@ keeps<-seq(lubridate::ymd("2000-12-01"),
 #change data type to POSIXct
 keeps <- as.POSIXct(keeps)
 # filter the dataset using the vector of dates
-wsim_gldas <- dplyr::filter(wsim_gldas, time %in% keeps)
+wsim_gldas_anoms <- dplyr::filter(wsim_gldas_anoms, time %in% keeps)
 # re-check the basic info
-print(wsim_gldas)
+print(wsim_gldas_anoms)
 ```
 
 Now we're down to a single attribute ("deficit") with 15 time steps. We can take a look at the first 6 years by passing the object through `slice` and then into `plot`.
 
 ```{r warning=FALSE}
-wsim_gldas |>
+wsim_gldas_anoms |>
   # slice out the first 6 time steps
   dplyr::slice(index = 1:6, along = "time") |>
   # plot them with some test breaks for the legend
@@ -275,14 +275,14 @@ It is estimated that the drought cost farmers and ranchers about \$8 billion in 
 
 ```{r}
 # crop the wsim-gldas file to the extent of te texas boundary
-wsim_gldas_tex <- wsim_gldas[texas]
+wsim_gldas_anoms_tex <- wsim_gldas_anoms[texas]
 ```
 
 Finally, we visualize the last time-step in the WSIM-GLDAS dataset (15/December, 2014) and render it with an overlay of the Texas boundary to perform a visual check of our processing.
 
 ```{r warning = FALSE}
 # slive out the first 15 timesteps of wsim-gldas and plot them
-wsim_gldas_tex |>
+wsim_gldas_anoms_tex |>
   dplyr::slice(index = 15, along = "time") |>
   # plot with 
   plot(reset = FALSE, breaks = c(0, -5, -10, -20, -30, -50))
@@ -300,7 +300,7 @@ Multidimensional (deficit, time, latitude, longitude) raster files can be saved 
 
 ```{r eval = FALSE}
 # write the processed wsim-gldas file to disk as a netcdf
-stars::write_mdim(wsim_gldas_tex, "output/wsim_gldas_tex.nc")
+stars::write_mdim(wsim_gldas_anoms_tex, "output/wsim_gldas_tex.nc")
 # write the Texas boundary to disk
 sf::st_write(texas, "output/texas.geojson")
 ```
@@ -323,8 +323,7 @@ For this exercise, we can quickly walk through similar pre-processing steps we p
 
 ```{r warning=FALSE}
 # read in the wsim-gldas layer from SEDAC
-wsim_gldas_anoms <- stars::read_stars("data/composite_12mo.nc", sub = 'deficit', proxy = FALSE)
-
+wsim_gldas <- stars::read_stars("data/composite_12mo.nc", proxy = FALSE, sub = 'deficit')
 # generate a vector of dates for subsetting
 keeps<-seq(lubridate::ymd("2000-12-01"),
            lubridate::ymd("2014-12-01"), 
@@ -422,7 +421,7 @@ This visualization shows that there were several significant drought events (as 
 ::: callout-note
 ## Knowledge Check
 
-7.  The output maps of Annual Mean Deficit Anomalies for the CONUSA indicate that...
+7. The output maps of Annual Mean Deficit Anomalies for the CONUSA indicate that...
     a.  The most significant deficit in 2004 is located in the western United States.
     b.  The least significant deficit 2003 is located in the Midwest.
     c.  The most significant deficit in 2011 is located around Texas and neighboring states.
@@ -448,25 +447,13 @@ In order to limit the amount of computing memory required for the operation, we 
 rm(wsim_gldas)
 ```
 
-Again we'll connect to the SCHOOL cloud bucket and download the 1 month integration file.
+Now let's load the composite 1-month file from SEDAC into the workspace. The attributes and dimensions will be the same as the 12-month integration so we'll skip ahead to directly loading in the deficit variable without performing a check on the structure using `proxy = TRUE`.
 
 ```{r}
 # clear the memory; R has an automated garbage collector to clear unused memory
 # but you can invoke it by using the gc() command
 gc()
-
-# connect to bucket and download 1-month integration
-aws.s3::save_object(
-  object = "water-module/composite_1mo.nc",
-  bucket = "s3://tops-school",
-  region = "us-west-2",
-  file = "data/composite_1mo.nc"
-)
-```
-
-The structure is the same as the 12-month integration so we will go ahead and load in just the deficit layer and check the object with `print`.
-
-```{r}
+# read in the 1 month wsim-gldas data
 wsim_gldas_1mo <- stars::read_stars("data/composite_1mo.nc", sub = 'deficit', proxy = FALSE)
 # check the basic info
 print(wsim_gldas_1mo)
@@ -549,7 +536,6 @@ ggplot2::ggplot(california)+
 This series of maps shows a startling picture. California faced massive water deficits throughout the state in January and February. This was followed by water deficits in the western half of the state in May-August. Although northern and eastern California saw some relief by September, southwest California continued to see deficits through December.
 
 ## Monthly Histograms
-
 ::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Data Science Review
@@ -581,14 +567,13 @@ ggplot2::ggplot(deficit_hist, ggplot2::aes(deficit))+
 
 The histograms start to quantify what we saw in the time series maps. Whereas the map shows where the deficits occur, the frequency distribution indicates the number of raster cells for each return period of the deficit range. The number of raster cells under a 60-year deficit (return period) is very high in most months, far exceeding any other value in the range.
 
-::: callout-note
-## Knowledge Check
-
-8.  What's another term for 'histogram'?
-    a.  Choropleth
-    b.  Frequency Distribution
-    c.  Data array
-    d.  Box plot
+::: callout-note 
+## Knowledge Check 
+8. What's another term for 'histogram'? 
+    a. Choropleth 
+    b. Frequency Distribution 
+    c. Data array 
+    d. Box plot 
 :::
 
 ## Zonal Summaries
@@ -700,7 +685,6 @@ This confirms the widespread distribution of high deficit values (all the bright
 
 ::: callout-note
 ## Knowledge Check
-
 9.  What can zonal statistics be used for?
     a.  Subsetting data to a time period of interest.
     b.  Creating a time series.
@@ -744,7 +728,6 @@ While this paints a striking picture of widespread water deficits, how many peop
 
 ::: callout-note
 ## Knowledge Check
-
 10. Choropleth maps, aka thematic maps, are useful for
     a.  Visualizing data in familiar geographies like counties or states
     b.  Finding directions from one place to another
@@ -762,22 +745,11 @@ While this paints a striking picture of widespread water deficits, how many peop
 The Gridded Population of the World Version 4 is available in multiple target metrics (e.g. counts, density), periods (2000, 2005, 2010, 2015, 2020), and spatial resolutions (30 sec, 2.5 min, 15 min, 30 min, 60 min). Read more about GPW at the [collection home page on SEDAC](https://sedac.ciesin.columbia.edu/data/collection/gpw-v4). GPW is one of four global gridded population datasets available in raster format. These datasets vary in the degree to which they use additional information as ancillary variables to model the spatial distribution of the population from the administrative units (vector polygons) in which they originate. A review of these datasets and their underlying models is found in a paper by Leyk and colleagues [@leyk2019]. You can learn more about gridded population datasets at POPGRID.org. Fitness-for-use is an important principle in determining the best dataset to use for a specific analysis. The question we ask here is --- what is the population exposure to different levels of water deficit in California? --- uses spatially coarse inputs and is for a place with high-quality data inputs, GPW is a good choice for this analysis. Users with vector-format census data (at the county or sub-county level) could also adopt this approach for those data. In the case of California, the US Census data and GPW will produce nearly identical estimates because GPW is based on the census inputs.
 :::
 
-Download the GPW tif from the cloud storage.
-
-```{r}
-# terra needs the file locally
-aws.s3::save_object(
-  object = "water-module/gpw_v4_population_density_rev11_2015_15_min.tif",
-  bucket = "s3://tops-school",
-  region = "us-west-2",
-  file = "data/gpw_v4_population_density_rev11_2015_15_min.tif")
-```
-
 Load in the population density layers.
 
 ```{r}
 # read in GPW with terra
-pop_dens <- terra::rast("data/gpw_v4_population_density_rev11_2015_15_min.tif")
+pop_dens<-terra::rast("data/gpw_v4_population_density_rev11_2015_15_min.tif")
 # check the basic information
 print(pop_dens)
 ```
@@ -975,11 +947,11 @@ This figure really illustrates the human impact of the 2014 drought. Nearly 100%
     b.  Analyzing a certain time or area of interest.
     c.  Making code run faster.
     d.  All of the above.
-4.  Gridded population datasets…(select all that apply)
-    a.  Show where river tributaries are.
-    b.  Model the distribution of the global human population in raster grid cells.
-    c.  Allow analyses of the number of persons impacted by a hazard such as drought.
-    d.  Vary in the extent to which ancillary data are used in their production.
+4. Gridded population datasets…(select all that apply) 
+    a. Show where river tributaries are.
+    b. Model the distribution of the global human population in raster grid cells.
+    c. Allow analyses of the number of persons impacted by a hazard such as drought.
+    d. Vary in the extent to which ancillary data are used in their production.
 :::
 
 ## In this Lesson, You Learned...
@@ -991,7 +963,7 @@ Congratulations! Now you should be able to:
 -   Temporally subset a NetCDF raster stack using R packages such as dplyr and lubridate.
 -   Crop a NetCDF raster stack with a spatial boundary.
 -   Write a subsetted dataset to disk and create an image to share results.
--   Identify areas of severe drought and select these areas for further analysis.
+-   Identify areas of severe  drought and select these areas for further analysis.
 -   Summarize data by county using the exactextractr tool.
 -   Integrate WSIM-GLDAS deficit, GPW population, and geoBoundaries administrative boundary data to create complex time series visualizations.
 
@@ -999,4 +971,4 @@ Congratulations! Now you should be able to:
 
 In this lesson we explored the California drought of 2014. In our next lesson, we will examine near real-time flood data in California using the MODIS data product.
 
-[Lesson 2: Moderate Resolution Imaging Spectroradiometer (MODIS) Near-Real Time (NRT) flood data](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m102-lance-modis-nrt-global-flood.html){.btn .btn-primary .btn role="button"}
+[Lesson 2: Moderate Resolution Imaging Spectroradiometer (MODIS) Near-Real Time (NRT) flood data](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m102-lance-modis-nrt-global-flood.html){.btn .btn-primary .btn role="button"} 
