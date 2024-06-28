@@ -105,22 +105,13 @@ install.packages('ggplot2')
 install.packages('kableExtra')
 ```
 
-First we will connect to our TOPS-SCHOOL cloud storage "bucket" to download the WSIM-GLDAS file. If you were working on a local system you would use the SEDAC website to download the files.
+## Load Data & Attribute Selection
+
+First we will connect to our TOPS-SCHOOL cloud storage "bucket" to download the WSIM-GLDAS file. If you were working on a local system you would use the SEDAC website to download the files, but that is not feasible in a live cloud workshop. Reading the file with the *argument* `proxy = TRUE` allows you to inspect the basic elements of the file without reading the whole file into memory. Multidimensional raster datasets can be extremely large and bring your computing environment to a halt if you have memory limitations.
 
 ```{r}
-# read in the 12 month integration WSIM-GLDAS file with stars
-aws.s3::save_object(
-  object = "water-module/composite_12mo.nc",
-  bucket = "s3://tops-school",
-  region = "us-west-2",
-  file = "data/composite_12mo.nc"
-)
-```
-
-Reading the file with the *argument* `proxy = TRUE` allows you to inspect the basic elements of the file without reading the whole file into memory. Multidimensional raster datasets can be extremely large and bring your computing environment to a halt if you have memory limitations.
-
-```{r}
-wsim_gldas <- stars::read_stars("data/composite_12mo.nc", proxy = TRUE)
+# read in the 12 month integration WSIM-GLDAS file in our s3 bucket
+wsim_gldas <- stars::read_stars("/vsicurl/https://s3-us-west-2.amazonaws.com/tops-school/water-module/composite_12mo.nc", proxy = TRUE)
 
 print(wsim_gldas)
 ```
@@ -129,13 +120,11 @@ Now we can use the *print* command to view basic information. The output tells u
 
 This means that the total number of individual raster layers in this NetCDF is 4020 (5 attributes x 804 time steps/months). Again, BIG data.
 
-## Attribute Selection
+We can manage this large file by selecting a single variable; in this case "deficit" (drought). We'll read the data back in; this time with `proxy = FALSE` to read the data into actual memory, but only selecting the deficit layer with the `sub = 'deficit'` to make it more manageable. This takes approximately 45-60 seconds on 2i2c's platform.
 
-The WSIM-GLDAS data is quite large with many variables available. We can manage this large file by selecting a single variable; in this case "deficit" (drought). Now we'll read the data back in; this time with `proxy = FALSE` and only selecting the deficit layer.
-
-```{r eval=FALSE}
+```{r}
 # read in just the deficit layer using proxy = false
-wsim_gldas <- stars::read_stars("data/composite_12mo.nc", sub = 'deficit', proxy = FALSE)
+wsim_gldas <- stars::read_stars("/vsicurl/https://s3-us-west-2.amazonaws.com/tops-school/water-module/composite_1mo.nc", proxy = FALSE, sub = 'deficit')
 ```
 
 ## Time Selection
@@ -273,7 +262,7 @@ Texas experienced a severe drought in 2011 that caused rivers to dry up and lake
 It is estimated that the drought cost farmers and ranchers about \$8 billion in losses.[@Roeseler2011] Furthermore, the dry conditions fueled a series of wildfires across the state in early September of 2011, the most devastating of which occurred in Bastrop County, where 34,000 acres and 1,300 homes were destroyed [@Roeseler2011].
 :::
 
-```{r}
+```{r warning = FALSE}
 # crop the wsim-gldas file to the extent of te texas boundary
 wsim_gldas_tex <- wsim_gldas[texas]
 ```
@@ -322,8 +311,8 @@ Random Access Memory (RAM) is where data and programs that are currently in use 
 For this exercise, we can quickly walk through similar pre-processing steps we performed earlier in this lesson and then move on to more advanced visualizations and integrations. Read the original 12-month integration data back in, filter with a list of dates for each December spanning 2000-2014, and then crop the raster data with the boundary of the contiguous United States using our geoBoundaries object.
 
 ```{r warning=FALSE}
-# read in the wsim-gldas layer from SEDAC
-wsim_gldas_anoms <- stars::read_stars("data/composite_12mo.nc", sub = 'deficit', proxy = FALSE)
+# read in the wsim-gldas layer from SCHOOL s3 bucket
+wsim_gldas <- stars::read_stars("/vsicurl/https://s3-us-west-2.amazonaws.com/tops-school/water-module/composite_12mo.nc", proxy = FALSE, sub = 'deficit')
 
 # generate a vector of dates for subsetting
 keeps<-seq(lubridate::ymd("2000-12-01"),
@@ -446,29 +435,20 @@ In order to limit the amount of computing memory required for the operation, we 
 ```{r}
 # remove the large wsim object from the environment
 rm(wsim_gldas)
-```
+rm(wsim_gldas_tex)
 
-Again we'll connect to the SCHOOL cloud bucket and download the 1 month integration file.
-
-```{r}
 # clear the memory; R has an automated garbage collector to clear unused memory
 # but you can invoke it by using the gc() command
 gc()
-
-# connect to bucket and download 1-month integration
-aws.s3::save_object(
-  object = "water-module/composite_1mo.nc",
-  bucket = "s3://tops-school",
-  region = "us-west-2",
-  file = "data/composite_1mo.nc"
-)
 ```
 
-The structure is the same as the 12-month integration so we will go ahead and load in just the deficit layer and check the object with `print`.
+Again we'll connect to the SCHOOL cloud bucket and read in the 1 month integration file. The structure is the same as the 12-month integration so we will go ahead and load in just the deficit layer and check the object with `print`.
 
 ```{r}
-wsim_gldas_1mo <- stars::read_stars("data/composite_1mo.nc", sub = 'deficit', proxy = FALSE)
-# check the basic info
+# connect to bucket and download 1-month integration
+# read in the wsim-gldas layer from SCHOOL s3 bucket
+wsim_gldas_1mo <- stars::read_stars("/vsicurl/https://s3-us-west-2.amazonaws.com/tops-school/water-module/composite_1mo.nc", proxy = FALSE, sub = 'deficit')
+
 print(wsim_gldas_1mo)
 ```
 
@@ -627,7 +607,7 @@ The [terra](https://cran.r-project.org/web/packages/terra/index.html) R package 
 :::
 :::
 
-We will perform our zonal statistics using the `exactextractr` package [@Baston2023]. It is the fastest, most accurate, and most flexible zonal statistics tool for the R programming language, but it currently has no default methods for the `stars` package, so we'll switch to `terra` for this portion of the lesson. You'll notice that there are slight differences in syntax to perform the same operations in **terra** as **stars.**
+We will perform our zonal statistics using the `exactextractr` package [@Baston2023]. It is the fastest, most accurate, and most flexible zonal statistics tool for the R programming language, but it currently has no default methods for the **stars** package and stars objects, so we'll switch to `terra` for this portion of the lesson. You'll notice that there are slight differences in syntax to perform the same operations in **terra** as **stars.**
 
 Read the data back in with **terra**.
 
@@ -636,7 +616,7 @@ Read the data back in with **terra**.
 rm(wsim_gldas_1mo)
 
 # create a terra collection with the wsim-gldas 1 month file from SEDAC
-wsim_gldas_1mo<-terra::sds("data/composite_1mo.nc")
+wsim_gldas_1mo<-terra::sds("/vsicurl/https://s3-us-west-2.amazonaws.com/tops-school/water-module/composite_1mo.nc")
 ```
 
 We'll check the basic info with `print`.
@@ -647,11 +627,11 @@ print(wsim_gldas_1mo)
 
 You can see that the information from **terra** is arranged differently but it's all still there. The attributes are numbered in the "subdatasets" (5) and listed by name in the "names" column. The time dimension is not listed by name, but "nlyr" tells us there are 804 layers for each attribute/subdataset. You can access more detailed information for the time dimensions using `terra::time`.
 
-Subset the data along the time dimension.
+Subset to just deficit and then again along the time dimension.
 
 ```{r}
 # pull out just the deficit layer
-wsim_gldas_1mo<-wsim_gldas_1mo["deficit"]
+ wsim_gldas_1mo<-wsim_gldas_1mo["deficit"]
 # create a sequence of dates to keep
 keeps<-seq(lubridate::ymd("2014-01-01"), lubridate::ymd("2014-12-01"), by = "month")
 # subset the terra object for only those time steps
@@ -762,22 +742,13 @@ While this paints a striking picture of widespread water deficits, how many peop
 The Gridded Population of the World Version 4 is available in multiple target metrics (e.g. counts, density), periods (2000, 2005, 2010, 2015, 2020), and spatial resolutions (30 sec, 2.5 min, 15 min, 30 min, 60 min). Read more about GPW at the [collection home page on SEDAC](https://sedac.ciesin.columbia.edu/data/collection/gpw-v4). GPW is one of four global gridded population datasets available in raster format. These datasets vary in the degree to which they use additional information as ancillary variables to model the spatial distribution of the population from the administrative units (vector polygons) in which they originate. A review of these datasets and their underlying models is found in a paper by Leyk and colleagues [@leyk2019]. You can learn more about gridded population datasets at POPGRID.org. Fitness-for-use is an important principle in determining the best dataset to use for a specific analysis. The question we ask here is --- what is the population exposure to different levels of water deficit in California? --- uses spatially coarse inputs and is for a place with high-quality data inputs, GPW is a good choice for this analysis. Users with vector-format census data (at the county or sub-county level) could also adopt this approach for those data. In the case of California, the US Census data and GPW will produce nearly identical estimates because GPW is based on the census inputs.
 :::
 
-Download the GPW tif from the cloud storage.
+Load in the GPW tif from the SCHOOL s3 cloud storage.
 
 ```{r}
-# terra needs the file locally
-aws.s3::save_object(
-  object = "water-module/gpw_v4_population_density_rev11_2015_15_min.tif",
-  bucket = "s3://tops-school",
-  region = "us-west-2",
-  file = "data/gpw_v4_population_density_rev11_2015_15_min.tif")
-```
+# read the file with terra from our s3 bucket
+pop_dens<- 
+terra::rast("/vsicurl/https://s3-us-west-2.amazonaws.com/tops-school/water-module/gpw_v4_population_density_rev11_2015_15_min.tif")
 
-Load in the population density layers.
-
-```{r}
-# read in GPW with terra
-pop_dens <- terra::rast("data/gpw_v4_population_density_rev11_2015_15_min.tif")
 # check the basic information
 print(pop_dens)
 ```
