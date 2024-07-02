@@ -1,7 +1,7 @@
 ---
 title: "MODIS NRT Global Flood Product"
 author: 
-  - "SCHOOL Development and Open Scicence Teams"
+  - "SCHOOL Development and Open Science Teams"
 date: "April 14, 2024"
 bibliography: "references/nrt-flood-references.bib"
 ---
@@ -14,7 +14,7 @@ bibliography: "references/nrt-flood-references.bib"
 
 ## Overview
 
-In this lesson, you will use R to take a closer look at the data from the LANCE MODIS Near Real Time (NRT) Global Flood Product, including learning about what are LANCE and MODIS, and the NRT Flood products available. You will then learn to select, download, and visualize one of the NRT Flood layers...
+In this lesson, you will use R to take a closer look at the data from the **LANCE MODIS Near Real Time (NRT) Global Flood Product**, including learning about what are LANCE and MODIS, and the NRT Flood products available. You will then learn to select, download, and visualize one of the NRT Flood layers available. Lastly, we will use the NRT Flood data to calculate the area of each cropland type found in the flood zone, and plot the top ten results as a bar graph.
 
 ::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
@@ -56,7 +56,7 @@ It is critical to understand the water cycle and how flooding events develop, pa
 
 The **Moderate Resolution Imaging Spectroradiometer (MODIS)** is part of a NASA Earth Observing System (EOS). The satellite-based sensor system creates data products including land surface temperatures, land surface reflectance, radiances, clouds, aerosols, water vapor, active fire, snow cover, sea ice measurements, and other factor information . The MODIS NRT data includes the Flood product which we will explore in this lesson. The NRT Flood product is a daily \~250-meter resolution product showing flood and surface water detected from the twice-daily overpass of the MODIS optical sensors.
 
-The satellite data is readily available shortly after it is acquired by the MODIS instrument on board the Terra and Aqua satellites. This space-based instrument distinguishes 36 spectral bands and groups of wavelengths in three different resolutions at 250 m, 500 m, and 1 km, all which helps map the extent of snow and ice caused by winter storms and frigid temperatures [@atmosphere2023]. Initially, a water-detecting algorithm is applied to both MODIS observations (Terra and Aqua), however, cloud and terrain shadows are known to create false positives in the data.
+The satellite data is readily available shortly after it is acquired by the MODIS instrument on board the Terra and Aqua satellites. This space-based instrument distinguishes 36 spectral bands and groups of wavelengths in three different resolutions at 250 m, 500 m, and 1 km, all which helps map the extent of snow and ice caused by winter storms and frigid temperatures [@atmosphe2023]. Initially, a water-detecting algorithm is applied to both MODIS observations (Terra and Aqua), however, cloud and terrain shadows are known to create false positives in the data.
 
 <img src="https://modis.gsfc.nasa.gov/about/images/modisComponents.jpg" alt="MODIS Components"/>[^3]
 
@@ -96,7 +96,7 @@ The MODIS Near Real-Time (NRT) Flood dataset offers multiple products, each acco
 
 ***MCDWD_F1_L3_NRT (1-Day product)*** This product type is the most basic level and provides binary information about water occurrence. Pixels are classified as either containing water or not, offering a simple way to identify flooded areas.
 
-***MCDWD_F1CS_L3_NRT (1-Day CS)***: F1CS has a cloud shadow mask applied on the version of the MCDWD_F1_L3_NRT product. A cloud shadow mask identifies areas that are cloud or shadow of cloud and categorizes them separately. This layer is produced because sometimes cloud-shadows can produce false positives in the data product. Thus, the cloud shadow mask can improve some analysis, however, the cloud mask can also produce errors and remove real water [@modisscienceteam2021]. See section 3.4.3 in the [MODIS User Guide](https://www.earthdata.nasa.gov/s3fs-public/2023-01/MCDWD_UserGuide_RevC.pdf).
+***MCDWD_F1CS_L3_NRT (1-Day CS)***: F1CS has a cloud shadow mask applied on the version of the MCDWD_F1_L3_NRT product. A cloud shadow mask identifies areas that are cloud or shadow of cloud and categorizes them separately. This layer is produced because sometimes cloud-shadows can produce false positives in the data product. Thus, the cloud shadow mask can improve some analysis, however, the cloud mask can also produce errors and remove real water [@rayne2024]. See section 3.4.3 in the [MODIS User Guide](https://www.earthdata.nasa.gov/s3fs-public/2023-01/MCDWD_UserGuide_RevC.pdf).
 
 ***MCDWD_F2_L3_NRT (2-Day)***: F2 provides additional information by categorizing water occurrences into three categories: no water, low-confidence water, and high-confidence water. This classification allows for a more nuanced understanding of the extent of the flood and its associated confidence levels.
 
