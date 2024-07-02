@@ -17,16 +17,14 @@ data. The three datasets and vignettes cover:
 
 - **WSIM-GLDAS:** Exploring water anomalies using a historical dataset.
   - [Lesson 1a: Acquiring and Pre-Processing
-    WSIM-GLDAS](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m101a-wsim-gldas-acquisition.html)
-  - [Lesson 1b: Advanced Visualizations with
-    WSIM-GLDAS](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m101b-wsim-gldas-vis.html)
+    WSIM-GLDAS](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m101-wsim-gldas.html)
 - **MODIS Near Real Time flood data:** Lessons in data acquisition and
   analysis of recent water anomalies.
   - [Lesson 2: Acquiring and Exploring MODIS NRT Flood
     Data](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m102-lance-modis-nrt-global-flood.html)
 - **Lead in New York State Schools:** Exploring lead contamination data
   and US Census data and lessons in data cleaning and visualization,
-  with a discerning eye towards data limitations.
+  with a discerning eye toward data limitations.
   - [Lesson 3: NYC School Water Quality: Exposure to Lead Data](https://topstschool.shinyapps.io/nyc-lead/)
 
 This course was made possible thanks to the work of our NASA Transform to Open Science (TOPS) team, our SCHOOL Open Science team, open science Subject Matter Experts (SMEs), and the SCHOOL Development team!
