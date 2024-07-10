@@ -1,0 +1,36 @@
+---
+title: "WSIM-GLDAS: Prerequisites and Glossary"
+author: 
+  - "Dhruvil Prajapati"
+date: "July 3, 2024"
+format: html
+editor: visual
+---
+
+### Prerequisites
+
+-   R (Programing Language)
+
+    -   Link: <https://cran.rstudio.com/>
+
+-   R-Studio (Integrated Development Environment \[Abbrv: IDE\])
+
+    -   Link: <https://posit.co/download/rstudio-desktop/>
+
+-   NASA EarthData account
+
+    -   Link: <https://urs.earthdata.nasa.gov/users/new>
+
+## Glossary
+
+**Application Programming Interface (API) :** is a set of defined rules that explain how computers or applications communicate with one another. APIs sit between an application and the web server and act as an intermediary layer that processes data transfer between systems. ([Source](https://www.earthdata.nasa.gov/technology/application-programming-interface-api))
+
+**Choropleths map :** A choropleth map is a thematic map that is used to represent statistical data using the color mapping symbology technique. \[Also called: Thematic map\] ([Source](https://www.oxfordreference.com/display/10.1093/acref/9780199599868.001.0001/acref-9780199599868-e-207))
+
+**Drought :** is an extended period of unusually dry weather when there is not enough rain. ([Source1](https://education.nationalgeographic.org/resource/understanding-droughts/) , [Source2](https://www.ncei.noaa.gov/access/monitoring/dyk/drought-definition))
+
+**Data Frame(s) :**
+
+**Precipitation :** is any liquid or frozen water that forms in the atmosphere and falls to Earth. It is one of the three main steps of the global water cycle. ([Source](https://education.nationalgeographic.org/resource/precipitation/))
+
+**Raster (Dataset) :** a raster consists of a matrix of cells (or pixels) organized into rows and columns (or a grid) where each cell contains a value representing information, such as temperature. ([Source](https://desktop.arcgis.com/en/arcmap/latest/manage-data/raster-and-images/what-is-raster-data.htm#GUID-CBED6408-2437-4554-A3E1-F0FDC4AFBD63))
