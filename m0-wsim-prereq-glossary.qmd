@@ -15,6 +15,8 @@ editor: visual
 
 [NASA EarthData account](https://urs.earthdata.nasa.gov/users/new)
 
+[Shiny app](https://shiny.posit.co/)
+
 ## Glossary
 
 **Aerosols :** are small particles suspended in the atmosphere. They are often not or barely visible to the human eye, yet their impact on climate, weather, health, and ecology are significant. ([Source](https://earth.gsfc.nasa.gov/climate/data/deep-blue/aerosols#:~:text=Sea%20spray%2C%20mineral%20dust%2C%20smoke,from%20volcanoes%20or%20industrial%20emissions))
@@ -25,7 +27,11 @@ editor: visual
 
 **Atmospheric Circulation :** is the movement of air around the planet. It explains how thermal energy and storm systems move over the Earth's surface. ([Source1](https://www.noaa.gov/jetstream/global/global-atmospheric-circulations#:~:text=Global%20Atmospheric%20Circulation%20is%20the,global%20circulation%20would%20be%20simple), [Source2](https://ugc.berkeley.edu/background-content/atmospheric-circulation/#heading1))
 
+**Boards of Cooperative Educational Services (BOCES) :** BOCES is a public organization created to provide shared educational programs and services to school districts.([Source](https://www.boces.org/about-boces/))
+
 **Choropleths map :** A choropleth map is a thematic map that is used to represent statistical data using the color mapping symbology technique. \[Also called: Thematic map\] ([Source](https://www.oxfordreference.com/display/10.1093/acref/9780199599868.001.0001/acref-9780199599868-e-207))
+
+**Contaminant :** A contaminant is any physical, chemical, biological or radiological substance or matter that affects the composition, taste, or safety in water. ([Source](https://www.epa.gov/ccl/definition-contaminant))
 
 **Drought :** is an extended period of unusually dry weather when there is not enough rain. ([Source1](https://education.nationalgeographic.org/resource/understanding-droughts/) , [Source2](https://www.ncei.noaa.gov/access/monitoring/dyk/drought-definition))
 
@@ -36,6 +42,8 @@ editor: visual
 **Hectare :** is 10,000 square meters (10,000 m2).
 
 **Land, Atmosphere Near real-time Capability for EOS (LANCE) :** LANCE is a component of the NASA Earth Observing System Data and Information System (EOSDIS). LANCE products are used for monitoring fires, dust storms, hurricanes, air quality, sea ice, vegetation and crop development and volcanic eruptions. ([Source1](https://www.earthdata.nasa.gov/learn/find-data/near-real-time/lance) , [Source2](https://www.earthdata.nasa.gov/s3fs-public/2023-03/LANCE_OnePager_2022_Prnt-Web.pdf?VersionId=nYtCSs6zuVJ5FZL6LRzBhgF4qLYqal49))
+
+**Lead :** Lead is a naturally occurring metal that can be found throughout the earth, particularly in the Earth's crust. It can toxic to humans and animals and lead to health effects. ([Source](https://www.epa.gov/lead/learn-about-lead))
 
 **Moderate Resolution Imaging Spectroradiometer (MODIS) :** is an instrument that collects remotely sensed data used by scientists for monitoring, modeling, and assessing the effects of natural processes and human actions on the Earth’s surface. ([Source1](https://pubs.usgs.gov/fs/2008/3061/pdf/fs2008-3061.pdf) , [Source2](https://modis.gsfc.nasa.gov/about/))
 
