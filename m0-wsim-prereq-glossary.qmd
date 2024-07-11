@@ -7,30 +7,44 @@ format: html
 editor: visual
 ---
 
-### Prerequisites
+## Prerequisites
 
--   R (Programing Language)
+[R (Programing Language)](https://cran.rstudio.com/)
 
-    -   Link: <https://cran.rstudio.com/>
+[R-Studio (Integrated Development Environment \[Abbrv: IDE\])](https://posit.co/download/rstudio-desktop/)
 
--   R-Studio (Integrated Development Environment \[Abbrv: IDE\])
-
-    -   Link: <https://posit.co/download/rstudio-desktop/>
-
--   NASA EarthData account
-
-    -   Link: <https://urs.earthdata.nasa.gov/users/new>
+[NASA EarthData account](https://urs.earthdata.nasa.gov/users/new)
 
 ## Glossary
 
+**Aerosols :** are small particles suspended in the atmosphere. They are often not or barely visible to the human eye, yet their impact on climate, weather, health, and ecology are significant. ([Source](https://earth.gsfc.nasa.gov/climate/data/deep-blue/aerosols#:~:text=Sea%20spray%2C%20mineral%20dust%2C%20smoke,from%20volcanoes%20or%20industrial%20emissions))
+
 **Application Programming Interface (API) :** is a set of defined rules that explain how computers or applications communicate with one another. APIs sit between an application and the web server and act as an intermediary layer that processes data transfer between systems. ([Source](https://www.earthdata.nasa.gov/technology/application-programming-interface-api))
+
+**Atmosphere :** Earth’s atmosphere is a thin veil of gas surrounding the planet. Although it only extends a few hundred kilometers above the surface, it contains a mixture of gases, such as oxygen and nitrogen, that are critical for life to exist. It distributes incoming solar radiation, protecting life from harmful ultraviolet radiation but also driving atmospheric circulation and weather. ([Source1](https://www.earthdata.nasa.gov/topics/atmosphere), [Source2](https://scied.ucar.edu/learning-zone/atmosphere/what-is-atmosphere))
+
+**Atmospheric Circulation :** is the movement of air around the planet. It explains how thermal energy and storm systems move over the Earth's surface. ([Source1](https://www.noaa.gov/jetstream/global/global-atmospheric-circulations#:~:text=Global%20Atmospheric%20Circulation%20is%20the,global%20circulation%20would%20be%20simple), [Source2](https://ugc.berkeley.edu/background-content/atmospheric-circulation/#heading1))
 
 **Choropleths map :** A choropleth map is a thematic map that is used to represent statistical data using the color mapping symbology technique. \[Also called: Thematic map\] ([Source](https://www.oxfordreference.com/display/10.1093/acref/9780199599868.001.0001/acref-9780199599868-e-207))
 
 **Drought :** is an extended period of unusually dry weather when there is not enough rain. ([Source1](https://education.nationalgeographic.org/resource/understanding-droughts/) , [Source2](https://www.ncei.noaa.gov/access/monitoring/dyk/drought-definition))
 
-**Data Frame(s) :**
+**Earth Observing System Data and Information System (EOSDIS) :** is the core operational system that provides end-to-end capabilities for managing NASA Earth science data from various sources—satellites, aircraft, field measurements, and various other programs. ([Source1](https://www.earthdata.nasa.gov/eosdis) , [Source2](https://www.earthdata.nasa.gov/esds/esds-highlights/nasa-earth-science-data-systems-program-highlights-2019))
+
+**Evaporation :** is the process that changes liquid water to gaseous water (water vapor). Water moves from the Earth’s surface to the atmosphere via evaporation. ([Source](https://www.usgs.gov/special-topics/water-science-school/science/evaporation-and-water-cycle))
+
+**Hectare :** is 10,000 square meters (10,000 m2).
+
+**Land, Atmosphere Near real-time Capability for EOS (LANCE) :** LANCE is a component of the NASA Earth Observing System Data and Information System (EOSDIS). LANCE products are used for monitoring fires, dust storms, hurricanes, air quality, sea ice, vegetation and crop development and volcanic eruptions. ([Source1](https://www.earthdata.nasa.gov/learn/find-data/near-real-time/lance) , [Source2](https://www.earthdata.nasa.gov/s3fs-public/2023-03/LANCE_OnePager_2022_Prnt-Web.pdf?VersionId=nYtCSs6zuVJ5FZL6LRzBhgF4qLYqal49))
+
+**Moderate Resolution Imaging Spectroradiometer (MODIS) :** is an instrument that collects remotely sensed data used by scientists for monitoring, modeling, and assessing the effects of natural processes and human actions on the Earth’s surface. ([Source1](https://pubs.usgs.gov/fs/2008/3061/pdf/fs2008-3061.pdf) , [Source2](https://modis.gsfc.nasa.gov/about/))
+
+**Near Real-Time (NRT) :** data are made available more rapidly than routine processing allows, generally with 1-3 hours after a satellite observation. ([Source](https://www.earthdata.nasa.gov/technology/near-real-time-data-nrt#:~:text=Near%20real-time%20NRT,hours%20after%20a%20satellite%20observation))
 
 **Precipitation :** is any liquid or frozen water that forms in the atmosphere and falls to Earth. It is one of the three main steps of the global water cycle. ([Source](https://education.nationalgeographic.org/resource/precipitation/))
 
 **Raster (Dataset) :** a raster consists of a matrix of cells (or pixels) organized into rows and columns (or a grid) where each cell contains a value representing information, such as temperature. ([Source](https://desktop.arcgis.com/en/arcmap/latest/manage-data/raster-and-images/what-is-raster-data.htm#GUID-CBED6408-2437-4554-A3E1-F0FDC4AFBD63))
+
+**Web Coverage Service (WCS) :** offers multi-dimensional coverage data for access over the Internet. WCS Core specifies a core set of requirements that a WCS implementation must fulfill. ([Source](https://www.ogc.org/standard/wcs/#:~:text=A%20Web%20Coverage%20Service%20WCS,a%20WCS%20implementation%20must%20fulfill))
+
+**Web Map Service :** The OpenGIS® Web Map Service Interface Standard (WMS) provides a simple HTTP interface for requesting geo-registered map images from one or more distributed geospatial databases. ([Source](https://www.ogc.org/standard/wms/))
