@@ -400,6 +400,5 @@ bslib::card(
         New York State Department of Health. 2020. “Lead Testing in School Drinking Water Sampling and Results Compliance Year 2016.” https://health.data.ny.gov/Health/Lead-Testing-in-School-Drinking-Water-Sampling-and/rkyy-fsv9/about_data.
         New York State Department of Health. 2024. “Lead Testing of School Drinking Water.” https://www.health.ny.gov/environmental/water/drinking/lead/lead_testing_of_school_drinking_water.htm.
         Schock, Michael R. 1990. “Causes of Temporal Variability of Lead in Domestic Plumbing Systems.” Environmental Monitoring and Assessment 15 (1): 59–82. https://doi.org/10.1007/BF00454749.
-        United States Environmental Protection Agency (EPA). 2024. “Basic Information about Lead in Drinking Water.” https://www.epa.gov/ground-water-and-drinking-water/basic-information-about-lead-drinking-water.
-        "))
+        United States Environmental Protection Agency (EPA). 2024. “Basic Information about Lead in Drinking Water.” https://www.epa.gov/ground-water-and-drinking-water/basic-information-about-lead-drinking-water."))
   )), ))
