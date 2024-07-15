@@ -1,8 +1,7 @@
 ---
 title: "MODIS NRT Global Flood Product"
 author: 
-  - "Juan F. Martinez"
-  - "Iris Cano"
+  - "SCHOOL Development and Open Science Teams"
 date: "April 14, 2024"
 bibliography: "references/nrt-flood-references.bib"
 ---
@@ -15,7 +14,7 @@ bibliography: "references/nrt-flood-references.bib"
 
 ## Overview
 
-In this lesson, you will use R to take a closer look at the data from the LANCE MODIS Near Real Time (NRT) Global Flood Product, including learning about what are LANCE and MODIS, and the NRT Flood products available. You will then learn to select, download, and visualize one of the NRT Flood layers...
+In this lesson, you will use R to take a closer look at the data from the **LANCE MODIS Near Real Time (NRT) Global Flood Product**, including learning about what are LANCE and MODIS, and the NRT Flood products available. You will then learn to select, download, and visualize one of the NRT Flood layers available. Lastly, we will use the NRT Flood data to calculate the area of each cropland type found in the flood zone, and plot the top ten results as a bar graph.
 
 ::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
@@ -33,7 +32,7 @@ After completing this lesson, you should be able to:
 
 -   Read a tile map and select a raster tile to download based on a point of interest.
 
--   Download near-real-time raster data using the application programming interfaces (APIs) with the GET HTTP request method [@wilsjame].
+-   Download near-real-time raster data using the application programming interfaces (APIs).
 
 -   Preview the downloaded raster data.
 
@@ -43,39 +42,39 @@ After completing this lesson, you should be able to:
 
 ## Introduction
 
-Atmospheric circulation, water evaporation, and their interactions with land surfaces can impact a region’s rainfall variability. For example, California’s winter is correlated with ocean evaporation near the West Coast and eastern North Pacific, and ocean evaporation is a strong factor in increased flooding in the region [@wei2016]. Additionally, drought in the region is associated with high-pressure systems off the U.S. West Coast, with studies finding that the high-pressure system is linked to the Pacific sea surface temperature anomalies, and exacerbated by high evaporation over land due to high temperatures [@wang2014; @hartmann2015; @seager2015].
+Atmospheric circulation, water evaporation, and their interactions with land surfaces can impact a region’s rainfall variability. For example, California’s winter is correlated with ocean evaporation near the West Coast and eastern North Pacific, and ocean evaporation is a strong factor in increased flooding in the region [@wei2016; @ucmp2022]. Additionally, drought in the region is associated with high-pressure systems off the U.S. West Coast, with studies showing that high-pressure system are linked to the Pacific sea surface temperature anomalies, and exacerbated by high evaporation over land due to high temperatures [@wang2014; @hartmann2015; @seager2015].
 
-It is critical to understand the water cycle and how flooding events develop, particularly as climate change intensifies extreme weather events because the impacts of flooding can be a risk to human life and can disrupt infrastructure, agriculture, and natural habitats.
+It is critical to understand the water cycle and how flooding events develop, particularly as climate change intensifies extreme weather events, the impacts of flooding can be a risk to human life and can disrupt infrastructure, agriculture, and natural habitats.
 
 ![](docs/images/FL_Flood_Aerials-8641.jpg)[^2]
 
 [^2]: Photo Credit, California Department of Water Resources.
 
-The **MODIS/Aqua+Terra Global Flood Product L3 Near Real Time (NRT) 250m Global Flood Product (MCDWD_L3_NRT) (beta)** provides daily maps of flooding globally. The product is provided over 3 compositing periods (1-day, 2-day, and 3-day) to minimize the impact of clouds and more rigorously identify flood water. The best composite will depend on the cloudiness of a particular event [@lin2019].
-
 ## What are MODIS and LANCE?
 
 ### MODIS
 
-The **Moderate Resolution Imaging Spectroradiometer (MODIS)** is part of a NASA Earth Observing System (EOS). The satellite-based sensor system creates data products including land surface temperatures, land surface reflectance, radiances, clouds, aerosols, water vapor, active fire, snow cover, sea ice measurements, and other factor information. The MODIS NRT data includes the Flood product which we will explore in this lesson. The NRT Flood product is a daily \~250 m resolution product showing flood and surface water detected from the twice-daily overpass of the MODIS optical sensors.
+The **Moderate Resolution Imaging Spectroradiometer (MODIS)** is part of a NASA Earth Observing System (EOS). The satellite-based sensor system creates data products including land surface temperatures, land surface reflectance, radiances, clouds, aerosols, water vapor, active fire, snow cover, sea ice measurements, and other factor information . The MODIS NRT data includes the Flood product which we will explore in this lesson. The NRT Flood product is a daily \~250-meter resolution product showing flood and surface water detected from the twice-daily overpass of the MODIS optical sensors.
 
-The satellite data is readily available shortly after it is acquired by the MODIS instrument on board the Terra and Aqua satellites. This space-based instrument distinguishes 36 spectral bands and groups of wavelengths which help map the extent of snow and ice caused by winter storms and frigid temperatures. Initially, the water-detecting algorithm is applied to both MODIS observations (Terra and Aqua) observations because false positives are created due to cloud and terrain shadows.
+The satellite data is readily available shortly after it is acquired by the MODIS instrument on board the Terra and Aqua satellites. This space-based instrument distinguishes 36 spectral bands and groups of wavelengths in three different resolutions at 250 m, 500 m, and 1 km, all which helps map the extent of snow and ice caused by winter storms and frigid temperatures [@atmosphe2023]. Initially, a water-detecting algorithm is applied to both MODIS observations (Terra and Aqua), however, cloud and terrain shadows are known to create false positives in the data.
 
 <img src="https://modis.gsfc.nasa.gov/about/images/modisComponents.jpg" alt="MODIS Components"/>[^3]
 
 [^3]: Photo Credit, NASA GSFC.
 
-To minimize errors, the product is generated with three different ***compositing periods (1-day, 2-day, and 3-day)*** to compare results and decide which product has better coverage for the event. Further, then product differentiates floods from expected surface water through the use of the MODIS Land Water Mask (MOD44W), which uses a decision tree classifier trained with MODIS data to produce a global water mask [@carroll2016].
+MODIS is one of the most advanced systems that can produce earth-observing real time satellite data "designed to provide the maximum operational versatility and performance combined with long life. Most operations, including calibration, are performed under internal processor control in response to time-tagged commands from the spacecraft. The electronics are highly redundant, such that no single-point of failure can disable the data from more than one of the 490 MODIS detectors [@frazier2022]."
 
-MODIS adoption aimed to surpass barriers related to satellite data, such as cost, delivery timelines, limited formats, and the need for technical expertise. The transition to a Fire Information for Resource Management System (FIRMS) establishes an operational system at the United Nations Food and Agriculture Organization (UN FAO), ensuring continuity in meeting NASA data-user needs [@lin2019].
+The adoption of MODIS aimed to surpass barriers related to satellite data, such as cost, delivery timelines, limited formats, and the need for technical expertise. This transition led to the establishment of the Fire Information for Resource Management System (FIRMS) at the United Nations Food and Agriculture Organization (UN FAO), ensuring continuity in meeting NASA data-user needs [@lin2019; @davies2010] .
 
 ### LANCE
 
-The **Land, Atmosphere Near real-time Capability for EOS (LANCE)** is a NASA initiative that provides near real-time access to satellite data, including MODIS. It allows users to access the latest data within a few hours of satellite overpass, enabling rapid responses to environmental events such as floods. LANCE is particularly valuable for emergency response teams and researchers who require up-to-date information for monitoring and assessing natural disasters [@LANCE2024].
+The **Land, Atmosphere Near real-time Capability for EOS (LANCE)** is a NASA initiative that provides near real-time access to satellite data, including MODIS. It allows users to access the latest data within a few hours of satellite overpass, enabling rapid responses to environmental events such as floods. Systems like LANCE highlight the importance of readily available data that can be easily consumed and analyzed through data analysis and data visualization for timely response. LANCE is particularly valuable for emergency response teams and researchers who require up-to-date information for monitoring and assessing natural disasters [@LANCE2024; @murphy2015].
 
 LANCE reduces processing time, allowing for timely computation. Users access the data through platforms like Web Map Service (WMS) and Web Coverage Service (WCS), enabling visualization and analysis for informed decision-making. This NRT approach enhances the speed and accessibility of critical information on vegetation conditions [@zhang2022].
 
 ### MODIS NRT Flood MCDWD Data Products
+
+The **MODIS/Aqua+Terra Global Flood Product L3 Near Real Time (NRT) 250m Global Flood Product (MCDWD_L3_NRT) (Release 1)** provides daily maps of flooding globally. The product is provided over 3 [compositing periods](https://vip.arizona.edu/documents/dataviewer/Compositing.pdf) (1-day, 2-day, and 3-day) to minimize the impact of clouds and more rigorously identify flood water. The best composite will depend on the cloudiness of a particular event [@lin2019].
 
 ::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
@@ -91,13 +90,13 @@ The main landing pages for the MODIS NRT Global Flood Product:
 :::
 :::
 
-The ***MODIS/Terra+Aqua Combined MODIS Water Detection (MCDWD)*** algorithm is tailor-made for detecting water bodies using MODIS data obtained from both the Terra and Aqua satellites. This algorithm employs various bands and spectral information to effectively identify and categorize water bodies. This enhances the accuracy and reliability of the flood product generated [@slayback2023].
+The ***MODIS/Terra+Aqua Combined MODIS Water Detection (MCDWD)*** algorithm is tailor-made for detecting water bodies using MODIS data obtained from both the Terra and Aqua satellites. This algorithm employs various bands and spectral information to effectively identify and categorize water bodies. This enhances the accuracy and reliability of the flood product generated [@slayback2023]. To minimize errors, the product is generated with three different ***compositing periods (1-day, 2-day, and 3-day)*** to compare results and decide which product has better coverage for the event. Further, then product differentiates floods from expected surface water through the use of the MODIS Land Water Mask (MOD44W), which uses a decision tree classifier trained with MODIS data to produce a global water mask [@carroll2016].
 
 The MODIS Near Real-Time (NRT) Flood dataset offers multiple products, each accompanied by corresponding layers. The specific layers depend on the temporal aggregation:
 
 ***MCDWD_F1_L3_NRT (1-Day product)*** This product type is the most basic level and provides binary information about water occurrence. Pixels are classified as either containing water or not, offering a simple way to identify flooded areas.
 
-***MCDWD_F1CS_L3_NRT (1-Day CS)***: F1CS has a cloud shadow mask applied on the version of the MCDWD_F1_L3_NRT product. A cloud shadow mask identifies areas that are cloud or shadow of cloud and categorizes them separately. This layer is produced because sometimes cloud-shadows can produce false positives in the data product. Thus, the cloud shadow mask can improve some analysis, however, the cloud mask can also produce errors and remove real water [@modisscienceteam2021]. See section 3.4.3 in the [MODIS User Guide](https://www.earthdata.nasa.gov/s3fs-public/2023-01/MCDWD_UserGuide_RevC.pdf).
+***MCDWD_F1CS_L3_NRT (1-Day CS)***: F1CS has a cloud shadow mask applied on the version of the MCDWD_F1_L3_NRT product. A cloud shadow mask identifies areas that are cloud or shadow of cloud and categorizes them separately. This layer is produced because sometimes cloud-shadows can produce false positives in the data product. Thus, the cloud shadow mask can improve some analysis, however, the cloud mask can also produce errors and remove real water [@rayne2024]. See section 3.4.3 in the [MODIS User Guide](https://www.earthdata.nasa.gov/s3fs-public/2023-01/MCDWD_UserGuide_RevC.pdf).
 
 ***MCDWD_F2_L3_NRT (2-Day)***: F2 provides additional information by categorizing water occurrences into three categories: no water, low-confidence water, and high-confidence water. This classification allows for a more nuanced understanding of the extent of the flood and its associated confidence levels.
 
@@ -142,7 +141,7 @@ This lesson uses the [stars](https://r-spatial.github.io/stars/), [httr](https:/
 :::
 :::
 
-#### Step 2, Check what days are available for the MCDWD L3 F3 product by going to this link: [LANCE NRT Primary Server](https://nrt3.modaps.eosdis.nasa.gov/archive/allData/61/MCDWD_L3_F3_NRT) or [Secondary](https://nrt4.modaps.eosdis.nasa.gov/archive/allData/61/MCDWD_L3_F3_NRT). Note: you must have a NASA Earthdata Account.
+#### Step 2, check what days are available for the MCDWD L3 F3 product by going to this link: [LANCE NRT Primary Server](https://nrt3.modaps.eosdis.nasa.gov/archive/allData/61/MCDWD_L3_F3_NRT) or [Secondary](https://nrt4.modaps.eosdis.nasa.gov/archive/allData/61/MCDWD_L3_F3_NRT). Note: you must have a NASA Earthdata Account.
 
 Based on availability, edit the year_day variable YYYY-DD. Example: '2022-01'
 
@@ -188,7 +187,7 @@ print(url)
 
 **NASA Earthdata** requires a NASA username and token. Go here to learn [How to generate a User Token](https://wiki.earthdata.nasa.gov/display/EL/How+to+Generate+a+User+Token).
 
-Once you have generated a User Token, you can access NASA Earthdata using the GET function. Replace `USER_TOKEN` with the token you generated:
+Once you have generated a User Token, you can access NASA Earthdata using the GET function [@wilsjame]. Replace `USER_TOKEN` with the token you generated:
 
 ```{r}
 token <- "USER_TOKEN"
@@ -295,7 +294,7 @@ NRT Flood data has 5 classifications:
 
 [^4]: Value 2 (Recurring flood) is not populated in the beta release.
 
-To view the data in this classification, we’ll need to create a classified legend; however, the NRT Flood data is stored in decimal numbers (aka floating-point). Create class breaks that divide the data using the breaks listed below and their corresponding colors and labels. Finally, add a title for the plot that includes the year and day, `year_day`, and the `tile_code`:
+To view the data in this classification, we’ll need to create a classified legend; however, the NRT Flood data is stored in decimal numbers (known as floating-point). Class breaks allow us to group together data depending on the values. Create classification breaks that divide the data using the breaks listed below and their corresponding colors and labels. Finally, add a title for the plot that includes the year and day, `year_day`, and the `tile_code`:
 
 ```{r}
 #class_breaks for the table plot categorization 
@@ -317,7 +316,7 @@ The `basemap_stars()` function from the `stars` package allows us to access Esri
 bm_m <- basemaps::basemap_stars(raster_df, map_service = "esri", map_type = "world_imagery")
 #The `st_rgb` function lets us turn the RGB stars item into a single image
 bm_m <- st_rgb(bm_m)
-#
+#transform the CRS of the basemap to match the flood raster
 bm_m <- st_transform(bm_m, 4326)
 ```
 
@@ -332,7 +331,7 @@ tmap_mode("plot")
 ## tmap mode can also be set to "view"
 #tmap_mode("view")
 
-#create an object the plots the basemap and the NRT flood raster
+#create an object that plots the basemap and the NRT flood raster
 #with the tmap library, call the tm_shape() function for the basemap
 tm_plot <-  tmap_options(max.raster = c(plot = 50000, view = 50000))+
   tm_shape(bm_m)+
@@ -386,7 +385,7 @@ tmap_mode("plot")
 ## tmap mode can also be set to "view"
 #tmap_mode("view")
 
-#create an object the plots the basemap and the NRT flood raster
+#create an object that plots the basemap and the NRT flood raster
 #with the tmap library, call the tm_shape() function for the basemap
 tm_plot <- tmap_options(max.raster = c(plot = 50000, view = 50000))+
   tm_shape(bm_m, raster.downsample=TRUE)+
@@ -441,19 +440,11 @@ cdl <- st_as_stars(cdl)
 plot(cdl, downsample=100)
 ```
 
-We are only interested in the areas that are showing as category 3, Flooded (unusual); therefore, we want to exclude other variables. We make a copy of the `raster_sub` variable and set variables that are not 3 as `NA`.
+We are only interested in the areas that are showing as category 3, Flooded (unusual); therefore, we want to exclude other variables. We can do this by setting variables that are not 3 as `NA`. Once we have only the flooded areas from the NRT Flood data, we can subset the CDL data.
 
 ```{r}
-#make copy of variable
-#raster3 <- raster_sub
-#set variables as NA
+#set variables as NA that do NOT equal 3
 raster_df[raster_df != 3] <- NA
-
-```
-
-Now that we have only the flooded areas from the NRT Flood data, we can subset the CDL data.
-
-```{r}
 #subset the CDL raster where unusual flooding occurred
 cdl <- cdl[raster_df==3] 
 ```
@@ -527,7 +518,6 @@ dataplot$area <- dataplot$Freq * 30 / 10000
 
 Once the area is calculated, we can plot a bar graph to compare the top 10 CDL Categories found in the NRT Flood zone.
 
-
 ```{r}
 #create new title for plot
 title = paste("Hectares of NASS CDL Cropland Category under flood, \nday", year_day, "in tile", tile_code)
@@ -554,6 +544,8 @@ plt <- ggplot(dataplot, aes(x = area, y = cdl)) +
 
 plt
 ```
+
+The graph above shows the hectares (ha) of land that were calculated using the NRT Flood data and the CDL cropland data within the bounding box we generated. We did this by selecting the area with abounding box, then subsetting the CDL data to areas that are labeled as "Unusually Flooded" by the NRT Flood data on a particular day, and counting the number of pixels by CDL category. With the count of pixels and the resolution of the CDL dataset, we calculated the total area flooded for each category in ha.
 
 Congratulations! We were able to download and explore NASA NRT Flood data to pick an area of interest in the contiguous U.S. and determine how much cropland may be affect by floods. Now you should be able to:
 

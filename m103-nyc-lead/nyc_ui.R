@@ -26,7 +26,7 @@ nyc_ui <-
         
             shiny::markdown(
               glue::glue("This use case explores the risks of exposure to lead via drinking water.", 
-                         "Lead contamination is a serious issue that poses severe health risks and requires remedial action. ",
+                         "Lead contamination is a serious issue that poses severe health risks and requires remedial action. Disease outbreaks have occured through United States have happened arou",
                          "In this lesson, we will analyze data on lead levels in [NY State schools](https://health.data.ny.gov/Health/Lead-Testing-in-School-Drinking-Water-Sampling-and/rkyy-fsv9/data) ", 
                          "collected from 2016, 2017, 2018, and 2019 and compare it with population characteristics at the county level in New York State (NYS) to understand its impact. ",
                          "No 'safe' levels of lead have been established, but we will discuss what level of lead can be detected. The lesson examines the sources of lead exposure and its adverse effects; ",
@@ -44,9 +44,9 @@ nyc_ui <-
             
             ## Introduction
             
-            Access to clean and safe drinking water is significant to ensure public health [@NIEHS]. ",
+            Access to clean and safe drinking water is significant to ensure public health. ",
             "Drinking water contaminants may have both short-term and long-term negative health impacts. ", 
-            "One such contaminant that can have detrimental effects is lead, which is particularly harmful to a child's development [@levallois2018]. ",
+            "One such contaminant that can have detrimental effects is lead, which is particularly harmful to a child's development [@NIEHS; @levallois2018]. ",
             "Exposure to lead, even at low levels, has been linked to harmful effects on children’s central nervous systems and cognitive function [@lanphear2005]. ",
             "Therefore, it is essential to address lead-contaminated water in schools and homes.
             
@@ -152,7 +152,7 @@ nyc_ui <-
         While converting the data, we also need to know the projection of the xy coordinates. ",
         "XY coordinates can be in different projection systems. Projection information is typically stored in the metadata of a dataset. However, in the NYS dataset, there is not any metadata attached to the dataset.
         
-        The most commonly used geographic coordinate system is the [WORLD GEODETIC SYSTEM 1984 (WGS 84)](https://earth-info.nga.mil/index.php?dir=wgs84&action=wgs84). We will use the WGS84 projection to convert the NYS dataset to spatial data.
+        The most commonly used geographic coordinate system in the [WORLD GEODETIC SYSTEM 1984 (WGS 84)](https://earth-info.nga.mil/index.php?dir=wgs84&action=wgs84). We will use the WGS84 projection to convert the NYS dataset to spatial data.
         
         We will now map the school locations in New York State from the dataset.
         "
@@ -336,7 +336,7 @@ bslib::card(
   fluidRow(
     shiny::markdown(
       glue::glue(
-        "Access to safe drinking water is a fundamental human right and a pillar of public health [@li2023]. ",
+        "Access to safe drinking water is a fundamental human right and a pillar of public health [@li2023, ]. ",
         "However, the cases discussed in the lesson underscore the critical need to address the risk of lead contamination. ",
         "From New York to Flint, Michigan, these examples serve as reminders of the need for action supported by transparent and accessible data.
         
