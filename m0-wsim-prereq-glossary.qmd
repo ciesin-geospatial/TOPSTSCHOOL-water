@@ -2,6 +2,7 @@
 title: "WSIM-GLDAS: Prerequisites and Glossary"
 author: 
   - "Dhruvil Prajapati"
+  - "America Munoz"
 date: "July 3, 2024"
 format: html
 editor: visual
@@ -9,11 +10,17 @@ editor: visual
 
 ## Prerequisites
 
+### Accounts
+
+[NASA EarthData account](https://urs.earthdata.nasa.gov/users/new)
+
+[Open Researcher and Contributor ID (ORCID)](https://orcid.org/)
+
+### Software/Tools
+
 [R (Programing Language)](https://cran.rstudio.com/)
 
 [R-Studio (Integrated Development Environment \[Abbrv: IDE\])](https://posit.co/download/rstudio-desktop/)
-
-[NASA EarthData account](https://urs.earthdata.nasa.gov/users/new)
 
 [Shiny app](https://shiny.posit.co/)
 
