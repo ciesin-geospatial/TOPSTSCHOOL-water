@@ -43,18 +43,18 @@ nyc_ui <-
             
             ## Introduction
             
-            Access to clean and safe drinking water is significant to ensure public health [@NIEHS]. ",
+            Access to clean and safe drinking water is significant to ensure public health [(National Institute of Environmental Health Sciences 2024)]. ",
             "Drinking water contaminants may have both short-term and long-term negative health impacts. ", 
-            "One such contaminant that can have detrimental effects is lead, which is particularly harmful to a child's development [@levallois2018]. ",
-            "Children's central nervous systems and cognitive function have been linked to harm from lead exposure, even at low levels [@lanphear2005]. ",
+            "One such contaminant that can have detrimental effects is lead, which is particularly harmful to a child's development [(Levallois et al. 2018)]. ",
+            "Children's central nervous systems and cognitive function have been linked to harm from lead exposure, even at low levels [(Lanphear et al. 2005)]. ",
             "Therefore, it is essential to address lead-contaminated water in schools and homes.
             
-            Lead exposure has no safe threshold; therefore, safety depends on ensuring that lead levels in water are below the legal thresholds set by the World Health Organization (WHO) and the US Environmental Protection Agency (EPA) [@EPA2024]. ",
-            "According to guidelines issued by the WHO, lead concentrations in drinking water should not exceed 10 ppb (Parts Per Billion) [@WHO2022], and 15 ppb is the action level set by the EPA [@EPA2024].
+            Lead exposure has no safe threshold; therefore, safety depends on ensuring that lead levels in water are below the legal thresholds set by the World Health Organization (WHO) and the US Environmental Protection Agency (EPA) [(United States Environmental Protection Agency (EPA) 2024)]. ",
+            "According to guidelines issued by the WHO, lead concentrations in drinking water should not exceed 10 ppb (Parts Per Billion) [(World Health Organization 2022)], and 15 ppb is the action level set by the EPA [(United States Environmental Protection Agency (EPA) 2024)].
             
-            It is crucial to highlight that the degree of lead able to be detected depends upon many variables [@schock1990]. ",
-            "The main source of lead in drinking water is the corrosion of lead-containing plumbing materials [@EPA2024]. ",
-            "Older plumbing systems with lead pipes and solder may leak lead into drinking water, particularly in regions with acidic water [@EPA2024]. ",
+            It is crucial to highlight that the degree of lead able to be detected depends upon many variables [(Schock 1990)]. ",
+            "The main source of lead in drinking water is the corrosion of lead-containing plumbing materials [(United States Environmental Protection Agency (EPA) 2024)]. ",
+            "Older plumbing systems with lead pipes and solder may leak lead into drinking water, particularly in regions with acidic water [(United States Environmental Protection Agency (EPA) 2024)]. ",
             "Furthermore, runoff from contaminated soil and industrial discharges can also introduce lead into water systems. ",
             "Developing effective preventive and remedial strategies requires understanding the factors that contribute to lead contamination.
 
@@ -71,11 +71,11 @@ nyc_ui <-
         "reported by each NYS public school and Boards of Cooperative Educational Services (BOCES) [(NYS Department of Health)](https://health.data.ny.gov/Health/Lead-Testing-in-School-Drinking-Water-Sampling-and/rkyy-fsv9/data). ",
         "More information on the NYS dataset sampling is available [here](https://www.health.ny.gov/environmental/water/drinking/lead/lead_testing_of_school_drinking_water.htm).
             
-        Analysis of the dataset reveals that as of 2022, 1,864 schools had lead outlets testing higher than 15 ppb [@NYS2016]. While 527 schools finished their remediation, 1,851 schools reported taking remedial action. ",
+        Analysis of the dataset reveals that as of 2022, 1,864 schools had lead outlets testing higher than 15 ppb [(New York State Department of Health 2020)]. While 527 schools finished their remediation, 1,851 schools reported taking remedial action. ",
         "There are now 12 schools with outlets exceeding 15 ppb in operation, indicating possible continuous exposure. However, there are gaps in following up and documenting the corrective measures. 
         
         More transparency is necessary for schools with high exposure to lead to address the hazards of lead contamination and implement improved repeated testing protocols. ",
-        "The New York State Department of Health provides guidelines, rules, and resources on lead testing and remediation in schools [@DOH2023]. ",
+        "The New York State Department of Health provides guidelines, rules, and resources on lead testing and remediation in schools [(New York State Department of Health 2024)]. ",
         "However, it seems that there is currently a lack of financial and technical support for schools to handle lead hazards.
         
         
@@ -339,12 +339,12 @@ bslib::card(
   fluidRow(
     shiny::markdown(
       glue::glue(
-        "Access to safe drinking water is a fundamental human right and a pillar of public health [@li2023]. ",
+        "Access to safe drinking water is a fundamental human right and a pillar of public health [(Li and Carpenter 2023)]. ",
         "However, the cases discussed underscore the critical need to address the risk of lead contamination. ",
         "From New York to Flint, Michigan, these examples serve as reminders of the need for action, supported by transparent and accessible data.
         
-        A balance is needed between short and long-term action - promptly addressing risks in the short term by closing down contaminated water sources, improving monitoring, and transparency in reporting water quality issues [@EPA2024]. ",
-        "In the long term, managing the costs of major infrastructure changes required to prevent such crises and exposures, such as replacing lead service lines and school plumbing [@EPA2024]. ", 
+        A balance is needed between short and long-term action - promptly addressing risks in the short term by closing down contaminated water sources, improving monitoring, and transparency in reporting water quality issues [(United States Environmental Protection Agency (EPA) 2024)]. ",
+        "In the long term, managing the costs of major infrastructure changes required to prevent such crises and exposures, such as replacing lead service lines and school plumbing [(United States Environmental Protection Agency (EPA) 2024)]. ", 
         "Community collaboration, precise surveillance databases, and flexible adaptation strategies are critical in ensuring access to safe drinking water.
         
         Maintaining transparency and exchanging information with communities regarding the outcomes of lead testing and mitigation strategies is essential; ",
@@ -354,7 +354,7 @@ bslib::card(
         #### Lead in the News
            
         Thousands of people were exposed to dangerously high lead levels in their drinking water when the [Flint water crisis](https://www.nrdc.org/stories/flint-water-crisis-everything-you-need-know) broke out in 2014. ",
-        "A study by Virginia Tech researchers, through their resident-organized sampling to testing data of 252 homes, revealed that lead levels in the city had increased [@NRDC]. ",
+        "A study by Virginia Tech researchers, through their resident-organized sampling to testing data of 252 homes, revealed that lead levels in the city had increased [(“Flint Water Crisis: Everything You Need to Know” 2024)]. ",
         "Over 17% of samples tested higher than the federal 'action level' of 15 ppb, which calls for the need for corrective action. ",
         "More than 40% had lead readings higher than 5 ppb, which the researchers deemed indicative of a 'very serious' issue.
      
@@ -386,5 +386,20 @@ bslib::card(
         -   Plot locations on a map.
         -   Obtain population data from US Census Bureau by using census API.
         -   Aggregate a dataset to a boundary.
-        -   Create your own map."))
+        -   Create your own map.
+        
+        #### References
+        
+        Brooks, Samantha K, and Sonny S Patel. 2022. “Psychological Consequences of the Flint Water Crisis: A Scoping Review.” Disaster Medicine and Public Health Preparedness 16 (3): 1259–69. https://doi.org/10.1017/dmp.2021.41.
+        “Flint Water Crisis: Everything You Need to Know.” 2024. Natural Resource Defense Council. https://www.nrdc.org/stories/flint-water-crisis-everything-you-need-know#summary.
+        Guidelines for Drinking-Water Quality. 2022. Fourth edition incorporating the first and Second addenda. Geneva: World Health Organization. https://www.who.int/publications/i/item/9789240045064.
+        Lanphear, Bruce P., Richard Hornung, Jane Khoury, Kimberly Yolton, Peter Baghurst, David C. Bellinger, Richard L. Canfield, et al. 2005. “Low-Level Environmental Lead Exposure and Children’s Intellectual Function: An International Pooled Analysis.” Environmental Health Perspectives 113 (7): 894–99. https://doi.org/10.1289/ehp.7688.
+        Levallois, Patrick, Prabjit Barn, Mathieu Valcke, Denis Gauvin, and Tom Kosatsky. 2018. “Public Health Consequences of Lead in Drinking Water.” Current Environmental Health Reports 5 (2): 255–62. https://doi.org/10.1007/s40572-018-0193-0.
+        Li, Samuel, and Adam Carpenter. 2023. “The Human Right to Water: UN Definitions, Implications, and Effects.” Journal AWWA 115 (10): 50–55. https://doi.org/10.1002/awwa.2199.
+        National Institute of Environmental Health Sciences. 2024. “Safe Water and Your Health.” https://www.niehs.nih.gov/health/topics/agents/water-poll.
+        New York State Department of Health. 2020. “Lead Testing in School Drinking Water Sampling and Results Compliance Year 2016.” https://health.data.ny.gov/Health/Lead-Testing-in-School-Drinking-Water-Sampling-and/rkyy-fsv9/about_data.
+        New York State Department of Health. 2024. “Lead Testing of School Drinking Water.” https://www.health.ny.gov/environmental/water/drinking/lead/lead_testing_of_school_drinking_water.htm.
+        Schock, Michael R. 1990. “Causes of Temporal Variability of Lead in Domestic Plumbing Systems.” Environmental Monitoring and Assessment 15 (1): 59–82. https://doi.org/10.1007/BF00454749.
+        United States Environmental Protection Agency (EPA). 2024. “Basic Information about Lead in Drinking Water.” https://www.epa.gov/ground-water-and-drinking-water/basic-information-about-lead-drinking-water.
+        "))
   )), ))
