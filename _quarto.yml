@@ -10,6 +10,7 @@ format:
     toc: true
     toc-title: Contents
     toc-location: left
+    code-overflow: wrap
 lightbox: true
 execute: 
   warning: false
@@ -23,10 +24,8 @@ website:
         url: https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/index.html
       - text: "Lessons"
         menu:
-          - text: "WSIM Data Acquisition and Processing"
-            url: https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m101a-wsim-gldas-acquisition.html
-          - text: "WSIM Data Visualization and Exploration"
-            url: https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m101b-wsim-gldas-vis.html
+          - text: "WSIM-GLDAS: Acquisition, Exploration, and Integration"
+            url: https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m101-wsim-gldas.html
           - text: "MODIS NRT Flood Data Acquisition Exploration"
             url: https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m102-lance-modis-nrt-global-flood.html
           - text: "Interactive NYC School Lead Data Explorer"
