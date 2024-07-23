@@ -1,6 +1,6 @@
 ---
 title: "WSIM-GLDAS: Prerequisites and Glossary"
-author: 
+authors: 
   - "Dhruvil Prajapati"
   - "America Munoz"
 date: "July 3, 2024"
@@ -34,11 +34,13 @@ editor: visual
 
 **Atmospheric Circulation :** is the movement of air around the planet. It explains how thermal energy and storm systems move over the Earth's surface. ([Source1](https://www.noaa.gov/jetstream/global/global-atmospheric-circulations#:~:text=Global%20Atmospheric%20Circulation%20is%20the,global%20circulation%20would%20be%20simple), [Source2](https://ugc.berkeley.edu/background-content/atmospheric-circulation/#heading1))
 
+**Attribute :** a specific characteristic that describes data objects within a dataset. ([Source](https://www.geeksforgeeks.org/attributes-and-its-types-in-data-analytics/))
+
 **Boards of Cooperative Educational Services (BOCES) :** BOCES is a public organization created to provide shared educational programs and services to school districts.([Source](https://www.boces.org/about-boces/))
 
-**Choropleths map :** A choropleth map is a thematic map that is used to represent statistical data using the color mapping symbology technique. \[Also called: Thematic map\] ([Source](https://www.oxfordreference.com/display/10.1093/acref/9780199599868.001.0001/acref-9780199599868-e-207))
+**Choropleths map :** a choropleth map is a thematic map that is used to represent statistical data using the color mapping symbology technique. \[Also called: Thematic map\] ([Source](https://www.oxfordreference.com/display/10.1093/acref/9780199599868.001.0001/acref-9780199599868-e-207))
 
-**Contaminant :** A contaminant is any physical, chemical, biological or radiological substance or matter that affects the composition, taste, or safety in water. ([Source](https://www.epa.gov/ccl/definition-contaminant))
+**Contaminant :** a contaminant is any physical, chemical, biological or radiological substance or matter that affects the composition, taste, or safety in water. ([Source](https://www.epa.gov/ccl/definition-contaminant))
 
 **Drought :** is an extended period of unusually dry weather when there is not enough rain. ([Source1](https://education.nationalgeographic.org/resource/understanding-droughts/) , [Source2](https://www.ncei.noaa.gov/access/monitoring/dyk/drought-definition))
 
@@ -56,9 +58,15 @@ editor: visual
 
 **Near Real-Time (NRT) :** data are made available more rapidly than routine processing allows, generally with 1-3 hours after a satellite observation. ([Source](https://www.earthdata.nasa.gov/technology/near-real-time-data-nrt#:~:text=Near%20real-time%20NRT,hours%20after%20a%20satellite%20observation))
 
+**Outlier :** a data point that differs significantly from other observastions in the dataset. ([Source](https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm))
+
 **Precipitation :** is any liquid or frozen water that forms in the atmosphere and falls to Earth. It is one of the three main steps of the global water cycle. ([Source](https://education.nationalgeographic.org/resource/precipitation/))
 
 **Raster (Dataset) :** a raster consists of a matrix of cells (or pixels) organized into rows and columns (or a grid) where each cell contains a value representing information, such as temperature. ([Source](https://desktop.arcgis.com/en/arcmap/latest/manage-data/raster-and-images/what-is-raster-data.htm#GUID-CBED6408-2437-4554-A3E1-F0FDC4AFBD63))
+
+**Spatial Data :** refers to geographic information about the earth's features and boundaries that identifies a location or area. ([Source](https://www.methods.manchester.ac.uk/themes/spatial-and-gis-methods/spatial-data/))
+
+**US Census Bureau :** produces data about the American people including the country's population size and growth as well as changing characteristics of communities and the economy. ([Source](https://www.census.gov/en.html))
 
 **Web Coverage Service (WCS) :** offers multi-dimensional coverage data for access over the Internet. WCS Core specifies a core set of requirements that a WCS implementation must fulfill. ([Source](https://www.ogc.org/standard/wcs/#:~:text=A%20Web%20Coverage%20Service%20WCS,a%20WCS%20implementation%20must%20fulfill))
 
