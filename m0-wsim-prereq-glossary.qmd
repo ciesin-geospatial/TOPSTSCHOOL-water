@@ -24,9 +24,27 @@ editor: visual
 
 [Shiny app](https://shiny.posit.co/)
 
+### R-Studio Layout
+
+![R-Studio Layout](docs/images/R-Studio%20Layout.png)[Toolbar Above Source Panel]{style="color:orange;"}: Provides quick access to a variety of useful functions and features for managing your R scripts and projects.
+
+-   To import a dataset select ***File and Import Dataset***, proceed with selecting the location of your file.
+
+[Source Panel]{style="color:blue"}: Top-left, where you write and edit your scripts.
+
+[Console Panel]{style="color:red"}: Bottom-left, where you can directly enter and execute R commands.
+
+[Environment/History Panel]{style="color:green"}: Top-right, showing variables, data, and command history.
+
+-   To import a dataset select ***Import Dataset*** and select the location of your file.
+
+[Files/Plots/Packages/Help/Viewer Panel]{style="color:purple"}: Bottom-right, for file navigation, viewing plots, managing packages, and accessing help.
+
 ## Glossary
 
 **Aerosols :** are small particles suspended in the atmosphere. They are often not or barely visible to the human eye, yet their impact on climate, weather, health, and ecology are significant. ([Source](https://earth.gsfc.nasa.gov/climate/data/deep-blue/aerosols#:~:text=Sea%20spray%2C%20mineral%20dust%2C%20smoke,from%20volcanoes%20or%20industrial%20emissions))
+
+**Aggregate :** the formation or combination of units or items ([Source](https://www.edglossary.org/aggregate-data/))
 
 **Application Programming Interface (API) :** is a set of defined rules that explain how computers or applications communicate with one another. APIs sit between an application and the web server and act as an intermediary layer that processes data transfer between systems. ([Source](https://www.earthdata.nasa.gov/technology/application-programming-interface-api))
 
@@ -58,7 +76,7 @@ editor: visual
 
 **Near Real-Time (NRT) :** data are made available more rapidly than routine processing allows, generally with 1-3 hours after a satellite observation. ([Source](https://www.earthdata.nasa.gov/technology/near-real-time-data-nrt#:~:text=Near%20real-time%20NRT,hours%20after%20a%20satellite%20observation))
 
-**Outlier :** a data point that differs significantly from other observastions in the dataset. ([Source](https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm))
+**Outlier :** a data point that differs significantly from other observations in the dataset. ([Source](https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm))
 
 **Precipitation :** is any liquid or frozen water that forms in the atmosphere and falls to Earth. It is one of the three main steps of the global water cycle. ([Source](https://education.nationalgeographic.org/resource/precipitation/))
 
