@@ -706,7 +706,7 @@ leg_colors=['#9B0039',
     "#FFFFFF"]
 ```
 
-Although **matplot.lib** is the more "python" way to plot, we are going to use the python version of R's popular **ggplot2** package. It's a simpler code structure, and will keep synergy between the R and Python versions of this lesson.
+Although **matplotlib** is the more "python" way to plot, we are going to use the python version of R's popular **ggplot2** package. It's a simpler code structure, and will keep synergy between the R and Python versions of this lesson.
 
 ```{python warning=FALSE}
 from plotnine import *
