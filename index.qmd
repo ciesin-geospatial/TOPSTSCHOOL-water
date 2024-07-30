@@ -25,7 +25,7 @@ This lesson uses the [R](https://www.r-project.org/about.html) language and envi
 
 
 -   **Water Security Indicator Model - Global Land Data Assimilation System (WSIM-GLDAS):** Exploring water anomalies using a historical dataset.
-    -   [Lesson 1: Acquiring, Pre-Processing, and Advanced Visualizations with WSIM-GLDAS](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m101-wsim-gldas.html)
+    -   [Lesson 1: Acquiring, Pre-Processing, and Advanced Visualizations with WSIM-GLDAS [R Version]](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m101-wsim-gldas.html); [[Python Version]](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m101-wsim-gldas-python.html)
 -   **Moderate Resolution Imaging Spectroradiometer (MODIS) Near Real-Time (NRT) flood data:** Lessons in data acquisition and analysis of recent water anomalies.
     -   [Lesson 2: Acquiring and Exploring MODIS NRT Flood Data](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m102-lance-modis-nrt-global-flood.html)
 -   **Lead in New York State Schools:** Exploring lead contamination data and US Census data and lessons in data cleaning and visualization, with a discerning eye towards data limitations.

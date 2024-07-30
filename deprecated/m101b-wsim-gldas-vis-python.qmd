@@ -1,0 +1,234 @@
+---
+title: "Untitled"
+format: html
+jupyter: python3
+---
+## Read in WSIM-GLDAS
+
+```{python}
+import xarray as xr
+
+file_path = "composite_12mo.nc"
+wsim_gldas = xr.open_dataset(file_path, engine = 'h5netcdf')
+```
+
+## Temporal/Variable Subsetting
+```{python}
+import pandas as pd
+wsim_gldas
+
+keeps = pd.date_range(start="2000-12-01", end="2014-12-01", freq = "YS-DEC")
+keeps
+
+wsim_gldas = wsim_gldas.sel(time= keeps)
+wsim_gldas = wsim_gldas[["deficit", "crs"]]
+wsim_gldas
+```
+
+```{python}
+p = wsim_gldas.deficit.plot(x="lon", y="lat", col="time", col_wrap = 3, cmap = "Reds_r", aspect = 2)
+```
+
+## Read in geoBoundaries
+
+```{python}
+import requests
+import geopandas as gp
+
+usa = requests.get("https://www.geoboundaries.org/api/current/gbOpen/USA/ADM1/")
+
+usa = usa.json()
+usa['gjDownloadURL']
+usa = gp.read_file(usa['gjDownloadURL'])
+
+drops = ["Alaska", "Hawaii", "American Samoa", "Puerto Rico", "Commonwealth of the Northern Mariana Islands", "Guam", "United States Virgin Islands"]
+
+usa = usa[~usa.shapeName.isin(drops)]
+usa.boundary.plot()
+```
+
+```{python}
+import rioxarray as rio
+wsim_gldas = wsim_gldas.rio.write_crs("epsg: 4326")
+wsim_gldas = wsim_gldas.rio.clip(usa.geometry.values)
+```
+
+```{python fig.width="100%"}
+wsim_gldas.deficit.plot(x="lon", y="lat", col="time", col_wrap = 3, cmap = "Reds_r", aspect = 1.75, size =1.25)
+```
+
+## Extract the California Counties
+```{python}
+usa_counties = requests.get("https://www.geoboundaries.org/api/current/gbOpen/USA/ADM2/")
+
+usa_counties = usa_counties.json()
+usa_counties['gjDownloadURL']
+usa_counties = gp.read_file(usa_counties['gjDownloadURL'])
+
+california = usa[usa["shapeName"].str.contains("California")]
+california_counties = usa_counties.overlay(california, how='intersection')
+california_counties.plot()
+```
+
+## WSIM-GLDAS 1-Month Integration
+```{python}
+file_path = "composite_1mo.nc"
+wsim_gldas_1mo = xr.open_dataset(file_path, engine = 'h5netcdf')
+```
+
+## Temporal/Variable Subsetting
+```{python}
+keeps = pd.date_range(start="2014-01-01", end="2014-12-01", freq = "MS")
+
+wsim_gldas_1mo = wsim_gldas_1mo.sel(time= keeps)
+wsim_gldas_1mo = wsim_gldas_1mo[["deficit", "crs"]]
+wsim_gldas_1mo
+```
+
+```{python}
+wsim_gldas_1mo = wsim_gldas_1mo.rio.write_crs("epsg: 4326")
+wsim_gldas_1mo = wsim_gldas_1mo.rio.clip(california_counties.geometry.values)
+```
+
+```{python}
+wsim_gldas_1mo.deficit.plot(x="lon", y="lat", col="time", col_wrap = 3, cmap = "Reds_r", aspect = 1, size =2.5)
+```
+
+## Choropleths
+```{python}
+from exactextract import exact_extract
+import calendar
+
+cc_summaries = exact_extract(wsim_gldas_1mo.deficit, california_counties, "mean", output = 'pandas', include_cols = "shapeName_1", include_geom = True)
+
+col_names = [["county"], calendar.month_name[1:], ["geometry"]]
+col_names = sum(col_names, [])
+
+cc_summaries.columns = col_names
+
+cc_summaries.plot("January", cmap = "Reds_r")
+```
+
+
+## Re-Classify the WSIM-GLDAS Raster
+
+```{python}
+import numpy
+
+wsim_bins = [numpy.inf, 0, -3, -5, -10, -20, -40, -60, numpy.NINF]
+
+wsim_class = xr.apply_ufunc(
+    numpy.digitize,
+    wsim_gldas_1mo,
+    wsim_bins)
+
+# wsim_class.where(wsim_class['deficit'] == -9223372036854775808) = 7
+
+```
+
+# GPW
+
+```{python}
+file_path = "gpw_v4_population_count_rev11_2015_15_min.tif" 
+# Open with rioxarray
+gpw = rio.open_rasterio(file_path)
+```
+
+```{python}
+cal_wsim_gpw = exact_extract(
+    wsim_class.deficit, 
+    california_counties, 
+    ['coverage', 'values', 'weights'], 
+    output = 'pandas', 
+    include_geom = False, 
+    weights = gpw)
+```
+
+```{python}
+explode_cols = list(cal_wsim_gpw.columns)
+cal_wsim_gpw = cal_wsim_gpw.explode(explode_cols)
+```
+
+```{python}
+cal_wsim_cov = cal_wsim_gpw.filter(like = 'coverage', axis = 1)
+cal_wsim_cov.columns = calendar.month_name[1:]
+cal_wsim_cov= pd.melt(cal_wsim_cov, var_name='month', value_name= 'coverage')
+```
+
+```{python}
+cal_wsim_val = cal_wsim_gpw.filter(like = 'values', axis = 1)
+cal_wsim_val.columns = calendar.month_name[1:]
+cal_wsim_val= pd.melt(cal_wsim_val, var_name='month', value_name = 'wsim_class')
+```
+
+```{python}
+cal_wsim_weight = cal_wsim_gpw.filter(like = 'weight', axis = 1)
+cal_wsim_weight.columns = calendar.month_name[1:]
+cal_wsim_weight= pd.melt(cal_wsim_weight, var_name='month', value_name = 'cell_pop_count')
+```
+
+```{python}
+test = pd.concat(
+    [cal_wsim_cov, 
+    cal_wsim_val["wsim_class"],
+    cal_wsim_weight["cell_pop_count"]], 
+    axis=1)
+```
+
+```{python}
+test['wsim_class'].replace(-9223372036854775808, 7)
+```
+
+```{python}
+test["wsim_class_pop"] = test["coverage"]*test["cell_pop_count"]
+test.wsim_class_pop = test['wsim_class_pop'].astype('float').round(0)
+test = test.groupby(['month', 'wsim_class'])['wsim_class_pop'].sum().reset_index()
+test['month_pop'] = test.groupby(['month'])['wsim_class_pop'].transform('sum')
+test['wsim_class_frac'] = test['wsim_class_pop'] / test['month_pop']
+test
+```
+
+```{python}
+test['wsim_class'] = test['wsim_class'].astype('category')
+test['wsim_class'] = test['wsim_class'].cat.rename_categories(
+    {0: "0", 1: "-3", 2: "-5", 3: "-10", 4: "-20", 5: "-40", 6: "-50", 7: "-60"})
+
+```
+```{python}
+test["month"] = pd.Categorical(test["month"],
+                             categories=["January", "February", "March", "April", "May", "June", "July",
+                                         "August", "September", "October", "November", "December"],
+                             ordered=True)
+leg_colors=['#9B0039',
+    # -50 to -40
+    '#D44135',
+    # -40 to -20
+    '#FF8D43',
+    # -20 to -10
+    '#FFC754',
+    # -10 to -5
+    '#FFEDA3',
+    # -5 to -3
+    '#fffdc7',
+    # -3 to 0
+    '#FFF4C7',
+    # 0-3
+    "#FFFFFF"]
+```
+
+```{python}
+from plotnine import *
+
+(ggplot(test, aes('month', 'wsim_class_frac', fill = 'wsim_class', group='wsim_class'))+ 
+scale_fill_manual(values = leg_colors[::-1])+
+geom_bar(stat='identity', position='stack')+ 
+ labs(title = "Monthly Fraction of Population Under Water Deficits in California During 2014",
+                subtitle = "Categorized by Intensity of Deficit Return Period",
+                x = "",
+                y = "Fraction of Population*",
+                caption = "*Population derived from Gridded Population of the World (2015)",
+                fill = "Deficit Class")+
+theme_minimal()+
+theme(axis_text_x=element_text(rotation=25, hjust=1))
+)
+```

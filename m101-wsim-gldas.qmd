@@ -24,6 +24,12 @@ After completing this lesson, you should be able to:
 -   Integrate gridded population data with WSIM-GLDAS data to perform analyses and construct visualizations to understand how people are impacted.
 -   Summarize WSIM-GLDAS and population raster data using zonal statistics.
 
+::: {.callout-tip style="color: #5a7a2b;"}
+## Programming Review
+
+This is the R version of this lesson. If you would like to work through the Python version please visit [WSIM-GLDAS: Acquisition, Exploration, and Integration (Python)](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m101-wsim-gldas-python.html)
+:::
+
 ## Introduction
 
 The water cycle is the process of circulation of water on, above, and under the Earth's surface [@NOAA2019]. Human activities produce greenhouse gas emissions, land use changes, dam and reservoir development, and groundwater extraction have affected the natural water cycle in recent decades [@intergovernmentalpanelonclimatechange2023]. The influence of these human activities on the water cycle has consequential impacts on oceanic, groundwater, and land processes, influencing phenomena such as droughts and floods [@Zhou2016].
@@ -84,7 +90,6 @@ We'll start by downloading the file directly from the SEDAC website. The [datase
 
 ## Reading the Data
 
-::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Data Science Review
 
@@ -93,7 +98,6 @@ This lesson uses the [`stars`](https://r-spatial.github.io/stars/), [`terra`](ht
 The `stars` and `terra` packages are designed to work with large and complex raster spatial data while the `sf` package lets you handle and analyze vector spatial data (more on that later). The `cubelyr` package helps you create and analyze multidimensional data cubes, making it easier to explore complex datasets and discover patterns. The `lubridate` package makes it easy to work with dates and times in R, and `httr` provides methods for users to interact with online databases and websites to directly download data. `exactextractr` performs fast and efficient zonal statistics that summarizes raster and vector data. `data.table` makes standard data processing much easier, and lastly, `ggplot2` and `kableExtra` are used for creating plots, maps, and tables.
 
 Make sure they are installed before you begin working with the code in this document. If you'd like to learn more about the functions used in this lesson you can use the help guides on their package websites.
-:::
 :::
 
 Once you have downloaded the WSIM-GLDAS file to your local computer, install and load the R packages required for this exercise. You can do this by defining the list of packages and assigning them to the new variable called "packages_to_check". Next we loop (iterate) through each of the packages in the list to see if they are already installed. If they are we continue to the next item, and if they aren't then we go ahead and install them.
@@ -120,7 +124,7 @@ Reading the file with the *argument* `proxy = TRUE` allows you to inspect the ba
 wsim_gldas_anoms <- stars::read_stars("data/composite_12mo.nc", proxy = TRUE)
 ```
 
-Now we can use the *print* command to view basic information. The output tells us we have 5 attributes (deficit, deficit_cause, surplus, surplus_cause, both) and 3 dimensions. The first 2 dimensions are the spatial extents (x/y--longitude/latitude) and time is the 3rd dimension.
+Now we can use the `print()` command to view basic information. The output tells us we have 5 attributes (deficit, deficit_cause, surplus, surplus_cause, both) and 3 dimensions. The first 2 dimensions are the spatial extents (x/y--longitude/latitude) and time is the 3rd dimension.
 
 This means that the total number of individual raster layers in this NetCDF is 4020 (5 attributes x 804 time steps/months). Again, BIG data.
 
