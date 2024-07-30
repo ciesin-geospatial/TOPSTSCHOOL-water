@@ -70,13 +70,13 @@ The **Water Security (WSIM-GLDAS) Monthly Grids, v1 (1948 - 2014)** The Water Se
     d.  A period of rainfall above the average.
 :::
 
-## Acquiring the Data
-
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Data Science Review
 
 The **Water Security (WSIM-GLDAS) Monthly Grids dataset** used in this lesson is hosted by [NASA's Socioeconomic Data and Applications Center (SEDAC](https://sedac.ciesin.columbia.edu/)), one of several [Distributed Active Archive Centers (DAACs)](https://www.earthdata.nasa.gov/eosdis/daacs). SEDAC hosts a variety of data products including geospatial population data, human settlements and infrastructure, exposure and vulnerability to climate change, and satellite-based land use, air, and water quality data. In order to download data hosted by SEDAC, you are required to have a free NASA EarthData account. You can create an account here: [NASA EarthData](https://urs.earthdata.nasa.gov/users/new).
 :::
+
+## Acquiring the Data
 
 For this lesson, we will work with the **WSIM-GLDAS dataset Composite Anomaly Twelve-Month Return Period NetCDF** file. This contains water deficit, surplus, and combined "Composite Anomaly" variables with an integration period of 12 months. Integration period represents the time period at which the anomaly values are averaged over. The 12-month integration averages water deficits (droughts), surpluses (floods), and combined (presence of droughts and floods) over a 12-month period ending with the month specified. We begin with the 12-month aggregation because this is a snapshot of anomalies for the entire year making it useful to get an understanding of a whole year; once we identify time periods of interest in the data, we can take a closer look using the 3-month or 1-month integration periods.
 
@@ -93,9 +93,9 @@ We'll start by downloading the file directly from the SEDAC website. The [datase
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Data Science Review
 
-This lesson uses the [`xarray`](https://docs.xarray.dev/en/stable/), [`rioxarray`](https://corteva.github.io/rioxarray/html/index.html), [`rasterio`](https://rasterio.readthedocs.io/en/stable/), [`pandas`](https://pandas.pydata.org/), [`geopandas`](https://geopandas.org/en/stable/),[`exactextractr`](https://isciences.gitlab.io/exactextractr/), [`numpy`](https://numpy.org/), [`calendar`](https://docs.python.org/3/library/calendar.html), [`requests`](https://pypi.org/project/requests/), and [plotnine](https://plotnine.org/) packages. If you'd like to learn more about the functions used in this lesson you can use the help guides on their package websites.\n
+This lesson uses the [**xarray**](https://docs.xarray.dev/en/stable/), [**rioxarray**](https://corteva.github.io/rioxarray/html/index.html), [**rasterio**](https://rasterio.readthedocs.io/en/stable/), [**pandas**](https://pandas.pydata.org/), [**geopandas**](https://geopandas.org/en/stable/),[**exactextractr**](https://isciences.gitlab.io/exactextractr/), [**numpy**](https://numpy.org/), [**calendar**](https://docs.python.org/3/library/calendar.html), [**requests**](https://pypi.org/project/requests/), and [**plotnine**](https://plotnine.org/) packages. If you'd like to learn more about the functions used in this lesson you can use the help guides on their package websites.\n
 
-The `xarray`, `rioxarray`, and `rasterio` packages are designed to work with large and complex raster spatial data while the `geopandas` package lets you handle and analyze vector spatial data (more on that later). `requests` provides methods for users to interact with online databases and websites to directly download data. `exactextractr` performs fast and efficient zonal statistics that summarizes raster and vector data. `calendar` assists with manipulating dates. `pandas` and `numpy` makes standard data processing much easier, and lastly,`plotnine` is used for creating standard plots and figures.\n
+The **xarray**, **rioxarray**, and **rasterio** packages are designed to work with large and complex raster spatial data while the **geopandas** package lets you handle and analyze vector spatial data (more on that later). **requests** provides methods for users to interact with online databases and websites to directly download data. **exactextractr** performs fast and efficient zonal statistics that summarizes raster and vector data. **calendar** assists with manipulating dates. **pandas** and **numpy** makes standard data processing much easier, and lastly, **plotnine** is used for creating standard plots and figures.\n
 
 Make sure they are installed before you begin working with the code in this document. If you'd like to learn more about the functions used in this lesson you can use the help guides on their package websites.
 :::
@@ -132,7 +132,7 @@ Checking again we see that we're down to 2 data variables (deficit and crs).
 
 ## Time Selection
 
-Specifying a temporal range of interest will make the file size smaller and even more manageable. We'll select every year for the range 2000-2014. This can be accomplished by generating a sequence for every year between December 2000 and December 2014 with `pandas`, and then passing that list of dates using the function `.sel()`. Remember, we're using the 12-month integration of WSIM-GLDAS. This means that each time step listed averages the deficit over the 12 prior months. Therefore, if we only select a sequence of December months spanning 2000-2014, each resulting layer will represent the average deficit for that year.
+Specifying a temporal range of interest will make the file size smaller and even more manageable. We'll select every year for the range 2000-2014. This can be accomplished by generating a sequence for every year between December 2000 and December 2014 with **pandas**, and then passing that list of dates using the function `.sel()`. Remember, we're using the 12-month integration of WSIM-GLDAS. This means that each time step listed averages the deficit over the 12 prior months. Therefore, if we only select a sequence of December months spanning 2000-2014, each resulting layer will represent the average deficit for that year.
 
 ```{python}
 # generate a list of dates for subsetting
@@ -456,7 +456,7 @@ The [exactextractr](https://github.com/isciences/exactextractr) [@Baston2023] R 
 :::
 :::
 
-We will perform our zonal statistics using the `exactextractr` package [@Baston2023]. It is the fastest, most accurate, and most flexible zonal statistics tool for the R programming language.
+We will perform our zonal statistics using the **exactextractr** package [@Baston2023]. It is the fastest, most accurate, and most flexible zonal statistics tool for the R programming language.
 
 Now let's carry out the extraction and check the January output.
 
@@ -471,7 +471,7 @@ col_names = sum(col_names, [])
 cc_summaries.columns = col_names
 ```
 
-`exactextractr` returns summary statistics in the same order of the input boundary file, therefore we can join the California county names to the **exactextract** summary statistics output for visualization. We can take a quick look at the first 10 counties to see their mean deficit return period for January-June.
+**exactextractr** returns summary statistics in the same order of the input boundary file, therefore we can join the California county names to the **exactextract** summary statistics output for visualization. We can take a quick look at the first 10 counties to see their mean deficit return period for January-June.
 
 ```{python}
 cc_summaries[0:10]
@@ -600,7 +600,7 @@ cal_wsim_gpw[:10]
 
 Now we have a single row for each unique WSIM-GLDAS/California County combination. The original row indices corresponding to the order of the counties in the `california_county` layer are replicated for the number of cells the county overlapped. In the first 10 rows we see that the first county (`0`) overlapped 9 WSIM-GLDAS cells (there are 9 rows with a 0 index).
 
-We will need to perform a few more processing steps to prepare this `DataFrame` for a time series visualization integrating all of the data. First we'll replace the band prefixes with calendar months names. Then, we will use the `pd.melt` function to transform the data from wide format to long format in order to produce a visualization in `plotnine`.
+We will need to perform a few more processing steps to prepare this `DataFrame` for a time series visualization integrating all of the data. First we'll replace the band prefixes with calendar months names. Then, we will use the `pd.melt` function to transform the data from wide format to long format in order to produce a visualization in **plotnine**.
 
 There's not a simple way to perform pattern based melts in **pandas** so we'll perform these operations on each of the 3 operations (`['coverage', 'values', 'weights']`) separately and then bind them back together.
 
