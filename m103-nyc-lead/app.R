@@ -8,15 +8,13 @@ link_web <- tags$a(shiny::icon("globe"), href = "https://ciesin-geospatial.githu
 link_git <- tags$a(shiny::icon("github"), href = "https://github.com/ciesin-geospatial/TOPSTSCHOOL/", target = "_blank")
 link_youtube <- tags$a(shiny::icon("youtube"), href = "https://www.youtube.com/channel/UCOIrczFd7_ht2bNUQ3qnM8w", target = "_blank")
 
-link_home <- tags$a("Home",
-                    href = "https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/",
-                    target = "_blank")
+
 
 link_wsim_acqu <- tags$a("WSIM Data Acquisition and Processing",
                          href = "https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m101-wsim-gldas.html",
                          target = "_blank")
 link_modis_nrt <- tags$a("MODIS NRT Flood Data Acquisition Exploration",
-                         href = "https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m102-lance-modis-nrt-global-flood-mcdwd-f3.html",
+                         href = "https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m102-lance-modis-nrt-global-flood.html",
                          target = "_blank")
 link_nyc_lead <- tags$a("Interactive NYC School Lead Data Explorer",
                         href = "https://topstschool.shinyapps.io/nyc-lead/",
@@ -38,8 +36,7 @@ ui <-
       nyc_ui,
       position = "fixed-top",
       collapsible = TRUE,
-      title = "TOPS-SCHOOL Water Module: ",
-      bslib::nav_item(link_home),
+      title = HTML('<a href="https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/" style="color: white;">SCHOOL Water Module</a>'),
       bslib::nav_menu(
         title = "Lessons",
         bslib::nav_item(link_wsim_acqu),
