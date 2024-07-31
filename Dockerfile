@@ -1,3 +1,3 @@
-FROM quay.io/isciences/tops-school-py:latest
+FROM quay.io/isciences/tops-school:latest
 
 RUN pip install nbgitpuller
