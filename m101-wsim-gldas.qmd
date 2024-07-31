@@ -26,7 +26,7 @@ After completing this lesson, you should be able to:
 
 ## Introduction
 
-The water cycle is the process of circulation of water on, above, and under the Earth's surface [@NOAA2019]. Human activities produce greenhouse gas emissions, land use changes, dam and reservoir development, and groundwater extraction have affected the natural water cycle in recent decades [@intergovernmentalpanelonclimatechange2023]. The influence of these human activities on the water cycle has consequential impacts on oceanic, groundwater, and land processes, influencing phenomena such as droughts and floods [@Zhou2016].
+The water cycle is the process of circulation of water on, above, and under the Earth's surface [@NOAA2019]. Human activities produce greenhouse gas emissions, land use changes, dam and reservoir development, and groundwater extraction have affected the natural water cycle in recent decades [@intergovernmentalpanelonclimatechange2023; @rost2008; @peters-lidard2021]. The influence of these human activities on the water cycle has consequential impacts on oceanic, groundwater, and land processes, influencing phenomena such as droughts and floods [@Zhou2016; @goodell2017]. For more information on causes of climate change, see the EPA's Climate Change Science website on [Causes of Climate Change](https://www.epa.gov/climatechange-science/causes-climate-change).
 
 Precipitation deficits, or periods of below-average rainfall, can lead to drought, characterized by prolonged periods of little to no rainfall and resulting water shortages. Droughts often trigger environmental stresses and can create cycles of reinforcement impacting ecosystems and people [@Rodgers2023]. For example, California frequently experiences drought but the combination of prolonged dry spells and sustained high temperatures prevented the replenishment of cool fresh water to the Klamath River, which led to severe water shortages in 2003 and again from 2012 to 2014. These shortages affect agricultural areas like the Central Valley, which grows almonds, one of California's most important crops, with the state producing 80% of the world's almonds. These severe droughts, coupled with competition for limited freshwater resources, resulted in declining populations of [Chinook salmon](https://www.fisheries.noaa.gov/species/chinook-salmon) due to heat stress and gill rot disease disrupting the food supply for Klamath basin tribal groups [@guillen2002; @Bland2014].
 
@@ -111,13 +111,22 @@ install.packages('ggplot2')
 install.packages('kableExtra')
 ```
 
-Once you've completed the download and placed the `composite_12mo.nc` file into your working directory and read the file with the `stars::read_stars()` function.
+If you were working on a local system you would use the SEDAC website to download the files, but that is not feasible in a live cloud workshop. Once you've completed the download and placed the `composite_12mo.nc` file into your working directory and read the file with the `stars::read_stars()` function.
 
-Reading the file with the *argument* `proxy = TRUE` allows you to inspect the basic elements of the file without reading the whole file into memory. Multidimensional raster datasets can be extremely large and bring your computing environment to a halt if you have memory limitations.
+For a virtual environment using AWS, we will connect to our TOPS-SCHOOL cloud storage "bucket" to download the WSIM-GLDAS file. Reading the file with the *argument* `proxy = TRUE` allows you to inspect the basic elements of the file without reading the whole file into memory. Multidimensional raster datasets can be extremely large and bring your computing environment to a halt if you have memory limitations.
 
 ```{r}
+
+## For 2i2c virtual environment and AWS
+# # read in the 12 month integration WSIM-GLDAS file in our s3 bucket
+wsim_gldas <- stars::read_stars("/vsicurl/https://s3-us-west-2.amazonaws.com/tops-school/water-module/composite_12mo.nc", proxy = TRUE)
+
+## For local data and analysis
 # read in the 12 month integration WSIM-GLDAS file with stars
-wsim_gldas_anoms <- stars::read_stars("data/composite_12mo.nc", proxy = TRUE)
+# wsim_gldas_anoms <- stars::read_stars("data/composite_12mo.nc", proxy = TRUE)
+
+print(wsim_gldas)
+
 ```
 
 Now we can use the *print* command to view basic information. The output tells us we have 5 attributes (deficit, deficit_cause, surplus, surplus_cause, both) and 3 dimensions. The first 2 dimensions are the spatial extents (x/y--longitude/latitude) and time is the 3rd dimension.
@@ -126,7 +135,7 @@ This means that the total number of individual raster layers in this NetCDF is 4
 
 ```{r}
 # check the basic info
-print(wsim_gldas_anoms)
+print(wsim_gldas)
 ```
 
 ## Attribute Selection
@@ -135,7 +144,12 @@ We can manage this large file by selecting a single variable; in this case "defi
 
 ```{r}
 # read in just the deficit layer using proxy = false
-wsim_gldas_anoms <- stars::read_stars("data/composite_12mo.nc", sub = 'deficit', proxy = FALSE)
+
+#AWS
+wsim_gldas <- stars::read_stars("/vsicurl/https://s3-us-west-2.amazonaws.com/tops-school/water-module/composite_1mo.nc", proxy = FALSE, sub = 'deficit')
+
+#Local Files
+# wsim_gldas <- stars::read_stars("data/composite_12mo.nc", sub = 'deficit', proxy = FALSE)
 ```
 
 ## Time Selection
@@ -421,7 +435,7 @@ This visualization shows that there were several significant drought events (as 
 ::: callout-note
 ## Knowledge Check
 
-7. The output maps of Annual Mean Deficit Anomalies for the CONUSA indicate that...
+7.  The output maps of Annual Mean Deficit Anomalies for the CONUSA indicate that...
     a.  The most significant deficit in 2004 is located in the western United States.
     b.  The least significant deficit 2003 is located in the Midwest.
     c.  The most significant deficit in 2011 is located around Texas and neighboring states.
@@ -536,6 +550,7 @@ ggplot2::ggplot(california)+
 This series of maps shows a startling picture. California faced massive water deficits throughout the state in January and February. This was followed by water deficits in the western half of the state in May-August. Although northern and eastern California saw some relief by September, southwest California continued to see deficits through December.
 
 ## Monthly Histograms
+
 ::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Data Science Review
@@ -567,13 +582,14 @@ ggplot2::ggplot(deficit_hist, ggplot2::aes(deficit))+
 
 The histograms start to quantify what we saw in the time series maps. Whereas the map shows where the deficits occur, the frequency distribution indicates the number of raster cells for each return period of the deficit range. The number of raster cells under a 60-year deficit (return period) is very high in most months, far exceeding any other value in the range.
 
-::: callout-note 
-## Knowledge Check 
-8. What's another term for 'histogram'? 
-    a. Choropleth 
-    b. Frequency Distribution 
-    c. Data array 
-    d. Box plot 
+::: callout-note
+## Knowledge Check
+
+8.  What's another term for 'histogram'?
+    a.  Choropleth
+    b.  Frequency Distribution
+    c.  Data array
+    d.  Box plot
 :::
 
 ## Zonal Summaries
@@ -685,6 +701,7 @@ This confirms the widespread distribution of high deficit values (all the bright
 
 ::: callout-note
 ## Knowledge Check
+
 9.  What can zonal statistics be used for?
     a.  Subsetting data to a time period of interest.
     b.  Creating a time series.
@@ -728,6 +745,7 @@ While this paints a striking picture of widespread water deficits, how many peop
 
 ::: callout-note
 ## Knowledge Check
+
 10. Choropleth maps, aka thematic maps, are useful for
     a.  Visualizing data in familiar geographies like counties or states
     b.  Finding directions from one place to another
@@ -947,11 +965,11 @@ This figure really illustrates the human impact of the 2014 drought. Nearly 100%
     b.  Analyzing a certain time or area of interest.
     c.  Making code run faster.
     d.  All of the above.
-4. Gridded population datasets…(select all that apply) 
-    a. Show where river tributaries are.
-    b. Model the distribution of the global human population in raster grid cells.
-    c. Allow analyses of the number of persons impacted by a hazard such as drought.
-    d. Vary in the extent to which ancillary data are used in their production.
+4.  Gridded population datasets…(select all that apply)
+    a.  Show where river tributaries are.
+    b.  Model the distribution of the global human population in raster grid cells.
+    c.  Allow analyses of the number of persons impacted by a hazard such as drought.
+    d.  Vary in the extent to which ancillary data are used in their production.
 :::
 
 ## In this Lesson, You Learned...
@@ -963,7 +981,7 @@ Congratulations! Now you should be able to:
 -   Temporally subset a NetCDF raster stack using R packages such as dplyr and lubridate.
 -   Crop a NetCDF raster stack with a spatial boundary.
 -   Write a subsetted dataset to disk and create an image to share results.
--   Identify areas of severe  drought and select these areas for further analysis.
+-   Identify areas of severe drought and select these areas for further analysis.
 -   Summarize data by county using the exactextractr tool.
 -   Integrate WSIM-GLDAS deficit, GPW population, and geoBoundaries administrative boundary data to create complex time series visualizations.
 
@@ -971,4 +989,4 @@ Congratulations! Now you should be able to:
 
 In this lesson we explored the California drought of 2014. In our next lesson, we will examine near real-time flood data in California using the MODIS data product.
 
-[Lesson 2: Moderate Resolution Imaging Spectroradiometer (MODIS) Near-Real Time (NRT) flood data](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m102-lance-modis-nrt-global-flood.html){.btn .btn-primary .btn role="button"} 
+[Lesson 2: Moderate Resolution Imaging Spectroradiometer (MODIS) Near-Real Time (NRT) flood data](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m102-lance-modis-nrt-global-flood.html){.btn .btn-primary .btn role="button"}
