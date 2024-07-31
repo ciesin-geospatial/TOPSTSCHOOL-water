@@ -1217,7 +1217,7 @@ Utilice la función `read_stars()` de la biblioteca R `stars` para leer el rást
 #read the raster data from the download_link
 raster_df <- stars::read_stars(contenido_respuesta)
 #Set a CRS for the stars object based on the data documentation
-sf::st_crs(raster_df) <- st_crs(4326)
+sf::st_crs(raster_df) <- sf::st_crs(4326)
 ```
 
 ### Visualización de datos de inundaciones NRT
@@ -1254,7 +1254,7 @@ Para ver los datos de esta clasificación, necesitaremos crear una leyenda clasi
 #quiebramentos para la categorización del diagrama de tabla
 quiebramentos<- c( 0, 1, 2, 3, Inf)
 #colores para las pausas argumentales
-colores <- c( "gray", "blue", "yellow", "red")
+colores <- c( rgb(0, 0, 0, alpha = 0), "blue", "yellow", "red")
 #etiquetas para las quiebras argumentales
 etiquetas = c("0: Sin agua", "1: Agua superficial", "2: Inundación recurrente", "3: Inundación (inusual)")
 titulo = paste("Inundación casi en tiempo real F3", dia, codigo_azulejo)
@@ -1269,9 +1269,9 @@ La función `basemap_stars()` del paquete `stars` nos permite acceder a las capa
 #definir mapa base usando el ráster como cuadro delimitador
 bm_m <- basemaps::basemap_stars(raster_df, map_service = "esri", map_type = "world_imagery")
 #La función `st_rgb` nos permite convertir el elemento de estrellas RGB en una sola imagen
-bm_m <- st_rgb(bm_m)
+bm_m <- sf::st_rgb(bm_m)
 #transformar el CRS del mapa base para que coincida con el ráster de inundación
-bm_m <- st_transform(bm_m, 4326)
+bm_m <- sf::st_transform(bm_m, 4326)
 ```
 
 ### Trazar mapa base y datos de inundaciones NRT
@@ -1280,30 +1280,30 @@ Genere un gráfico desde la biblioteca tmap usando la función `tm_shape()`. Tra
 
 ```{r}
 ## modo tmap configurado en "trazar"
-tmap_mode("plot")
+tmap::tmap_mode("plot")
 
 ## el modo tmap también se puede configurar en "ver"
-#tmap_mode("view")
+#tmap::tmap_mode("view")
 
 #crear un objeto que trace el mapa base y el ráster de inundación NRT
 #con la biblioteca tmap, llame a la función tm_shape() para el mapa base
-tm_plot <-  tmap_options(max.raster = c(plot = 50000, view = 50000))+
-  tm_shape(bm_m)+
+tm_plot <-  tmap::tmap_options(max.raster = c(plot = 50000, view = 50000))+
+  tmap::tm_shape(bm_m)+
   #el mapa base bm_m se trata como un ráster
-  tm_raster()+
+  tmap::tm_raster()+
   #cree una nueva forma de tmap para el ráster de inundación NRT con un estilo como "cat", que significa categórico.
-  tm_shape(raster_df, style="cat")+
+  tmap::tm_shape(raster_df, style="cat")+
   #agregar el estilo de clasificación al ráster, incluidos colores, títulos, saltos de clase y etiquetas
-  tm_raster( palette = c(colores),
+  tmap::tm_raster( palette = c(colores),
   title = titulo, 
   breaks = quiebramentos,
   labels = etiquetas )+
   #estilizar la trama
-  tm_layout(legend.outside = TRUE) +
-  tm_graticules(lines=FALSE)
+  tmap::tm_layout(legend.outside = TRUE) +
+  tmap::tm_graticules(lines=FALSE)
  
  ##ver la trama
- tm_plot
+ tmap::tm_plot
 ```
 
 Para observar una ubicación más de cerca, podemos crear un nuevo cuadro delimitador usando valores de latitud y longitud, recortar los datos y volver a trazarlos en un mapa. Primero, seleccione del mapa cuatro esquinas en grados que incluyan información Norte/Sur y Este/Oeste. Usamos estas coordenadas para crear una matriz de puntos que representan cuatro esquinas; Luego, las cuatro esquinas se utilizan para crear un cuadro delimitador. Las esquinas se colocan primero en el GCS WGS84 para que coincidan con nuestro ráster.
@@ -1316,7 +1316,7 @@ oeste <- -71 #se utilizan números negativos para Oeste
 este <- -76 #se utilizan números negativos para Oeste
 
 # Crea un cuadro delimitador
-bbox_subset <- st_bbox(c(xmin = oeste, ymin = sur, xmax = este, ymax = norte), crs = 4326)
+bbox_subset <- sf::st_bbox(c(xmin = oeste, ymin = sur, xmax = este, ymax = norte), crs = 4326)
 
 ```
 
@@ -1335,26 +1335,26 @@ bm_m <- sf::st_transform(bm_m, 4326)
 ```{r} 
 
 ## modo tmap configurado en "trazar"
-tmap_mode("plot")
+tmap::tmap_mode("plot")
 
 ## el modo tmap también se puede configurar en "ver"
-#tmap_mode("view")
+tmap::#tmap_mode("view")
 
 #crear un objeto que trace el mapa base y el ráster de inundación NRT
 #con la biblioteca tmap, llame a la función tm_shape() para el mapa base
-tm_plot <- tmap_options(max.raster = c(plot = 50000, view = 50000))+ 
-  tm_shape(bm_m, raster.downsample=TRUE)+ 
-  tm_raster()+ 
+tm_plot <- tmap::tmap_options(max.raster = c(plot = 50000, view = 50000))+ 
+  tmap::tm_shape(bm_m, raster.downsample=TRUE)+ 
+  tmap::tm_raster()+ 
   #cree una nueva forma de tmap para el ráster de inundación NRT con el estilo "gato", que significa categórico.
-  tm_shape(raster_df, style="cat", raster.downsample=TRUE)+ 
+  tmap::tm_shape(raster_df, style="cat", raster.downsample=TRUE)+ 
   #agregar el estilo de clasificación al ráster 
-  tm_raster( palette = c(colores), title = titulo, breaks = quiebramentos, labels = etiquetas )+ 
+  tmap::tm_raster( palette = c(colores), title = titulo, breaks = quiebramentos, labels = etiquetas )+ 
   #estilizar la trama
-  tm_layout(legend.outside = TRUE) + 
-  tm_graticules(lines=FALSE)
+  tmap::tm_layout(legend.outside = TRUE) + 
+  tmap::tm_graticules(lines=FALSE)
 
 #Ver la trama:
-tm_plot
+tmap::tm_plot
 
 ```
 
