@@ -1,0 +1,1370 @@
+---
+title: "WSIM-GLDAS: Acquisition, Exploration, and Integration"
+author: 
+  - "Josh Brinks"
+  - "Elaine Famutimi"
+date: "Julio 30, 2024"
+bibliography: "references/wsim-gldas-references.bib"
+---
+
+## Descripción General
+
+En esta lección, adquirirás el conjunto de datos llamado **Modelo de Indicadores de Seguridad Hídrica - Sistema Global de Asimilación de Datos Territoriales (WSIM-GLDAS)** desde el sitio web del [NASA Socioeconomic Data and Applications Center (SEDAC)](https://sedac.ciesin.columbia.edu/), realizarás varias tareas de preprocesamiento y explorarás el conjunto de datos con visualizaciones avanzadas. También integraremos WSIM-GLDAS con un conjunto de datos de límites administrativos globales llamado [geoBoundaries](https://www.geoboundaries.org/api.html) y un conjunto de datos de población llamado [Gridded Population of the World](https://sedac.ciesin.columbia.edu/data/collection/gpw-v4). Aprenderás cómo realizar numerosas manipulaciones de datos y visualizaciones a lo largo de esta lección.
+
+## Objetivos de Aprendizaje
+
+Después de completar esta lección, deberías ser capaz de:
+
+-   Recuperar datos de WSIM-GLDAS desde SEDAC.
+-   Recuperar límites administrativos utilizando la API de geoBoundaries.
+-   Subconjuntar datos de WSIM-GLDAS para una región y período de interés.
+-   Visualizar datos geoespaciales para resaltar patrones de déficit de precipitación.
+-   Escribir un archivo preprocesado en formato NetCDF al disco.
+-   Realizar exploración visual con histogramas, coropletas y mapas de series temporales.
+-   Integrar datos de población enrejada con datos de WSIM-GLDAS para realizar análisis y construir visualizaciones para entender cómo las personas son impactadas.
+-   Resumir datos raster de WSIM-GLDAS y población utilizando estadísticas zonales.
+
+## Introducción
+
+El ciclo del agua es el proceso de circulación del agua en, sobre y bajo la superficie de la Tierra [@NOAA2019]. Las actividades humanas producen emisiones de gases de efecto invernadero, cambios en el uso del suelo, desarrollo de presas y embalses, y extracción de aguas subterráneas que han afectado el ciclo natural del agua en las últimas décadas [@intergovernmentalpanelonclimatechange2023]. La influencia de estas actividades humanas en el ciclo del agua tiene impactos consecuentes en los procesos oceánicos, de aguas subterráneas y terrestres, influyendo en fenómenos como sequías e inundaciones [@Zhou2016].
+
+Los déficits de precipitación, o períodos de lluvia por debajo del promedio, pueden llevar a la sequía, caracterizada por períodos prolongados de poca o ninguna lluvia y escasez de agua resultante. Las sequías a menudo desencadenan estrés ambiental y pueden crear ciclos de refuerzo que impactan ecosistemas y personas [@Rodgers2023]. Por ejemplo, California frecuentemente experimenta sequías, pero la combinación de períodos secos prolongados y temperaturas sostenidas altas impidió el reabastecimiento de agua fresca y fría al río Klamath, lo que llevó a graves escaseces de agua en 2003 y nuevamente entre 2012 y 2014. Estas escaseces afectan áreas agrícolas como el Valle Central, que cultiva almendras, uno de los cultivos más importantes de California, con el estado produciendo el 80% de las almendras del mundo. Estas sequías severas, junto con la competencia por recursos limitados de agua dulce, resultaron en poblaciones decrecientes de [salmón Chinook](https://www.fisheries.noaa.gov/species/chinook-salmon) debido al estrés térmico y la enfermedad de putrefacción de las branquias, lo que interrumpió el suministro de alimentos para los grupos tribales de la cuenca de Klamath [@guillen2002; @Bland2014].
+
+![Ciclo del Agua](docs/images/watercycle_rc.jpg){width="2690"}[^1]
+
+[^1]: Crédito de la foto, NASA/JPL.
+
+::: column-margin
+::: {.callout-tip style="color: #5a7a2b;"}
+## Revisión de Ciencia de Datos
+
+Un [raster](https://docs.qgis.org/2.18/en/docs/gentle_gis_introduction/raster_data.html) es un tipo de datos geográficos en formato de imagen digital con información numérica almacenada en cada píxel. (Los rasteres a menudo se llaman cuadrículas debido a su estructura de datos matricial regularmente formada). Los rasteres pueden almacenar muchos tipos de información y pueden tener dimensiones que incluyen latitud, longitud y tiempo. NetCDF es un formato para datos raster; otros incluyen Geotiff, ASCII y muchos más. Varios formatos raster como NetCDF pueden almacenar múltiples capas raster, o una "pila raster", lo cual puede ser útil para almacenar y analizar una serie de rasteres.
+:::
+:::
+
+El conjunto de datos **Water Security (WSIM-GLDAS) Monthly Grids, v1 (1948 - 2014)** "identifica y caracteriza los excedentes y déficits de agua dulce, y los parámetros que determinan estas anomalías, en intervalos mensuales durante el período de enero de 1948 a diciembre de 2014" [@isciences2022]. El conjunto de datos puede descargarse desde el sitio web de [NASA SEDAC](https://sedac.ciesin.columbia.edu/data/set/water-wsim-gldas-v1). Las descargas de datos de WSIM-GLDAS están organizadas por una combinación de variables temáticas (excedente/déficit compuesto, temperatura, PETmE, escorrentía, humedad del suelo, precipitación) y períodos de integración (una agregación temporal) (1, 3, 6, 12 meses). Cada combinación de variable-integración consta de un archivo raster NetCDF (.nc) (con una dimensión de tiempo que contiene una capa raster para cada uno de los 804 meses entre enero de 1948 y diciembre de 2014. Algunas variables también contienen múltiples atributos, cada uno con su propia serie temporal. Por lo tanto, este es un archivo grande que puede tardar mucho tiempo en descargarse y puede causar problemas de memoria en ciertos sistemas. Esto se considera data GRANDE.
+
+::: callout-note
+## Revisión de Conocimientos
+
+1.  ¿Cómo describirías mejor el ciclo del agua?
+    a.  Un período prolongado de poca o ninguna lluvia.
+    b.  Baja precipitación combinada con temperaturas récord.
+    c.  La circulación del agua en y sobre la superficie de la Tierra.
+    d.  Un ciclo que ocurre debido a la sequía.
+2.  ¿Qué intervenciones humanas afectan el ciclo del agua (selecciona todas las que apliquen)?
+    a.  Emisiones de gases de efecto invernadero.
+    b.  Cambios en el uso del suelo.
+    c.  Desarrollo de presas y embalses.
+    d.  Sobreexplotación de aguas subterráneas.
+3.  ¿Qué es un déficit de precipitación?
+    a.  Un período de precipitación por debajo del promedio.
+    b.  Un período prolongado de poca o ninguna lluvia.
+    c.  Un período de reacciones en cadena.
+    d.  Un período de precipitación por encima del promedio.
+:::
+
+## Adquisición de los Datos
+
+::: {.callout-tip style="color: #5a7a2b;"}
+## Revisión de Ciencia de Datos
+
+El conjunto de datos **Water Security (WSIM-GLDAS) Monthly Grids** utilizado en esta lección está alojado por el [Centro de Datos y Aplicaciones Socioeconómicas de la NASA (SEDAC)](https://sedac.ciesin.columbia.edu/), uno de los varios [Centros de Archivo Activo Distribuidos (DAACs)](https://www.earthdata.nasa.gov/eosdis/daacs). SEDAC alberga una variedad de productos de datos que incluyen datos de población geoespacial, asentamientos humanos e infraestructura, exposición y vulnerabilidad al cambio climático, y datos de calidad del aire, agua y uso del suelo basados en satélites. Para descargar datos alojados por SEDAC, se requiere tener una cuenta gratuita de NASA EarthData. Puedes crear una cuenta aquí: [NASA EarthData](https://urs.earthdata.nasa.gov/users/new).
+:::
+
+Para esta lección, trabajaremos con el archivo NetCDF **WSIM-GLDAS dataset Composite Anomaly Twelve-Month Return Period**. Este contiene variables de agua, excedente y "anomalía compuesta" combinada con un período de integración de 12 meses. El período de integración representa el tiempo durante el cual se promedian los valores de anomalía. La integración de 12 meses promedia **déficits de agua (sequías), excedentes (inundaciones) y combinados (presencia de sequías e inundaciones)** durante un período de 12 meses que finaliza con el mes especificado. Comenzamos con la agregación de 12 meses porque es una instantánea de anomalías para todo el año, lo que la hace útil para obtener una comprensión de un año completo; una vez que identificamos períodos de tiempo de interés en los datos, podemos examinar más de cerca utilizando los períodos de integración de 3 meses o 1 mes.
+
+Cuando trabajas en tu sistema local puedes descargar directamente WSIM-GLDAS desde el sitio web de SEDAC, sin embargo, estamos trabajando en la nube, por lo que nos conectaremos al cubo de datos TOPS-SCHOOL S3. La [documentación del conjunto de datos](https://sedac.ciesin.columbia.edu/downloads/docs/water/water-wsim-gldas-v1-documentation.pdf) describe las variables compuestas como características clave de WSIM-GLDAS que combinan "los períodos de retorno de múltiples parámetros de agua en índices compuestos de excedentes y déficits de agua en general [@isciences2022a]". Los archivos de anomalía compuesta presentan los datos en términos de la frecuencia con la que ocurren; o un "período de retorno". Por ejemplo, un período de retorno de déficit de 25 significa una sequía tan severa que solo esperaríamos que ocurra una vez cada 25 años. Por favor, procede a descargar el archivo.
+
+## Lectura de los Datos
+
+::: column-margin
+::: {.callout-tip style="color: #5a7a2b;"}
+## Revisión de Ciencia de Datos
+
+Esta lección utiliza los paquetes [`stars`](https://r-spatial.github.io/stars/), [`terra`](https://rspatial.org/pkg/), [`sf`](https://r-spatial.github.io/sf/), [`lubridate`](https://lubridate.tidyverse.org/), [`httr`](https://httr.r-lib.org/), [cubelyr](https://cran.r-project.org/web/packages/cubelyr/index.html), [`exactextractr`](https://isciences.gitlab.io/exactextractr/), [`ggplot2`](https://ggplot2.tidyverse.org/), [`data.table`](https://rdatatable.gitlab.io/data.table/), y [kableExtra](https://cran.r-project.org/web/packages/kableExtra/index.html). Si deseas aprender más sobre las funciones utilizadas en esta lección, puedes utilizar las guías de ayuda en los sitios web de sus paquetes.
+
+Los paquetes `stars` y `terra` están diseñados para trabajar con datos espaciales raster grandes y complejos, mientras que el paquete `sf` te permite manejar y analizar datos espaciales vectoriales (más sobre esto más adelante). El paquete `cubelyr` te ayuda a crear y analizar cubos de datos multidimensionales, lo que facilita explorar conjuntos de datos complejos y descubrir patrones. El paquete `lubridate` facilita trabajar con fechas y horas en R, y `httr` proporciona métodos para que los usuarios interactúen con bases de datos y sitios web en línea para descargar datos directamente. `exactextractr` realiza estadísticas zonales rápidas y eficientes que resumen datos raster y vectoriales. `data.table` facilita el procesamiento estándar de datos, y finalmente, `ggplot2` y `kableExtra` se utilizan para crear gráficos, mapas y tablas.
+
+Asegúrate de que estén instalados antes de comenzar a trabajar con el código en este documento. Si deseas aprender más sobre las funciones utilizadas en esta lección, puedes utilizar las guías de ayuda en los sitios web de sus paquetes.
+:::
+:::
+
+A continuación, instala y carga los paquetes de R necesarios para este ejercicio. Los paquetes que estamos utilizando hoy se enumeran a continuación, pero estamos utilizando la imagen Docker de TOPS-SCHOOL para nuestro análisis, por lo que el entorno en la nube que estamos utilizando hoy ya está configurado con todo lo que necesitamos.
+
+```{r eval=FALSE}
+
+packages_to_check <- c("stars", "terra", "sf", "cubelyr", "lubridate", "httr", "data.table", "exactextractr", "ggplot2", "kableExtra", "jsonlite", "tmap")
+
+# Check and install packages
+for (package_name in packages_to_check) {
+  if (!package_name %in% rownames(installed.packages())) {
+    install.packages(package_name)
+    cat(paste("Package", package_name, "installed.\n"))
+  } else {
+    cat(paste("Package", package_name, "is already installed.\n"))
+  }
+  library(package_name, character.only = TRUE)
+}
+
+```
+
+## Cargar Datos y Selección de Atributos
+
+Primero nos conectaremos a nuestro "cubo" de almacenamiento en la nube de TOPS-SCHOOL para descargar el archivo WSIM-GLDAS. Si estuvieras trabajando en un sistema local, utilizarías el sitio web de SEDAC para descargar los archivos, pero eso no es factible en un taller en la nube en vivo. Leer el archivo con el *argumento* `proxy = TRUE` te permite inspeccionar los elementos básicos del archivo sin leer el archivo completo en la memoria. Los conjuntos de datos raster multidimensionales pueden ser extremadamente grandes y detener tu entorno de computación si tienes limitaciones de memoria.
+
+```{r}
+# leer el archivo de integración de 12 meses WSIM-GLDAS en nuestro cubo s3
+wsim_gldas <- stars::read_stars("/vsicurl/https://s3-us-west-2.amazonaws.com/tops-school/water-module/composite_12mo.nc", proxy = TRUE)
+
+print(wsim_gldas)
+```
+
+Ahora podemos usar el comando `print` para ver la información básica. La salida nos dice que tenemos 5 atributos (déficit, causa del déficit, excedente, causa del excedente, ambos) y 3 dimensiones. Las primeras 2 dimensiones son las extensiones espaciales (x/y--longitud/latitud) y el tiempo es la 3ª dimensión.
+
+Esto significa que el número total de capas raster individuales en este NetCDF es 3965 (5 atributos x 793 pasos de tiempo/meses). De nuevo, data grande.
+
+Podemos gestionar este archivo grande seleccionando una sola variable; en este caso "both" (ambos). Leeremos los datos de nuevo; esta vez con proxy = FALSE para leer los datos en memoria real, pero solo seleccionando la capa de déficit con sub = 'surplus' para que sea más manejable. Esto toma aproximadamente 45-60 segundos en la plataforma de 2i2c.
+
+```{r}
+# leer solo la capa de déficit usando proxy = false
+# wsim_gldas <- stars::read_stars("data/composite_1mo.nc", sub = 'deficit')
+
+wsim_gldas <- stars::read_stars("/vsicurl/https://s3-us-west-2.amazonaws.com/tops-school/water-module/composite_12mo.nc", proxy = FALSE, sub = 'surplus')
+
+```
+
+## Selección de Tiempo
+
+Especificar un rango temporal de interés hará que el tamaño del archivo sea más pequeño y manejable. Seleccionaremos todos los años para el rango 2000-2014. Esto se puede lograr generando una secuencia para cada año entre diciembre de 2000 y diciembre de 2014, y luego pasando esa lista de fechas, en forma de vector, usando la función "filtro". Recuerde, estamos utilizando la integración de 12 meses de WSIM-GLDAS. Esto significa que cada paso de tiempo enumerado promedia el déficit de los 12 meses anteriores. Por lo tanto, si seleccionamos solo una secuencia de meses de diciembre que abarca el período 2000-2014, cada capa resultante representará el déficit promedio de ese año.
+
+```{r}
+# generar un vector de fechas para subconjuntos
+keeps<-seq(lubridate::ymd("2000-12-01"),
+           lubridate::ymd("2014-12-01"),
+           by = "year")
+#cambiar tipo de datos a POSIXct
+keeps <- as.POSIXct(keeps)
+# filtrar el conjunto de datos usando el vector de fechas
+wsim_gldas_2000_2014 <- dplyr::filter(wsim_gldas, time %in% keeps)
+# volver a verificar la información básica
+print(wsim_gldas_2000_2014)
+```
+
+Ahora nos hemos reducido a un único atributo ("déficit") con 15 pasos de tiempo. Podemos echar un vistazo a los primeros 6 años pasando el objeto por "slice" y luego por "trama".
+
+```{r warning=FALSE}
+wsim_gldas_2000_2014 |>
+  # corta los primeros 6 pasos de tiempo
+  dplyr::slice(index = 1:6, along = "time") |>
+  # trazarlos con algunas quiebras de prueba para la leyenda
+  plot(key.pos = 1,  breaks = c(-60, -30, -5,  0, 5, 30, 70), key.lab = "Pariodos de retorno de ambos (excedentes y deficits)") 
+# breaks = c(0, -1, -5, -10, -20, -30, -50, -100, -200, -500),
+# breaks = c(0, 1, 5, 10, 20, 30, 50),
+```
+
+Aunque ahora hemos reducido los datos a un solo atributo con un tiempo de interés restringido, podemos ir un paso más allá y limitar la extensión espacial a un país o estado de interés.
+
+::: callout-note
+## Verificación de conocimientos
+
+4.  ¿Cuál de estos describe mejor un conjunto de datos ráster?
+    a.  Un tipo de datos geográficos formados por celdas cuadradas.
+
+    b.  Una tabla o lista de números geográficos.
+
+    c.  Una región geográfica de interés.
+
+    d.  Un tipo de datos geográficos formados por líneas y puntos
+5.  ¿Cuál de las siguientes afirmaciones es cierta sobre la información que pueden almacenar los rásteres? (seleccione todas las que correspondan)
+    a.  Atributos (contenido temático)
+    b.  Dimensiones (información que expresa información de extensión espacial o temporal)
+    c.  Coordenadas geográficas
+    d.  Una lista de números
+:::
+
+## Selección espacial
+
+::: column-margin
+::: {.callout-tip style="color: #5a7a2b;"}
+## Revisión de ciencia de datos
+
+[GeoJSON](https://geojson.org/) es un formato para codificar, almacenar y compartir datos geográficos como datos vectoriales, es decir, puntos, líneas y polígonos. Se utiliza comúnmente en aplicaciones de mapas web para representar características geográficas y sus atributos asociados. Los archivos GeoJSON son fácilmente legibles tanto por humanos como por computadoras, lo que los convierte en una opción popular para compartir datos geográficos a través de Internet.
+:::
+:::
+
+Podemos recortar espacialmente la pila de ráster con algunos métodos diferentes. Las opciones incluyen el uso de un cuadro delimitador en el que se especifican las coordenadas geográficas exteriores (xmin, ymin, xmax, ymax), el uso de otro objeto ráster o el uso de un límite vectorial como un archivo de forma o GeoJSON para recortar la extensión de los datos ráster originales.
+
+En este ejemplo utilizamos un límite vectorial para realizar la tarea de geoprocesamiento de recortar los datos a una unidad administrativa o política. Primero, adquirimos los datos en formato GeoJSON para Ecuador desde la API geoBoundaries. (Tenga en cuenta que también es posible descargar los límites vectorizados directamente desde <https://www.geoboundaries.org/> en lugar de utilizar la API).
+
+Para utilizar la API de geoBoundaries, la URL raíz a continuación se modifica para incluir un código de 3 letras de la Organización Internacional de Estándares utilizado para identificar países (ISO3) y un nivel administrativo para la solicitud de datos. Los niveles administrativos corresponden a unidades geográficas como el País (nivel administrativo 0), el Estado/Provincia (nivel administrativo 1), el Condado/Distrito (nivel administrativo 2), etc.:
+
+*https://www.geoboundaries.org/api/current/gbOpen/**ISO3**/**NIVEL**/*
+
+::: column-margin
+::: {.callout-tip style="color: #5a7a2b;"}
+## Revisión de ciencia de datos
+
+Creada por la comunidad y [William & Mary geoLab](https://github.com/wmgeolab), la base de datos global de límites administrativos políticos geoBoundaries es un recurso en línea con licencia abierta (CC BY 4.0 / ODbL) para límites administrativos (es decir, , estado, condado, provincia) para todos los países del mundo. Desde 2016, este proyecto ha rastreado aproximadamente 1 millón de unidades espaciales dentro de más de 200 entidades; incluidos todos los estados miembros de la ONU.
+:::
+:::
+
+Para este ejemplo, ajustamos los componentes en negrita de la dirección URL de muestra a continuación para especificar el país que queremos usando el código de país de caracteres ISO3 para Ecuador (**ECU**) y el nivel administrativo del estado deseado (**ADM2** ).
+
+```{r}
+# realizar la solicitud al sitio web de geoboundarie para los límites de Ecuador al nivel de administracion 2.
+ecuador_ad2 <- httr::GET("https://www.geoboundaries.org/api/current/gbOpen/ECU/ADM2/")
+```
+
+En la línea de código anterior, usamos `httr:GET` para obtener metadatos de la URL. Asignamos el resultado a una nueva variable llamada "ecuador_ad2". A continuación examinaremos el "contenido".
+
+```{r}
+
+# analizar el contenido en un formato legible
+ecuador_ad2<- httr::content(ecuador_ad2)
+# ecuador_ad3 <- fromJSON(ecuador_ad3)
+# mire las etiquetas para obtener información disponible
+names(ecuador_ad2)
+```
+
+El contenido analizado contiene 32 componentes. El elemento 29 es un enlace directo al archivo GeoJSON (gjDownloadURL) donde se encuentran los datos del límite del vector. A continuación obtendremos el GeoJSon y comprobaremos los resultados.
+
+```{r}
+# leer directamente en el geojson con sf desde el servidor de geoserver
+
+ecuador_ad2 <- sf::st_read(ecuador_ad2$gjDownloadURL)
+# revisa las imágenes
+plot(sf::st_geometry(ecuador_ad2))
+```
+
+```{r}
+# ver el nombre de las areas administrativas 2
+ecuador_ad2$shapeName
+```
+
+Al examinarlo, vemos que este GeoJSon incluye las areas administrativas y territorios. (Por supuesto, también podría simplificarse a otras áreas de interés simplemente adaptando el código siguiente).
+
+Primero creamos una lista de las geografías que deseamos seleccionar y las asignamos a una variable llamada "estados". A continuación, reasignamos nuestra variable "ecuador_ad2_sub" para incluir solo las areas seleccionadas, y finalmente trazamos los resultados.
+
+```{r}
+# crear un vector de territorios que queremos en nuestro límite
+estados<-
+  c("Tiwintza", "Tosagua", "Tulcan" ,"Urdaneta" , "Valencia", "Riobamba" ,"Ventanas","Vinces","Yacuambi","Yantzaza","Zamora","Zapotillo")
+
+# seleccione todos los estados y territorios que no están en la lista anterior
+# en R el "!" significa NO o lo OPUESTO
+ecuador_ad2_sub<-ecuador_ad2[(ecuador_ad2$shapeName %in% estados),]
+# en R el "!" significa NO o lo OPUESTO
+# ecuador_ad_sub<-ecuador_ad2[!(ecuador_ad2$shapeName %in% estados),]
+# revisa las imágenes
+plot(sf::st_geometry(ecuador_ad2_sub))
+```
+
+Podemos llevar esto un paso más allá y seleccionar un solo estado para el análisis. Aquí utilizamos un método ligeramente diferente creando un nuevo objeto llamado "ecu_adm1" subdividiendo por nombre.
+
+```{r}
+# extraer solo un  límite
+ecu_adm1 <- ecuador_ad2[ecuador_ad2$shapeName == "Zapotillo",]
+# revisa las imágenes
+plot(sf::st_geometry(ecu_adm1))
+```
+
+Desde aquí podemos recortar la dimension escapical del ráster WSIM-GLDAS utilizando el límite almacenado. Puedes llamar a la función `sf::st_crop()` para recortar la capa WSIM-GLDAS, pero como ves a continuación, de manera más simple, puedes usar la indexación entre corchetes `[ ]` para recortar un objeto **stars** con un objeto de **sf**.
+
+```{r warning = FALSE}
+# recortar el archivo wsim-gldas hasta la extensión del límite de Ecuador
+wsim_gldas <- wsim_gldas[ecuador_ad2]
+print(wsim_gldas)
+```
+
+Finalmente, visualizamos el último paso de tiempo en el conjunto de datos WSIM-GLDAS (1 de diciembre de 2014) y lo representamos con una superposición del límite de Ecuador para realizar una verificación visual de nuestro procesamiento.
+
+```{r warning = FALSE}
+# elimina los primeros 15 pasos de tiempo de wsim-gldas y trazalos
+wsim_gldas |>
+  dplyr::slice(index = 15, along = "time") |>
+  # visualizar
+  plot(reset = FALSE) # , breaks = c(0, 5, 10, 20, 30, 50, 60)
+# agrega el límite de Ecuador en la parte superior
+plot(sf::st_geometry(ecuador_ad2),
+     add = TRUE,
+     lwd = 1,
+     fill = NA,
+     border = 'purple')
+```
+
+¡Voilá! Recortamos con éxito el WSIM-GLDAS hasta la extensión de Ecuador y creamos un mapa superpuesto con ambos conjuntos de datos para verificar los resultados. Si estaba realizando más análisis o deseaba compartir su trabajo con colegas, es posible que desee guardar el WSIM-GLDAS procesado en el disco.
+
+Los archivos ráster multidimensionales (déficit, tiempo, latitud, longitud) se pueden guardar con la función `stars::write_mdim` y los datos vectoriales se pueden guardar usando `sf::st_write`.
+
+```{r eval = FALSE}
+# escribir el archivo wsim-gldas procesado en el disco como netcdf
+# stars::write_mdim(wsim_gldas_tex, "output/wsim_gldas_ecu.nc")
+# escribir el límite de Ecuador en el disco
+# sf::st_write(ecuador_ad2, "output/ecuador.geojson")
+```
+
+El tamaño del conjunto de datos preprocesado es de 1,6 MB en comparación con el conjunto de datos original de 1,7 GB. Esto es mucho más manejable en entornos de nube, talleres y plataformas Git. t
+
+## Visualizaciones avanzadas e integraciones de datos
+
+Ahora que hemos introducido los conceptos básicos de manipulación y visualización de WSIM-GLDAS, podemos explorar visualizaciones e integraciones de datos más avanzadas. Limpiemos el espacio de trabajo y comencemos de nuevo con el mismo **Período de retorno de doce meses de anomalía compuesta WSIM-GLDAS** que usamos anteriormente. Subdividiremos espacialmente los datos para cubrir a Ecuador, lo que ayudará a minimizar nuestra huella de memoria. Podemos reducir aún más nuestra sobrecarga de memoria leyendo solo la variable que queremos analizar. En este caso, podemos leer solo el atributo `déficit` del archivo del período de retorno de doce meses de anomalía compuesta de WSIM-GLDAS, en lugar de leer el NetCDF completo con todos sus atributos.
+
+::: column-margin
+::: {.callout-tip style="color: #5a7a2b;"}
+## Revisión de codificación
+
+La memoria de acceso aleatorio (RAM) es donde se almacenan temporalmente los datos y programas que están actualmente en uso. Permite que la computadora acceda rápidamente a los datos, haciendo que todo lo que haga en la computadora sea más rápido y eficiente. A diferencia del disco duro, que almacena datos de forma permanente, la RAM pierde todos sus datos cuando se apaga la computadora. La RAM es como la memoria a corto plazo de una computadora y le ayuda a realizar múltiples tareas a la vez.
+:::
+:::
+
+Para este ejercicio, podemos recorrer rápidamente pasos de preprocesamiento similares que realizamos anteriormente en esta lección y luego pasar a visualizaciones e integraciones más avanzadas. Vuelva a leer los datos de integración originales de 12 meses, filtre con una lista de fechas para cada diciembre que abarca del 1994 al 2001 y luego recorte los datos ráster con el límite de Ecuador utilizando nuestro objeto geoBoundaries.
+
+```{r warning=FALSE}
+# leer en la capa wsim-gldas del depósito SCHOOL s3
+# wsim_gldas <- stars::read_stars("/vsicurl/https://s3-us-west-2.amazonaws.com/tops-school/water-module/composite_12mo.nc", proxy = FALSE, sub = 'surplus')
+
+# generar un vector de fechas para subconjuntos
+keeps<-seq(lubridate::ymd("1994-12-01"),
+           lubridate::ymd("2001-12-01"), 
+           by = "year")
+
+#cambiar tipo de datos a POSIXct
+keeps <- as.POSIXct(keeps)
+# filtrar usando ese vector
+wsim_gldas <- dplyr::filter(wsim_gldas, time %in% keeps)
+
+
+```
+
+Verifique nuevamente la información del objeto.
+
+```{r}
+# check the basic information again
+print(wsim_gldas)
+```
+
+Querrá revisar la copia impresa para asegurarse de que se vea bien.
+
+-   ¿Contiene las variables que esperabas?
+
+-   ¿Los valores de las variables parecen plausibles?
+
+Otros análisis descriptivos básicos son útiles para verificar y comprender sus datos. Uno de ellos es producir una distribución de frecuencia (también conocida como histograma), que se analiza a continuación.
+
+::: callout-note
+## Verificación de conocimientos
+
+6.  ¿Cuáles son las dos formas en que redujimos nuestra huella de memoria cuando cargamos el conjunto de datos WSIM-GLDAS para esta lección? (seleccione todas las que correspondan)
+    a.  Subconjunto espacial de los datos al Ecuador
+    b.  Leyendo en sólo un año de datos
+    c.  Leer sólo el atributo de interés (es decir, 'surplus')
+    d.  Todo lo anterior.
+:::
+
+## Serie temporal anual de Ecuador
+
+Las propiedades básicas de los datos revisadas en el paso anterior son útiles para el análisis exploratorio de datos, pero debemos realizar una inspección más profunda. Podemos comenzar nuestra exploración visual de los excedentes anual en Ecuador creando un mapa que ilustre el período de retorno del excedente para cada uno de los años en el objeto WSIM-GLDAS.
+
+```{r warning = FALSE, message = FALSE}
+# cargar los datos base del límite de Ecuador
+ggplot2::ggplot()+
+  # visualizar el objeto
+  stars::geom_stars(data = wsim_gldas)+
+  # establecer coordenadas iguales para los ejes
+  ggplot2::coord_equal()+
+  # crear múltiples paneles para cada paso de tiempo
+  ggplot2::facet_wrap(~time)+
+  # trazar el límite de Ecuador solo con el contorno
+  # ggplot2::geom_sf(fill = NA, lwd=0)+
+  # agregar la paleta para wsim-gldas
+  ggplot2::scale_fill_stepsn(
+    colors = c(
+    # -29 a 0
+    '#FFC300', 
+    # 0 a 5
+    '#DDFFFF',
+    # 5 a 10
+    '#00BFFF',
+    # 10 a 30
+    '#0000FF',
+    # 30 a 60
+    '#191970'), 
+    # establecer las diviciones en la paleta
+    breaks = c(-29, 0, 5, 10, 30, 60))+
+  # agregar etiquetas de trama
+  ggplot2::labs(
+    title="Anomalías del Excedente Medio Anual del Ecuador",
+    subtitle = "Utilizando datos observados de 12 meses integrados WSIM-GLDAS para 1994-2001",
+    fill = "Período de retorno del excedente"
+  )+
+  # establecer el tema mínimo
+  ggplot2::theme_minimal()+
+  # desactivar algunos elementos gráficos adicionales
+  ggplot2::theme(
+    axis.title.x=ggplot2::element_blank(),
+    axis.text.x=ggplot2::element_blank(),
+    axis.ticks.x=ggplot2::element_blank(),
+    axis.title.y=ggplot2::element_blank(),
+    axis.text.y=ggplot2::element_blank(),
+    axis.ticks.y=ggplot2::element_blank())
+```
+
+Esta visualización muestra que hubo varios eventos de inundacion importantes (como lo indican los valores del período de retorno del exceso en azul oscuro) durante el período 1994-2001. Los eventos de inundacion importantes incluyeron el noroeste en 1998, el sur en 2001, Las inundaciones de los años 1998 y 2001 son particularmente graves y generalizados, con períodos de retorno superiores a 30 años que abarcan varios estados. Según las normas históricas, ¡solo deberíamos esperar sequías tan fuertes cada 30 o 60 años!
+
+::: callout-note
+## Verificación de conocimientos
+
+7.  Los mapas de salida de Anomalías del Execdente Medio Anual para Ecuador indican que...
+    a.  El exceso más significativo en 1998 se localiza en el oeste de Ecuador.
+    b.  El exceso menos significativo de 2000 se sitúa en el Sur.
+    c.  El exceso más significativo en 1996 se localiza en los estados vecinos.
+    d.  El déficit menos significativo en 2000 se sitúa en el sudeste.
+:::
+
+## Serie temporal mensual
+
+Podemos obtener una visión más detallada de estos eventos de sequía utilizando el conjunto de datos compuesto WSIM-GLDAS de 1 mes y recortando los datos en una extensión espacial más pequeña que coincida con uno de los eventos que hemos observado en el gráfico anterior. Echemos un vistazo más de cerca a la sequía de California de 2014.
+
+::: {.callout-tip style="color: #5a7a2b;"}
+## La sequía en las noticias
+
+La sequía de California de 2012-2014 fue la peor en 1200 años [@WHOI2014]. Esta sequía causó problemas a los propietarios e incluso conflictos entre los agricultores y el salmón salvaje. El gobernador Jerry Brown declaró una emergencia por sequía y pidió a los residentes que redujeran el consumo de agua en un 20%. El uso de agua aumentó un 8% en mayo de 2014 en comparación con 2013, en lugares como la costa de California y Los Ángeles. Debido a la escasez de agua, el estado votó a favor de multar a quienes desperdician agua hasta \$500 dólares. La sequía también afectó a los residentes de manera diferente según su situación económica. Por ejemplo, en el condado de El Dorado, ubicado en una zona rural al este de Sacramento, los residentes se duchaban con baldes y los residentes rurales informaron que los pozos, de los que dependen para obtener agua dulce, se estaban secando. El gobierno federal finalmente anunció una ayuda de emergencia por sequía de \$9,7 millones para esas áreas [@Sanders2014].
+
+Además, había miles de salmones adultos que luchaban por sobrevivir en el río Klamath en el norte de California, donde el agua era escasa y cálida debido al desvío del flujo del río hacia el Valle Central, una zona agrícola donde se cultivan almendros. Las almendras son uno de los cultivos más importantes de California; el estado produce el 80% de las almendras del mundo. Sin embargo, el salmón, que migra río arriba, podría contraer una enfermedad llamada pudrición branquial, que prospera en aguas cálidas y que ya mató a decenas de miles de Chinook en 2002. Esta enfermedad se estaba propagando nuevamente entre la población de salmón debido a esta asignación de agua, afectando a los nativos locales. Tribus americanas que dependen del pescado [@Bland2014].
+:::
+
+Para limitar la cantidad de memoria informática necesaria para la operación, primero borraremos elementos del espacio de trabajo en memoria y luego recargaremos un archivo compuesto más pequeño; comenzaremos eliminando el objeto compuesto de 12 meses.
+
+```{r}
+# eliminar el objeto wsim grande del entorno
+rm(wsim_gldas_1mo)
+rm(wsim_gldas_ecu)
+rm(wsim_gldas_2000_2014)
+rm(ecuador_ad2_sub)
+rm(ecu_adm1)
+
+# borrar la memoria; R tiene un recolector de basura automatizado para borrar la memoria no utilizada
+# pero puedes invocarlo usando el comando gc()
+gc()
+```
+
+Nuevamente nos conectaremos al depósito de nube SCHOOL y leeremos el archivo de integración de 1 mes. La estructura es la misma que la integración de 12 meses, por lo que continuaremos y cargaremos solo la capa deficitaria y verificaremos el objeto con `print`.
+
+```{r}
+# conéctese al depósito y descargue la integración de 1 mes
+# leer en la capa wsim-gldas del depósito SCHOOL s3
+wsim_gldas_1mo_98 <- stars::read_stars("/vsicurl/https://s3-us-west-2.amazonaws.com/tops-school/water-module/composite_1mo.nc", proxy = FALSE, sub = 'surplus')
+
+print(wsim_gldas_1mo_98)
+```
+
+Una vez más, subdividiremos la dimensión temporal para nuestro período de interés. Sin embargo, esta vez queremos todos los meses de 1998 para poder observar más de cerca la inundacion en Ecuador.
+
+```{r}
+# generar un vector de fechas para subconjuntos
+keeps<-seq(lubridate::ymd("1998-01-01"),
+           lubridate::ymd("1998-12-01"), 
+           by = "month")
+# cambiar tipo de datos a POSIXct
+keeps <- as.POSIXct(keeps)
+# filtrar usando ese vector
+wsim_gldas_1mo_98 <- dplyr::filter(wsim_gldas_1mo_98, time %in% keeps)
+# verifica la información
+print(wsim_gldas_1mo_98)
+```
+
+Ahora tenemos 12 rásteres con datos mensuales para 1998. Acerquémonos a Ecuador y veamos cómo progresó esta inundacion a lo largo del año.
+
+```{r warning = FALSE, message = FALSE}
+
+# subconjunto wsim-gldas hasta la extensión del límite de california
+wsim_gldas_1mo_98 <- wsim_gldas_1mo_98[ecuador_ad2]
+# dar etiquetas bonitas a la dimensión del tiempo
+wsim_gldas_1mo_98 <-
+  wsim_gldas_1mo_98 |>
+    stars::st_set_dimensions("time", values = month.name)
+
+# parcelas mensuales de Ecuador
+# cargar los datos base de Ecuador
+ggplot2::ggplot()+
+  # cargar el objeto wsim stars
+  stars::geom_stars(data = wsim_gldas_1mo_98)+
+  # relación de aspecto igual para el hacha lat/long
+  ggplot2::coord_equal()+
+  # crear una trama secundaria para cada paso de tiempo
+  ggplot2::facet_wrap(~time)+
+  # configurar la paleta wsim
+  ggplot2::scale_fill_stepsn(
+    colors = c(
+    # -60 a -30
+    '#9B0039',
+    #-30 a -10
+    '#FF8D43',
+    # -10 a -5
+    '#FFC754',
+    # -5 a 0
+    '#FFF4C7',
+    # 0 a 5
+    '#DDFFFF',
+    # 5 a 10
+    '#00BFFF',
+    # 10 a 30
+    '#0000FF',
+    # 30 a 60
+    '#191970'), 
+    # establecer las diviciones de la paleta
+    breaks = c(-60, -30, -10, -5, 0, 5, 10, 30, 60))+
+    
+  # agregar etiquetas
+  ggplot2::labs(
+    title="Anomalías del Excedente Medio Mensual del Ecuador",
+    subtitle = "Utilizando datos observados de 12 meses WSIM-GLDAS para 1998",
+    fill = "Período de retorno del excedente"
+  )+
+  # comenzar con un tema mínimo base
+  ggplot2::theme_minimal()+
+  # eliminar elementos adicionales para hacer un mapa más limpio
+  ggplot2::theme(
+    axis.title.x=ggplot2::element_blank(),
+    axis.text.x=ggplot2::element_blank(),
+    axis.ticks.x=ggplot2::element_blank(),
+    axis.title.y=ggplot2::element_blank(),
+    axis.text.y=ggplot2::element_blank(),
+    axis.ticks.y=ggplot2::element_blank())
+```
+
+Esta serie de mapas muestra una imagen sorprendente. Ecuado enfrentó enormes excedentes de agua en el Oeste el estado en Marzo, Mayo, Junio. A esto le siguieron déficits de agua en este del estado en Diciembre. Aunque el Centro y el Norte de Ecuado experimentaron cierto alivio en Septiembre, el Noroeste de Ecuador continuó experimentando excedentes hasta Noviembre.
+
+## Histogramas mensuales
+
+::: column-margin
+::: {.callout-tip style="color: #5a7a2b;"}
+## Revisión de ciencia de datos
+
+Un [marco de datos](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/data.frame) (dataFrame) es una estructura de datos utilizada para almacenar datos tabulares. Organiza datos en filas y columnas. Cada columna puede tener un tipo diferente de datos (numéricos, de caracteres, de factores, etc.) y las filas representan observaciones o casos individuales. Los marcos de datos proporcionan una manera conveniente de trabajar con datos estructurados, lo que los hace esenciales para proyectos de análisis de datos y estadísticas.
+:::
+:::
+
+Podemos explorar más los datos creando una distribución de frecuencia (también llamada histograma) de las anomalías del déficit para cualquier extensión espacial determinada; Aquí todavía estamos observando las anomalías del excedente en Ecuador. Comenzamos extrayendo los datos de la serie temporal ráster y luego creamos un marco de datos de valores que son más fáciles de manipular en un histograma. Los [dataFrame R](https://www.w3schools.com/r/r_data_frames.asp) son datos que se muestran en formato de tabla, que se pueden trazar en gráficos o tablas.
+
+```{r}
+# extraer los valores ráster en un marco de datos
+excedente_hist <-  
+  wsim_gldas_1mo_98 |>
+  as.data.frame(wsim_gldas_1mo_98$surplus)
+
+# eliminar los valores NA
+excedente_hist<-stats::na.omit(excedente_hist)
+
+# crear el histograma
+ggplot2::ggplot(excedente_hist, ggplot2::aes(surplus))+
+  # darle estilo a las barras
+  ggplot2::geom_histogram(binwidth = 6, fill = "#325d88")+
+  # subtrama para cada paso de tiempo
+  ggplot2::facet_wrap(~time)+
+  # usa el tema mínimo
+  ggplot2::theme_minimal()
+```
+
+Los histogramas empiezan a cuantificar lo que vimos en los mapas de series temporales. Mientras que el mapa muestra dónde ocurren los excedentes, la distribución de frecuencia indica el número de celdas ráster para cada período de retorno del rango de excedente. El número de celdas ráster bajo un excedente de 60 años (período de retorno) es muy alto en la mayoría de los meses, superando con creces cualquier otro valor en el rango.
+
+::: callout-note
+## Verificación de conocimientos
+
+8.  ¿Cuál es otro término para "histograma"?
+    a.  coropleta
+    b.  Distribución de frecuencias
+    c.  Matriz de datos
+    d.  Diagrama de caja
+:::
+
+## Resúmenes Zonales
+
+Hasta este punto, hemos descrito la excedented de Ecuador de 1998 examinando el estado en su conjunto. Aunque al mirar los mapas tenemos una idea de lo que está sucediendo en diferentes ciudades o condados, estos no proporcionan resúmenes cuantitativos de las áreas locales.
+
+Las estadísticas zonales son una forma de resumir las celdas de una capa ráster que se encuentran dentro de los límites de otra capa de datos (que puede estar en formato ráster o vectorial). Por ejemplo, agregar períodos de retorno del déficit con otro ráster que represente el tipo de cobertura terrestre o un límite vectorial (shapefile) de países, estados o condados producirá estadísticas descriptivas para esa nueva capa. Estas estadísticas podrían incluir la suma, la media, la mediana, la desviación estándar y el rango.
+
+::: column-margin
+::: {.callout-tip style="color: #5a7a2b;"}
+## Revisión de codificación
+
+El paquete R [exactextractr](https://github.com/isciences/exactextractr) [@Baston2023] resume los valores ráster en agrupaciones o zonas, también conocidas como estadísticas zonales. Las estadísticas zonales ayudan a evaluar las características estadísticas de una determinada región.
+
+El paquete R [terra](https://cran.r-project.org/web/packages/terra/index.html) procesa datos geoespaciales rasterizados y ofrece funcionalidades como manipulación de datos, análisis espacial, modelado y visualización, con un enfoque en la eficiencia y la escalabilidad.
+:::
+:::
+
+Realizaremos nuestras estadísticas zonales utilizando el paquete `exactextractr` [@Baston2023]. Es la herramienta de estadísticas zonales más rápida, precisa y flexible para el lenguaje de programación R, pero actualmente no tiene métodos predeterminados para el paquete **stars** y los objetos stars, por lo que cambiaremos a `terra` para esto. parte de la lección. Notarás que existen ligeras diferencias en la sintaxis para realizar las mismas operaciones en **terra** que en **stars.**
+
+Vuelva a leer los datos con **terra**.
+
+```{r}
+# eliminar el objeto del mes anterior
+rm(wsim_gldas_1mo_98)
+
+# crear una colección terra con el archivo wsim-gldas de 1 mes de SEDAC
+wsim_gldas_1mo<-terra::sds("/vsicurl/https://s3-us-west-2.amazonaws.com/tops-school/water-module/composite_1mo.nc")
+```
+
+Verificaremos la información básica con `print`.
+
+```{r}
+print(wsim_gldas_1mo)
+```
+
+Puedes ver que la información de **terra** está organizada de manera diferente, pero toda sigue ahí. Los atributos están numerados en los "subconjuntos de datos" (5) y se enumeran por nombre en la columna "nombres". La dimensión de tiempo no aparece por nombre, pero "nlyr" nos dice que hay 804 capas para cada atributo/subconjunto de datos. Puede acceder a información más detallada para las dimensiones de tiempo usando `terra::time`.
+
+Subconjunto simplemente al excedente de agua de WSIM-GLDAS y luego nuevamente a lo largo de la dimensión temporal.
+
+```{r}
+# sacar solo la capa deficitaria
+ wsim_gldas_1mo<-wsim_gldas_1mo["surplus"]
+# crear una secuencia de fechas para mantener
+keeps<-seq(lubridate::ymd("2014-01-01"), lubridate::ymd("2014-12-01"), by = "month")
+# subconjunto del objeto terra solo para esos pasos de tiempo del 2014
+wsim_gldas_1mo_14<-wsim_gldas_1mo[[terra::time(wsim_gldas_1mo) %in% keeps]]
+# etiquetar los pasos de tiempo
+names(wsim_gldas_1mo_14) <- keeps
+#verifica la información
+print(wsim_gldas_1mo_14)
+# crear una secuencia de fechas para mantener
+keeps<-seq(lubridate::ymd("1998-01-01"), lubridate::ymd("1998-12-01"), by = "month")
+# subconjunto del objeto terra solo para esos pasos de tiempo del 1998
+wsim_gldas_1mo_98<-wsim_gldas_1mo[[terra::time(wsim_gldas_1mo) %in% keeps]]
+# etiquetar los pasos de tiempo
+names(wsim_gldas_1mo_98) <- keeps
+#verifica la información
+print(wsim_gldas_1mo_98)
+#remover el variable 
+rm(wsim_gldas_1mo)
+
+```
+
+Ahora que hemos seleccionado solo la variable "surplus", **terra** enumera el "varname" como "surplus" y muestra los pasos de tiempo en la columna "nombres". Un poco confuso, pero **terra** cambia la visualización una vez que el objeto pasa de múltiples variables a solo una.
+
+Hora de realizar el resumen zonal.
+
+```{r warning=FALSE, message=FALSE}
+# ejecutar la extracción
+ecu_resumen_14<-
+  exactextractr::exact_extract(
+    # los datos ráster
+    wsim_gldas_1mo_14, 
+    # los datos del límite
+    ecuador_ad2, 
+    # el cálculo
+    'mean', 
+    # no mostrar progreso
+    progress = FALSE)
+# darle etiquetas más bonitas al paso del tiempo
+names(ecu_resumen_14)<-lubridate::month(keeps, label = TRUE, abbr = FALSE)
+# Incluir 'E14_' a los nombres de columna
+names(ecu_resumen_14) <- paste0('E14_', names(ecu_resumen_14))
+
+ecu_resumen_98<-
+  exactextractr::exact_extract(
+    # los datos ráster
+    wsim_gldas_1mo_98, 
+    # los datos del límite
+    ecuador_ad2, 
+    # el cálculo
+    'mean', 
+    # no mostrar progreso
+    progress = FALSE)
+# darle etiquetas más bonitas al paso del tiempo
+names(ecu_resumen_98)<-lubridate::month(keeps, label = TRUE, abbr = FALSE)
+# Incluir 'E14_' a los nombres de columna
+names(ecu_resumen_98) <- paste0('E98_', names(ecu_resumen_98))
+```
+
+`exactextractr` devolverá estadísticas resumidas en el mismo orden que el archivo de límites de entrada, por lo tanto, podemos unir los nombres de las areas admnistrativas de Ecuador a la salida de estadísticas resumidas **exactextract** para su visualización. También haremos una versión para ver como una tabla para inspeccionar los datos sin procesar. Podemos echar un vistazo rápido a los primeros 10 areas para ver su período medio de retorno del déficit de enero a junio.
+
+```{r}
+# vincular los medios extraídos con el límite de Ecuador
+ecuador_ad2<-cbind(ecuador_ad2, ecu_resumen_98)
+ecuador_ad2<-cbind(ecuador_ad2, ecu_resumen_14)
+```
+
+```{r}
+# Combinar las dos tables 98 y 14
+combined_data <- cbind(ecu_resumen_98, ecu_resumen_14)
+# preparar una versión para crear una tabla
+ecu_tabla<-cbind(Area=ecuador_ad2$shapeName,
+                         round(combined_data))
+# crear la tabla con solo las primeras filas y 25 columnas
+kableExtra::kbl(ecu_tabla[,c(1:25)]) |>
+    kableExtra::kable_styling(
+      bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+Esto confirma la distribución generalizada de valores de excedente elevados en nuestros mapas exploratorios. Actualmente, los datos están en formato ancho, lo que facilita la visualización de una serie temporal, pero la visualización programática más avanzada generalmente requiere que los datos estén en un formato largo (más sobre esto más adelante).
+
+::: callout-note
+## Verificación de conocimientos
+
+9.  ¿Para qué se pueden utilizar las estadísticas zonales?
+    a.  Subcomponer datos a un período de tiempo de interés.
+    b.  Creando una serie de tiempo.
+    c.  Resumir los valores de las celdas que se encuentran dentro de un límite.
+    d.  Todo lo anterior.
+:::
+
+## Coropletas de Areas Administrativas
+
+Ahora que hemos inspeccionado los datos, podemos hacer una coropleta a partir de los datos del período de retorno del excedente medio. Anteriormente demostramos mapas más complejos usando **ggplot2**, **sf** y **stars**, pero también puedes hacer trazados rápidos de objetos **sf** con la función de trazado base. De forma predeterminada, **sf** creará un mapa para cada columna enumerada en el conjunto de datos.
+
+```{r}
+colnames(ecuador_ad2)
+```
+
+En este caso solo queremos ver las medias mensuales, por lo que solo trazaremos las columnas 6 a 18. Puede realizar modificaciones simples en la paleta de colores y la posición de la leyenda, pero los títulos de mapas personalizados y los títulos de leyendas no se logran fácilmente con múltiples -Mapas en panel (varios mapas en uno) como el que se muestra a continuación.
+
+```{r warning=FALSE, message=FALSE}
+# trazar los datos para un cheque usando solo los 12 resúmenes mensuales en las columnas 
+plot(ecuador_ad2[c(6, 18)], # 15:17
+     # la paleta que hemos estado usando
+     pal = c(
+    # -60 a -30
+    '#9B0039',
+    #-30 a -10
+    '#FF8D43',
+    # -10 a -5
+    '#FFC754',
+    # -5 a 0
+    '#FFF4C7',
+    # 0 a 5
+    '#DDFFFF',
+    # 5 a 10
+    '#00BFFF',
+    # 10 a 30
+    '#0000FF',
+    # 30 a 60
+    '#191970'), 
+    # establecer las diviciones de la paleta
+    breaks = c(-60, -30, -10, -5, 0, 5, 10, 30, 60), 
+    # donde colocaremos la leyenda
+    key.pos = 1, 
+    # qué tan gruesa queremos que sea la leyenda
+    key.width = 0.3,
+    # Ajustar el grueso del borde
+    border=NA)
+```
+
+Debido a los excedentes hídricos generalizados en los datos sin procesar, los valores medios no parecen muy diferentes de la capa ráster de excedente sin procesar; sin embargo, los mapas coropléticos, también llamados mapas temáticos, pueden facilitar a los usuarios el estudio del paisaje mediante la visualización de lugares familiares. (como areas administrativas o ciudades) que se colocan a sí mismos y a sus experiencias vividas junto a los datos.
+
+Si bien esto muestra un panorama sorprendente de excedentes hídricos generalizados, ¿cuántas personas se ven afectadas por estas inundaciones? Aunque la superficie terrestre parece bastante grande, si uno no está familiarizado con la distribución de la población y los centros urbanos de Ecuador, puede resultar difícil tener una idea del impacto humano directo. (Esto se debe en parte a que los lugares más poblados suelen estar representados por superficies de tierra más pequeñas y los lugares menos poblados suelen estar representados por grandes fronteras administrativas que contienen mucha más superficie de tierra). Normalizar un tema determinado por superficie terrestre puede ser algo que un analista quiera hacer, pero a continuación cubrimos otro enfoque.
+
+::: callout-note
+## Verificación de conocimientos
+
+10. Los mapas coropléticos, también conocidos como mapas temáticos, son útiles para
+    a.  Visualizar datos en geografías familiares como condados o estados.
+    b.  Encontrar direcciones de un lugar a otro
+    c.  Visualización de datos en unidades geográficas uniformes, como celdas de cuadrícula ráster.
+    d.  Cálculo de periodos de retorno.
+:::
+
+## Integración de datos de población
+
+**Gridded Population of the World (GPW)** es una recopilación de datos de SEDAC que modela la distribución de la población humana global como recuentos y densidades en formato ráster [@CIESIN2018]. Aprovecharemos al máximo **exactextractr** para integrarse a través de WSIM-GLDAS, geoBoundaries y GPW. Para comenzar, necesitamos descargar los datos de densidad de población para el año 2015 con una resolución de 15 minutos (aproximadamente 30 kilómetros cuadrados en el ecuador) de GPW. Esta versión de GPW se acerca más a nuestro período de tiempo (2014) y a la resolución de WSIM-GLDAS (0,25 grados). Aunque en muchas aplicaciones se puede optar por utilizar las capas de datos de recuento de población de GPW, como utilizamos **exactextractr**, podemos lograr resultados más precisos (especialmente a lo largo de las costas) utilizando la densidad de población junto con las estimaciones de superficie terrestre del**exactextractr** paquete.
+
+::: {.callout-tip style="color: #5a7a2b;"}
+## Revisión de datos
+
+La población cuadriculada del mundo versión 4 está disponible en múltiples métricas objetivo (por ejemplo, recuentos, densidad), períodos (2000, 2005, 2010, 2015, 2020) y resoluciones espaciales (30 segundos, 2,5 minutos, 15 minutos, 30 minutos, 60 minutos). Lea más sobre GPW en la [página de inicio de la colección en SEDAC](https://sedac.ciesin.columbia.edu/data/collection/gpw-v4). GPW es uno de los cuatro conjuntos de datos de población cuadriculados globales disponibles en formato ráster. Estos conjuntos de datos varían en el grado en que utilizan información adicional como variables auxiliares para modelar la distribución espacial de la población a partir de las unidades administrativas (polígonos vectoriales) en las que se originan. En un artículo de Leyk y sus colegas [@leyk2019] se encuentra una revisión de estos conjuntos de datos y sus modelos subyacentes. Puede obtener más información sobre los conjuntos de datos de población cuadriculados en [POPGRID.org](https://popgrid.org/). La idoneidad para el uso es un principio importante para determinar el mejor conjunto de datos a utilizar para un análisis específico. La pregunta que nos hacemos aquí es: ¿cuál es la exposición de la población a diferentes niveles de exceso de agua en Ecuador? --- utiliza entradas espacialmente aproximadas y es para un lugar con entradas de datos de alta calidad, GPW es una buena opción para este análisis. Los usuarios con datos censales en formato vectorial (a nivel de condado o subcondado) también podrían adoptar este enfoque para esos datos. En el caso de California, los datos del censo de EE. UU. y el GPW producirán estimaciones casi idénticas porque el PGB se basa en los datos del censo.
+:::
+
+Cargue el GPW tif desde el almacenamiento en la nube de SCHOOL s3.
+
+```{r}
+# leer el archivo con terra desde nuestro depósito s3
+pob_dens<- 
+terra::rast("/vsicurl/https://s3-us-west-2.amazonaws.com/tops-school/water-module/gpw_v4_population_density_rev11_2015_15_min.tif")
+
+# comprobar la información básica
+print(pob_dens)
+```
+
+Para este ejemplo, clasificaremos la capa ráster del período de retorno del excedented WSIM-GLDAS en ocho categorías. Combinar los datos facilitará la gestión de la salida y la interpretación de los resultados.
+
+```{r}
+# establece los saltos de clase por filas (desde, hasta, nueva etiqueta)
+# Por ejemplo, la primera fila indica: "todos los períodos de retorno del 0 al 5 ahora se etiquetarán como 0
+m <- c(-60, -30, -30,
+       -30,-10, -10,
+       -10,-5,-5,
+      -5, 0, 0,
+       0, 5, 5,
+       5, 10, 10,
+       10, 30, 30,
+       30, 60, 60)
+# convertir el vector en una matriz
+rclmat <- matrix(m, ncol=3, byrow=TRUE)
+# clasificar los datos
+wsim_gldas_1mo_class_98 <-
+  terra::classify(wsim_gldas_1mo_98, rclmat, include.lowest = TRUE)
+wsim_gldas_1mo_class_14 <-
+  terra::classify(wsim_gldas_1mo_14, rclmat, include.lowest = TRUE)
+```
+
+En nuestro ejemplo anterior, utilizamos la función "media" incorporada de **exactextractr**, pero también podemos pasar funciones personalizadas a **exactextractr** que también llevarán a cabo varias operaciones a la vez. El siguiente código podría combinarse en una única función pasada a **exactextractr**, pero aquí se presenta como funciones múltiples para poder seguirlo más fácilmente. Puede leer más sobre los argumentos de **exactextractr** en el paquete [guía de ayuda](https://cran.r-project.org/web/packages/exactextractr/exactextractr.pdf). Los argumentos clave a tener en cuenta son los llamados a:
+
+1.  `weights = pob_dens`: resume el período de retorno del excedente de cada celda WSIM-GLDAS con el valor de densidad de población correspondiente.
+2.  `coverage_area = TRUE`: calcula el área correspondiente de la celda ráster WSIM-GLDAS que está cubierta por el límite de Ecuador
+
+```{r}
+# ejecutar la extracción
+pop_by_rp_98 <-
+  exactextractr::exact_extract(wsim_gldas_1mo_class_98, ecuador_ad2, function(df) {
+    df <- data.table::setDT(df)}, 
+  # convertir la salida a un marco de datos
+  summarize_df = TRUE, 
+  # especificamos los pesos que estamos usando
+  weights = pob_dens, 
+  # devolver el área de cobertura (m^2)
+  coverage_area = TRUE,
+  # devolver el nombre del area con los datos de salida
+  include_cols = 'shapeISO', 
+  # no mostrar progreso
+  progress = FALSE)
+
+# ejecutar la extracción
+pop_by_rp_14 <-
+  exactextractr::exact_extract(wsim_gldas_1mo_class_14, ecuador_ad2, function(df) {
+    df <- data.table::setDT(df)}, 
+  # convertir la salida a un marco de datos
+  summarize_df = TRUE, 
+  # especificamos los pesos que estamos usando
+  weights = pob_dens, 
+  # devolver el área de cobertura (m^2)
+  coverage_area = TRUE,
+  # devolver el nombre del area con los datos de salida
+  include_cols = 'shapeISO', 
+  # no mostrar progreso
+  progress = FALSE)
+```
+
+Esto devuelve un `data.frame` con una fila para cada celda ráster en la capa WSIM-GLDAS que se superpone con el límite de Ecuador. Echemos un vistazo a las primeras 6 filas.
+
+```{r}
+head(pop_by_rp_98)
+```
+
+-   `shapeISO`: La etiqueta del límite del polígono donde se encuentra la celda. Esto se transmitió desde el límite geojson de Ecuador como se especifica en el argumento `include_cols = 'shapeISO'`. En este caso, no es muy útil porque utilizamos el límite estatal de Ecuador, pero si pasamos el límite ADM2 con los condados, proporcionaría el nombre del condado donde se encuentra la celda.
+
+-   `2014-01-01` a `2014-12-01`: Las siguientes 12 columnas enumeran el valor de clasificación del período de retorno del déficit para la celda en cada uno de los 12 meses correspondientes a la dimensión temporal de la capa ráster `wsim_gldas_1mo`.
+
+-   `weights`: la columna `weight` enumera el valor de densidad de población correspondiente (personas por km\^2) para esa celda WSIM-GLDAS. Las capas ráster WSIM-GLDAS y GPW tienen la misma proyección y resolución. Por lo tanto, debido a que están perfectamente alineadas, cada celda del período de retorno de WSIM tiene un peso de población de GPW correspondiente que se puede superponer exactamente sobre ella.
+
+-   `coverage_area`: el área total (m\^2) de la celda WSIM-GLDAS que está cubierta por la capa límite de California. Dada la superficie total de la celda del WSIM que está cubierta y el peso de personas del GPW por unidad de área, podemos calcular el número de personas que se estima que vivirán dentro de esta celda durante este período de retorno del déficit del WSIM.
+
+Necesitaremos realizar algunos pasos de procesamiento más para preparar este "marco de datos" para una visualización de series de tiempo que integre todos los datos. Usaremos la función `melt` para transformar los datos de formato ancho a formato largo para producir una visualización en `ggplot2`. Específicamente, necesitamos usar `melt` para convertir las columnas de 12 meses (`2014-01-01` a `2014-12-01`) en 2 columnas nuevas: 1) especificando el valor del período de retorno del excedente de WSIM-GLDAS y 2 ) el mes de donde vino.
+
+::: column-margin
+::: {.callout-tip style="color: #5a7a2b;"}
+## Coding Review
+
+## Revisión de codificación
+
+La conversión de datos de formatos ancho a largo o de largo a ancho es un componente clave para el procesamiento de datos; sin embargo, puede resultar confuso. Para leer más sobre cómo fundir/pivotar más tiempo (de ancho a largo) y cómo fundir/pivotar más ancho (de largo a ancho), consulte la viñeta *data.table* [Remodelación eficiente usando data.tables](https://cran.r-project%20.org/web/packages/data.table/vignettes/datatable-reshape.html) y *dplyr* [`pivot_longer`](https://tidyr.tidyverse.org/reference/pivot_longer.html) y [`pivot_wider`](https://tidyr.tidyverse.org/reference/pivot_wider.html) páginas de referencia.
+:::
+:::
+
+```{r}
+# convertir el conjunto de datos de ancho a largo (melt)
+pop_by_rp_98 <-
+  data.table::melt(
+    # datos que estamos derritiendo
+    pop_by_rp_98,
+    # las columnas que deben permanecer como columnas/ids
+    id.vars = c("shapeISO", "coverage_area", "weight"),
+    # nombre de las columnas del mes que vamos a fusionar en una sola columna
+    variable.name = "month",
+    # nombre de los valores que se convierten en una sola columna
+    value.name = "return_period")
+
+# comprobar las primeras 5 filas de datos derretidos
+head(pop_by_rp_98)
+```
+
+```{r}
+# convertir el conjunto de datos de ancho a largo (melt)
+pop_by_rp_14 <-
+  data.table::melt(
+    # datos que estamos derritiendo
+    pop_by_rp_14,
+    # las columnas que deben permanecer como columnas/ids
+    id.vars = c("shapeISO", "coverage_area", "weight"),
+    # nombre de las columnas del mes que vamos a fusionar en una sola columna
+    variable.name = "month",
+    # nombre de los valores que se convierten en una sola columna
+    value.name = "return_period")
+
+# comprobar las primeras 5 filas de datos derretidos
+head(pop_by_rp_14)
+```
+
+Cada fila enumera la superficie terrestre (área de cobertura) cubierta por la zona, el valor de densidad de población (peso) de la zona, el mes al que corresponde el período de retorno del déficit y la clase del período de retorno del déficit real para la zona.
+
+A continuación, resumiremos los datos por clase de período de retorno.
+
+```{r}
+# crear una nueva columna con totales de población para cada mes y combinación de período de retorno
+# dividir por 1000000
+pop_by_rp_98 <-
+  pop_by_rp_98[, .(pop_rp = round(sum(coverage_area * weight) / 1e6)), by = .(month, return_period)]
+# algunas celdas no tienen valores de período de retorno deficitario y dan como resultado NaN; simplemente elimínelas
+pop_by_rp_98 <- na.omit(pop_by_rp_98)
+# crear una nueva columna con la población total para ese mes (será la misma para cada mes pero será necesaria para crear una fracción de clase wsim)
+pop_by_rp_98[, total_pop := sum(pop_rp), by = month]
+# revisa las primeras filas
+head(pop_by_rp_98)
+```
+
+```{r}
+# crear una nueva columna con totales de población para cada mes y combinación de período de retorno
+# dividir por 1000000
+pop_by_rp_14 <-
+  pop_by_rp_14[, .(pop_rp = round(sum(coverage_area * weight) / 1e6)), by = .(month, return_period)]
+# algunas celdas no tienen valores de período de retorno deficitario y dan como resultado NaN; simplemente elimínelas
+pop_by_rp_14 <- na.omit(pop_by_rp_14)
+# crear una nueva columna con la población total para ese mes (será la misma para cada mes pero será necesaria para crear una fracción de clase wsim)
+pop_by_rp_14[, total_pop := sum(pop_rp), by = month]
+# revisa las primeras filas
+head(pop_by_rp_14)
+```
+
+Ahora tenemos una fila para cada combinación única de mes, clase de período de retorno y población total. Podemos calcular el porcentaje de la población total representada por esta clase del período de retorno con 2 líneas más.
+
+```{r}
+# calcular la fracción de esa combinación de clase mes-wsim en relación con la población total
+pop_by_rp_98[, pop_frac := pop_rp / total_pop][, total_pop := NULL]
+# calcular la fracción de esa combinación de clase mes-wsim en relación con la población total
+pop_by_rp_14[, pop_frac := pop_rp / total_pop][, total_pop := NULL]
+
+
+# revisa las primeras filas
+head(pop_by_rp_14)
+```
+
+Antes de trazar, haremos que las etiquetas de los meses sean más legibles para el trazado, convertiremos la clase del período de retorno WSIM-GLDAS en un factor y configuraremos la paleta de clases WSIM-GLDAS.
+
+::: column-margin
+::: {.callout-tip style="color: #5a7a2b;"}
+## Revisión de codificación
+
+Los factores son la forma más común de manejar datos categóricos en R. Aunque convertir sus variables categóricas en factores no siempre es la mejor opción, en muchos casos (especialmente al trazar con *ggplot2*) los beneficios superarán cualquier molestia. Para obtener más información sobre los factores y R, consulte el capítulo de Hadley Wickham sobre factores en [**R para ciencia de datos, segunda edición**.](https://r4ds.hadley.nz/factors.html)
+:::
+:::
+
+```{r warning=FALSE}
+# ggplot es más fácil con factores
+pop_by_rp_98$return_period<-
+  factor(pop_by_rp_98$return_period, 
+         levels = c("-60", "-30", "-10", "-5","0", "5", "10", "30", "60"))
+
+# agregar los datos base
+pop_by_rp_98[,month:=lubridate::month(pop_by_rp_98$month, label = TRUE)]
+
+# ggplot es más fácil con factores
+pop_by_rp_14$return_period<-
+  factor(pop_by_rp_14$return_period, 
+         levels = c("-60", "-30", "-10", "-5","0", "5", "10", "30", "60"))
+
+# agregar los datos base
+pop_by_rp_14[,month:=lubridate::month(pop_by_rp_14$month, label = TRUE)]
+
+
+#renombrar las columnas
+colnames(pop_by_rp_98) <- c("mes", "periodo_retorno", "pop_rp", "pop_frac")
+colnames(pop_by_rp_14) <- c("mes", "periodo_retorno", "pop_rp", "pop_frac")
+
+head(pop_by_rp_14)
+```
+
+Ahora podemos ponerlo todo junto en una visualización.
+
+```{r}
+# Anadir una columna del año. 
+pop_by_rp_98$year <- "1998"
+pop_by_rp_14$year <- "2014"
+
+# Combinar las tablas
+combined_data <- rbind(pop_by_rp_98, pop_by_rp_14)
+
+```
+
+```{r}
+
+# crear la paleta para pasar a ggplot
+leg_colors<-c(
+    # -60 a -30
+    '#9B0039',
+    #-30 a -10
+    '#FF8D43',
+    # -10 a -5
+    '#FFC754',
+    # -5 a 0
+    '#FFF4C7',
+    # 0 a 5
+    '#DDFFFF',
+    # 5 a 10
+    '#00BFFF',
+    # 10 a 30
+    '#0000FF',
+    # 30 a 60
+    '#191970') 
+
+
+# Crear una combinacion the los resulados
+ggplot2::ggplot(combined_data, 
+       ggplot2::aes(x = mes, 
+           y = pop_frac,
+           group = periodo_retorno, 
+           fill = periodo_retorno)) +
+  ggplot2::geom_bar(stat = "identity", 
+           position = "stack", 
+           color = "darkgrey") +
+  ggplot2::scale_fill_manual(values = leg_colors) +
+  ggplot2::ylim(0, 1) +
+  ggplot2::labs(title = "Fracción mensual de la población con excedente de agua en Ecuador",
+       subtitle = "1998 y 2014, Categorizado por intensidad del período de retorno del excedente",
+       x = "",
+       y = "Fracción de la población*",
+       caption = "*Población derivada de la población mundial cuadriculada (2015)",
+       color = "Periodo Retorno", fill = "Periodo Retorno", group = "Periodo Retorno", alpha = "Periodo Retorno") +
+  ggplot2::theme_minimal() +
+  ggplot2::facet_wrap(~year)+
+  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust =0.25))
+
+
+```
+
+Esta cifra realmente ilustra el impacto humano de la inundacion de 1998 y 2014.
+
+::: callout-note
+## Revisión de conocimientos
+
+1.  Hay varias opciones para subconjuntos (o recortes) espaciales de un objeto ráster a una región de interés. ¿Qué método se utilizó en esta lección?
+    a.  Usando un vector de fechas.
+    b.  Usando otro objeto ráster.
+    c.  Especificación de un cuadro delimitador.
+    d.  Usando un conjunto de datos de límites vectoriales.
+2.  Cuando tenga problemas de memoria, ¿qué puede hacer para reducir la carga computacional?
+    a.  Trabaje con un período de tiempo o región a la vez.
+    b.  Guárdelo como un archivo nuevo.
+    c.  Subconjunto de datos en una región de interés/marco de tiempo.
+    d.  Encuentre otros datos con los que trabajar.
+3.  ¿Cuál es la importancia de subconjuntos de datos?
+    a.  Liberando espacio.
+    b.  Analizar un determinado momento o área de interés.
+    c.  Hacer que el código se ejecute más rápido.
+    d.  Todo lo anterior.
+4.  Conjuntos de datos de población cuadriculados... (seleccione todos los que correspondan)
+    a.  Muestre dónde están los afluentes de los ríos.
+    b.  Modele la distribución de la población humana global en celdas de cuadrícula ráster.
+    c.  Permitir análisis del número de personas impactadas por una amenaza como la sequía.
+    d.  Variar en la medida en que se utilizan datos auxiliares en su producción.
+:::
+
+## En esta lección, aprendiste...
+
+¡Felicidades! Ahora deberías poder:
+
+-   Navegue por el sitio web de SEDAC para buscar y descargar conjuntos de datos.
+-   Acceda a límites administrativos desde datos de geoBoundaries utilizando API.
+-   Subconjunto temporal de un ráster NetCDF utilizando paquetes R como dplyr y lubridate.
+-   Recortar una ráster NetCDF con un límite espacial.
+-   Escriba un conjunto de datos subconjunto en el disco y cree una imagen para compartir resultados.
+-   Identificar áreas de sequía severa y seleccionarlas para su posterior análisis.
+-   Resumir datos por condado utilizando la herramienta exactaextractr.
+-   Integre el excedente de WSIM-GLDAS, la población de GPW y los datos de límites administrativos de geoBoundaries para crear visualizaciones complejas de series de tiempo.
+
+## Lección 2
+
+En esta lección exploramos la sequía de California de 2014. En nuestra próxima lección, examinaremos datos de inundaciones casi en tiempo real en California utilizando el producto de datos MODIS.
+
+### Producto de inundaciones globales en tiempo casi real (NRT) de LANCE MODIS
+
+#### Paso 2, verifique qué días están disponibles para el producto MCDWD L3 F3 accediendo a este enlace: [Servidor primario LANCE NRT](https://nrt3.modaps.eosdis.nasa.gov/archive/allData/61%20/MCDWD_L3_F3_NRT) o [Secundario](https://nrt4.modaps.eosdis.nasa.gov/archive/allData/61/MCDWD_L3_F3_NRT). Nota: debe tener una cuenta de NASA Earthdata.
+
+Según la disponibilidad, edite la variable día_año AAAA-DD. Ejemplo: '2022-01'
+
+```{r}
+
+#agregue el año y la fecha que desea buscar (AAAA-DD, 2022-01)
+dia <- '2024-210'
+
+```
+
+#### Determinar mosaicos de interés:
+
+[Mapa de mosaicos MODIS NRT](https://www.earthdata.nasa.gov/s3fs-public/2023-01/MCDWD_GlobalTileMapHoriz_Website_865x2250.jpg?VersionId=lOQ_j47U8T.j7UUqibD7SM63FVHjM_V5)
+
+<img src="https://www.earthdata.nasa.gov/s3fs-public/2023-01/MCDWD_GlobalTileMapHoriz_Website_865x2250.jpg?VersionId=lOQ_j47U8T.j7UUqibD7SM63FVHjM_V5" alt="Un mapa global con mosaicos etiquetados" width="100% "/>
+
+Según la disponibilidad, edite la variable Tile_code:
+
+```{r}
+#añadir código de mosaico del mapa de arriba (escrito como h00v00)
+codigo_azulejo <- 'h10v09'
+```
+
+Esta es la URL de la API NRT Flood F3 (MCDWD_L3_F3):
+
+```{r}
+# Servidor primario
+API_URL <-paste0('https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/details?products=MCDWD_L3_F3_NRT&archiveSets=61&temporalRanges=')
+
+# si el servidor primario no funciona, el servidor secundario puede estar disponible:
+#API_URL <-paste0('https://nrt4.modaps.eosdis.nasa.gov/api/v2/content/details?products=MCDWD_L3_F3_NRT&archiveSets=61&temporalRanges=')
+```
+
+Podemos combinar la URL de API anterior con el día_año proporcionado e imprimir los conjuntos de datos disponibles:
+
+```{r}
+#pegando juntos URL y dia
+url <- paste0(API_URL, dia)
+print(url)
+```
+## Cargando los datos
+
+**NASA Earthdata** requiere un nombre de usuario y un token de la NASA. Vaya aquí para aprender [Cómo generar un token de usuario] (https://wiki.earthdata.nasa.gov/display/EL/How+to+Generate+a+User+Token).
+
+Una vez que haya generado un token de usuario, podrá acceder a NASA Earthdata utilizando la función GET [@wilsjame]. Reemplace `USER_TOKEN` con el token que generó:
+
+```{r}
+token <- "USUARIO_TOKEN"
+```
+
+Combine el token con el protador `"Bearer"` en una sola cadena de texto.
+
+```{r}
+
+api_key <- paste("Bearer", token)
+```
+
+Este código es para usar en una computadora local, no en 2i2c. Úselo para proteger su token localmente.
+
+```{r, eco=FALSO}
+## Para uso en una computadora local, no en 2i2c
+
+#api_key <- readLines("lance-modis-nrt-key.txt")
+## Convertir la clave API en una cadena
+#api_key <- toString(api_key)
+##"Portador USER_TOKEN"
+#api_key <- paste("Bearer", api_key)
+
+
+
+```
+
+```{r}
+# Definir encabezados (incluye tu token)
+encabezados <- c (Authorization = api_key)
+
+# Realizar solicitud httr::GET
+contenido_respuesta <- httr::GET(url, httr::add_headers(.headers=encabezados))
+
+```
+
+Verifique el estado de la respuesta desde la función GET:
+
+```{r}
+contenido_respuesta
+```
+
+A partir de la respuesta del servidor, comprobaremos si la respuesta fue exitosa con `if (http_status(contenido_respuesta)$category == "Success")`. Si esta afirmación es verdadera, entonces el contenido se asignará a la variable `datos` en formato JSON, que luego se analiza en un marco de datos usando `data_parsed <- jsonlite::fromJSON(data)`. El marco de datos contiene `data_parsed$content`, una columna con contenido. Filtramos el contenido por código de mosaico usando el comando `content_items <- data_parsed$content[grepl(tile_code, data_parsed$content$name, ignore.case = TRUE),]` y agregamos los resultados a un marco de datos.
+
+
+```{r}
+if (httr::http_status(contenido_respuesta)$category == "Success") {
+  # Leer el contenido JSON en un marco de datos
+  contenido_respuesta <- httr::content(contenido_respuesta, as = "parsed", simplifyVector = TRUE)
+  contenido_respuesta <- contenido_respuesta$content
+} else {
+  print("La solicitud falló con el código de estado", httr::http_status(contenido_respuesta)$status_code)
+}
+names(contenido_respuesta)
+```
+
+Busque el marco de datos y subconjunto de las filas que contienen "codigo_azulejo" en la columna "downloadsLink".
+
+```{r}
+# Subconjunto de filas donde la columna downloadsLink contiene el código del mosaico
+contenido_respuesta <- contenido_respuesta[grepl(codigo_azulejo, contenido_respuesta$downloadsLink),]
+
+contenido_respuesta
+```
+
+
+Si solo hay 1 fila, seleccione la columna de cadena 'enlace de descargas':
+
+
+```{r}
+
+contenido_respuesta <- contenido_respuesta$downloadsLink
+print(contenido_respuesta)
+```
+
+## Leer los datos
+
+Utilice la función `read_stars()` de la biblioteca R `stars` para leer el ráster geoTiff. El ráster se asigna a la variable `raster_df`. Esta es una capa derivada de la web que se encuentra en el Sistema de coordenadas geográficas (GCS) WGS84 - Sistema geodésico mundial 1984 EPSG:4326 (número EPSG 4326). Podemos asignar el Sistema de Referencia de Coordenadas (CRS) al objeto estrella:
+
+
+```{r}
+#read the raster data from the download_link
+raster_df <- stars::read_stars(contenido_respuesta)
+#Set a CRS for the stars object based on the data documentation
+sf::st_crs(raster_df) <- st_crs(4326)
+```
+
+### Visualización de datos de inundaciones NRT
+
+Traza el ráster para verlo rápidamente. `downsample` permite una representación más rápida para la visualización:
+
+```{r}
+plot(raster_df, downsample=30)
+```
+
+### Create NRT Flood Plot with Classification
+
+### Crear gráfico de inundación NRT con clasificación
+
+Consulte la [Guía del usuario del producto MODIS NRT Global Flood] (https://www.earthdata.nasa.gov/s3fs-public/2023-01/MCDWD_UserGuide_RevC.pdf) para obtener más información.
+
+Los datos de inundaciones de NRT tienen 5 clasificaciones:
+
+
+| Codigo | Definicion               |
+|:------:|:-------------------------|
+|  0     | Sin agua                 |
+|  1     | Agua Superficial         |
+|  2     | Inundación recurrente[^2]|
+|  3     | Inundación (inusual)     |
+| 255    | Datos insuficientes      |
+
+[^2]: El valor 2 (inundación recurrente) no se completa en la versión beta.
+
+Para ver los datos de esta clasificación, necesitaremos crear una leyenda clasificada; sin embargo, los datos de NRT Flood se almacenan en números decimales (conocidos como punto flotante). Los saltos de clase nos permiten agrupar datos en función de los valores. Cree saltos de clasificación que divida los datos utilizando los saltos que se enumeran a continuación y sus colores y etiquetas correspondientes. Finalmente, agregue un título para el gráfico que incluya el año y el día, "dia" y "codigo_azulejo":
+
+
+```{r}
+#quiebramentos para la categorización del diagrama de tabla
+quiebramentos<- c( 0, 1, 2, 3, Inf)
+#colores para las pausas argumentales
+colores <- c( "gray", "blue", "yellow", "red")
+#etiquetas para las quiebras argumentales
+etiquetas = c("0: Sin agua", "1: Agua superficial", "2: Inundación recurrente", "3: Inundación (inusual)")
+titulo = paste("Inundación casi en tiempo real F3", dia, codigo_azulejo)
+
+```
+
+### Generar un mapa base a partir de Esri Imagery
+
+La función `basemap_stars()` del paquete `stars` nos permite acceder a las capas de imágenes de Esri. Para generar un mapa base que muestre la ubicación de nuestro ráster, primero debemos definir el cuadro delimitador con `raster_df`. Elija "world_imagery" como nuestro fondo y asígnelo al objeto `bm_m`. La función `st_rgb` combina la imagen RGB del mapa base en un solo archivo. Finalmente, `st_transform` transforma el CRS en WGS84.
+
+```{r}
+#definir mapa base usando el ráster como cuadro delimitador
+bm_m <- basemaps::basemap_stars(raster_df, map_service = "esri", map_type = "world_imagery")
+#La función `st_rgb` nos permite convertir el elemento de estrellas RGB en una sola imagen
+bm_m <- st_rgb(bm_m)
+#transformar el CRS del mapa base para que coincida con el ráster de inundación
+bm_m <- st_transform(bm_m, 4326)
+```
+
+### Trazar mapa base y datos de inundaciones NRT
+
+Genere un gráfico desde la biblioteca tmap usando la función `tm_shape()`. Trazaremos el mapa base y los elementos raster_df en un solo gráfico.
+
+```{r}
+## modo tmap configurado en "trazar"
+tmap_mode("plot")
+
+## el modo tmap también se puede configurar en "ver"
+#tmap_mode("view")
+
+#crear un objeto que trace el mapa base y el ráster de inundación NRT
+#con la biblioteca tmap, llame a la función tm_shape() para el mapa base
+tm_plot <-  tmap_options(max.raster = c(plot = 50000, view = 50000))+
+  tm_shape(bm_m)+
+  #el mapa base bm_m se trata como un ráster
+  tm_raster()+
+  #cree una nueva forma de tmap para el ráster de inundación NRT con un estilo como "cat", que significa categórico.
+  tm_shape(raster_df, style="cat")+
+  #agregar el estilo de clasificación al ráster, incluidos colores, títulos, saltos de clase y etiquetas
+  tm_raster( palette = c(colores),
+  title = titulo, 
+  breaks = quiebramentos,
+  labels = etiquetas )+
+  #estilizar la trama
+  tm_layout(legend.outside = TRUE) +
+  tm_graticules(lines=FALSE)
+ 
+ ##ver la trama
+ tm_plot
+```
+
+Para observar una ubicación más de cerca, podemos crear un nuevo cuadro delimitador usando valores de latitud y longitud, recortar los datos y volver a trazarlos en un mapa. Primero, seleccione del mapa cuatro esquinas en grados que incluyan información Norte/Sur y Este/Oeste. Usamos estas coordenadas para crear una matriz de puntos que representan cuatro esquinas; Luego, las cuatro esquinas se utilizan para crear un cuadro delimitador. Las esquinas se colocan primero en el GCS WGS84 para que coincidan con nuestro ráster.
+
+```{r}
+# Definir las coordenadas NWES
+norte <- -2 #se utilizan valores negativos para el sur
+sur <- -7 #se utilizan valores negativos para el sur
+oeste <- -71 #se utilizan números negativos para Oeste
+este <- -76 #se utilizan números negativos para Oeste
+
+# Crea un cuadro delimitador
+bbox_subset <- st_bbox(c(xmin = oeste, ymin = sur, xmax = este, ymax = norte), crs = 4326)
+
+```
+
+Rehacemos el mismo proceso anterior para trazar los datos con un mapa base pero con un cuadro delimitador diferente:
+
+
+```{r}
+
+#generar un nuevo mapa base
+bm_m <- basemaps::basemap_stars(bbox_subset, map_service = "esri", map_type = "world_imagery")
+#combinar bandas RGB del mapa base
+bm_m <- stars::st_rgb(bm_m)
+#transformarse a CRS 4326
+bm_m <- sf::st_transform(bm_m, 4326)
+```
+```{r} 
+
+## modo tmap configurado en "trazar"
+tmap_mode("plot")
+
+## el modo tmap también se puede configurar en "ver"
+#tmap_mode("view")
+
+#crear un objeto que trace el mapa base y el ráster de inundación NRT
+#con la biblioteca tmap, llame a la función tm_shape() para el mapa base
+tm_plot <- tmap_options(max.raster = c(plot = 50000, view = 50000))+ 
+  tm_shape(bm_m, raster.downsample=TRUE)+ 
+  tm_raster()+ 
+  #cree una nueva forma de tmap para el ráster de inundación NRT con el estilo "gato", que significa categórico.
+  tm_shape(raster_df, style="cat", raster.downsample=TRUE)+ 
+  #agregar el estilo de clasificación al ráster 
+  tm_raster( palette = c(colores), title = titulo, breaks = quiebramentos, labels = etiquetas )+ 
+  #estilizar la trama
+  tm_layout(legend.outside = TRUE) + 
+  tm_graticules(lines=FALSE)
+
+#Ver la trama:
+tm_plot
+
+```
+
+
+¡Felicitaciones! Pudimos descargar y explorar los datos de inundaciones del NRT de la NASA para elegir un área de interés en Ecuador y visualizar los resultados. Ahora debería poder:
+
+- Navegar por el sitio web de datos de LANCE y determinar qué datos están disponibles.
+
+- Seleccionar un mosaico y una fecha para descargar los datos del NRT.
+
+- Crear una solicitud HTTP GET para descargar datos casi en tiempo real.
+
+- Trazar en un mapa y clasificar los datos ráster para determinar las áreas con inundaciones inusuales.
