@@ -1128,9 +1128,10 @@ Podemos combinar la URL de API anterior con el día_año proporcionado e imprimi
 url <- paste0(API_URL, dia)
 print(url)
 ```
+
 ## Cargando los datos
 
-**NASA Earthdata** requiere un nombre de usuario y un token de la NASA. Vaya aquí para aprender [Cómo generar un token de usuario] (https://wiki.earthdata.nasa.gov/display/EL/How+to+Generate+a+User+Token).
+**NASA Earthdata** requiere un nombre de usuario y un token de la NASA. Vaya aquí para aprender \[Cómo generar un token de usuario\] (https://wiki.earthdata.nasa.gov/display/EL/How+to+Generate+a+User+Token).
 
 Una vez que haya generado un token de usuario, podrá acceder a NASA Earthdata utilizando la función GET [@wilsjame]. Reemplace `USER_TOKEN` con el token que generó:
 
@@ -1177,7 +1178,6 @@ contenido_respuesta
 
 A partir de la respuesta del servidor, comprobaremos si la respuesta fue exitosa con `if (http_status(contenido_respuesta)$category == "Success")`. Si esta afirmación es verdadera, entonces el contenido se asignará a la variable `datos` en formato JSON, que luego se analiza en un marco de datos usando `data_parsed <- jsonlite::fromJSON(data)`. El marco de datos contiene `data_parsed$content`, una columna con contenido. Filtramos el contenido por código de mosaico usando el comando `content_items <- data_parsed$content[grepl(tile_code, data_parsed$content$name, ignore.case = TRUE),]` y agregamos los resultados a un marco de datos.
 
-
 ```{r}
 if (httr::http_status(contenido_respuesta)$category == "Success") {
   # Leer el contenido JSON en un marco de datos
@@ -1198,9 +1198,7 @@ contenido_respuesta <- contenido_respuesta[grepl(codigo_azulejo, contenido_respu
 contenido_respuesta
 ```
 
-
 Si solo hay 1 fila, seleccione la columna de cadena 'enlace de descargas':
-
 
 ```{r}
 
@@ -1212,11 +1210,10 @@ print(contenido_respuesta)
 
 Utilice la función `read_stars()` de la biblioteca R `stars` para leer el ráster geoTiff. El ráster se asigna a la variable `raster_df`. Esta es una capa derivada de la web que se encuentra en el Sistema de coordenadas geográficas (GCS) WGS84 - Sistema geodésico mundial 1984 EPSG:4326 (número EPSG 4326). Podemos asignar el Sistema de Referencia de Coordenadas (CRS) al objeto estrella:
 
-
 ```{r}
-#read the raster data from the download_link
+#leer er raster 
 raster_df <- stars::read_stars(contenido_respuesta)
-#Set a CRS for the stars object based on the data documentation
+#Poner el CRS basado en CRS 4326
 sf::st_crs(raster_df) <- sf::st_crs(4326)
 ```
 
@@ -1232,23 +1229,21 @@ plot(raster_df, downsample=30)
 
 ### Crear gráfico de inundación NRT con clasificación
 
-Consulte la [Guía del usuario del producto MODIS NRT Global Flood] (https://www.earthdata.nasa.gov/s3fs-public/2023-01/MCDWD_UserGuide_RevC.pdf) para obtener más información.
+Consulte la \[Guía del usuario del producto MODIS NRT Global Flood\] (https://www.earthdata.nasa.gov/s3fs-public/2023-01/MCDWD_UserGuide_RevC.pdf) para obtener más información.
 
 Los datos de inundaciones de NRT tienen 5 clasificaciones:
 
-
-| Codigo | Definicion               |
-|:------:|:-------------------------|
-|  0     | Sin agua                 |
-|  1     | Agua Superficial         |
-|  2     | Inundación recurrente[^2]|
-|  3     | Inundación (inusual)     |
-| 255    | Datos insuficientes      |
+| Codigo | Definicion                |
+|:------:|:--------------------------|
+|   0    | Sin agua                  |
+|   1    | Agua Superficial          |
+|   2    | Inundación recurrente[^2] |
+|   3    | Inundación (inusual)      |
+|  255   | Datos insuficientes       |
 
 [^2]: El valor 2 (inundación recurrente) no se completa en la versión beta.
 
 Para ver los datos de esta clasificación, necesitaremos crear una leyenda clasificada; sin embargo, los datos de NRT Flood se almacenan en números decimales (conocidos como punto flotante). Los saltos de clase nos permiten agrupar datos en función de los valores. Cree saltos de clasificación que divida los datos utilizando los saltos que se enumeran a continuación y sus colores y etiquetas correspondientes. Finalmente, agregue un título para el gráfico que incluya el año y el día, "dia" y "codigo_azulejo":
-
 
 ```{r}
 #quiebramentos para la categorización del diagrama de tabla
@@ -1269,7 +1264,7 @@ La función `basemap_stars()` del paquete `stars` nos permite acceder a las capa
 #definir mapa base usando el ráster como cuadro delimitador
 bm_m <- basemaps::basemap_stars(raster_df, map_service = "esri", map_type = "world_imagery")
 #La función `st_rgb` nos permite convertir el elemento de estrellas RGB en una sola imagen
-bm_m <- sf::st_rgb(bm_m)
+bm_m <- stars::st_rgb(bm_m)
 #transformar el CRS del mapa base para que coincida con el ráster de inundación
 bm_m <- sf::st_transform(bm_m, 4326)
 ```
@@ -1303,7 +1298,7 @@ tm_plot <-  tmap::tmap_options(max.raster = c(plot = 50000, view = 50000))+
   tmap::tm_graticules(lines=FALSE)
  
  ##ver la trama
- tmap::tm_plot
+ tm_plot
 ```
 
 Para observar una ubicación más de cerca, podemos crear un nuevo cuadro delimitador usando valores de latitud y longitud, recortar los datos y volver a trazarlos en un mapa. Primero, seleccione del mapa cuatro esquinas en grados que incluyan información Norte/Sur y Este/Oeste. Usamos estas coordenadas para crear una matriz de puntos que representan cuatro esquinas; Luego, las cuatro esquinas se utilizan para crear un cuadro delimitador. Las esquinas se colocan primero en el GCS WGS84 para que coincidan con nuestro ráster.
@@ -1322,7 +1317,6 @@ bbox_subset <- sf::st_bbox(c(xmin = oeste, ymin = sur, xmax = este, ymax = norte
 
 Rehacemos el mismo proceso anterior para trazar los datos con un mapa base pero con un cuadro delimitador diferente:
 
-
 ```{r}
 
 #generar un nuevo mapa base
@@ -1332,13 +1326,14 @@ bm_m <- stars::st_rgb(bm_m)
 #transformarse a CRS 4326
 bm_m <- sf::st_transform(bm_m, 4326)
 ```
-```{r} 
+
+```{r}
 
 ## modo tmap configurado en "trazar"
 tmap::tmap_mode("plot")
 
 ## el modo tmap también se puede configurar en "ver"
-tmap::#tmap_mode("view")
+#tmap::tmap_mode("view")
 
 #crear un objeto que trace el mapa base y el ráster de inundación NRT
 #con la biblioteca tmap, llame a la función tm_shape() para el mapa base
@@ -1354,17 +1349,16 @@ tm_plot <- tmap::tmap_options(max.raster = c(plot = 50000, view = 50000))+
   tmap::tm_graticules(lines=FALSE)
 
 #Ver la trama:
-tmap::tm_plot
+tm_plot
 
 ```
 
-
 ¡Felicitaciones! Pudimos descargar y explorar los datos de inundaciones del NRT de la NASA para elegir un área de interés en Ecuador y visualizar los resultados. Ahora debería poder:
 
-- Navegar por el sitio web de datos de LANCE y determinar qué datos están disponibles.
+-   Navegar por el sitio web de datos de LANCE y determinar qué datos están disponibles.
 
-- Seleccionar un mosaico y una fecha para descargar los datos del NRT.
+-   Seleccionar un mosaico y una fecha para descargar los datos del NRT.
 
-- Crear una solicitud HTTP GET para descargar datos casi en tiempo real.
+-   Crear una solicitud HTTP GET para descargar datos casi en tiempo real.
 
-- Trazar en un mapa y clasificar los datos ráster para determinar las áreas con inundaciones inusuales.
+-   Trazar en un mapa y clasificar los datos ráster para determinar las áreas con inundaciones inusuales.
