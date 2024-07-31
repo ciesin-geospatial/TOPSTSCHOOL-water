@@ -124,7 +124,7 @@ We can manage this large file by selecting a single variable; in this case "defi
 ```{python}
 # subset data variables with double brackets
 wsim_gldas = wsim_gldas[["deficit", "crs"]]
-
+# check info
 wsim_gldas
 ```
 
@@ -137,11 +137,10 @@ Specifying a temporal range of interest will make the file size smaller and even
 ```{python}
 # generate a list of dates for subsetting
 import pandas as pd
-wsim_gldas
-
+# create the list of dates
 keeps = pd.date_range(start="2000-12-01", end="2014-12-01", freq = "YS-DEC")
 keeps
-# subset the wsim_gldas object w/ keep
+# subset the wsim_gldas object w/ keeps
 wsim_gldas = wsim_gldas.sel(time= keeps)
 
 # check the time dimension
@@ -151,6 +150,7 @@ wsim_gldas.time
 Now we're down to a single attribute ("deficit") with 15 time steps. We can take a look with a quick plot.
 
 ```{python warning=FALSE}
+# plot it
 p = wsim_gldas.deficit.plot(x="lon", y="lat", col="time", col_wrap = 3, cmap = "Reds_r", aspect = 1.5, size = 1.5, cbar_kwargs =  {'orientation':'vertical', 'shrink':0.5, 'label':'Deficit Anomaly'})
 ```
 
@@ -200,14 +200,14 @@ Built by the community and [William & Mary geoLab](https://github.com/wmgeolab),
 For this example we adjust the bolded components of the sample URL address below to specify the country we want using the ISO3 Character Country Code for the United States (**USA**) and the desired Administrative Level of State (**ADM1**).
 
 ```{python}
-# make the request to geoboundarie's website for the USA boundaries
 import requests
 import geopandas as gp
 
+# make the request to geoboundarie's website for the USA boundaries
 usa = requests.get("https://www.geoboundaries.org/api/current/gbOpen/USA/ADM1/")
 ```
 
-In the line of code above, we used `requests.get` to obtain metadata from the URL. We assign the result to a new variable called "usa". Next we will examine the `content`.
+In the line of code above, we used `requests.get` to obtain metadata from the URL. We assign the result to a new variable called "usa". Next we will examine the content.
 
 ```{python}
 # parse the content into a readable format
@@ -232,9 +232,7 @@ We first create a list of the geographies we wish to remove and assign them to a
 ```{python}
 # create a list of territories we don't want in our CONUSA boundary
 drops = ["Alaska", "Hawaii", "American Samoa", "Puerto Rico", "Commonwealth of the Northern Mariana Islands", "Guam", "United States Virgin Islands"]
-
 # select all the states and territories not in the above list
-# in R the "!" signifies NOT or the OPPOSITE
 usa = usa[~usa.shapeName.isin(drops)]
 # check the visuals
 usa.boundary.plot()
@@ -260,7 +258,6 @@ It is estimated that the drought cost farmers and ranchers about \$8 billion in 
 :::
 
 ```{python}
-# load riocarray
 import rioxarray as rio
 # specify the CRS for rasterio
 wsim_gldas = wsim_gldas.rio.write_crs("epsg: 4326")
@@ -271,6 +268,7 @@ wsim_gldas_texas = wsim_gldas.rio.clip(texas.geometry.values)
 Finally, we visualize the last time-step in the WSIM-GLDAS dataset (15/December, 2014) and render it with an overlay of the Texas boundary to perform a visual check of our processing.
 
 ```{python warning = FALSE}
+# check the visuals
 wsim_gldas_texas.deficit.plot(x="lon", y="lat", col="time", col_wrap = 3, cmap = "Reds_r", aspect = 0.8, size =2.25, cbar_kwargs =  {'orientation':'horizontal', 'shrink':0.6, 'label':'Deficit Anomaly'})
 ```
 
@@ -281,10 +279,8 @@ Multidimensional (deficit, time, latitude, longitude) raster files can be saved 
 ```{python eval = FALSE}
 # the grid_mapping attribute will kick an error when we try to write to disk so we have to delete it first
 del wsim_gldas_texas['deficit'].attrs['grid_mapping']
-
 # write the processed wsim-gldas file to disk as a netcdf
 wsim_gldas_texas.to_netcdf("wsim_gldas_tex.nc")
-
 # write the Texas boundary to disk
 texas.to_file('texas.geojson')
 ```
@@ -352,6 +348,7 @@ Other basic descriptive analyses are useful to verify and understand your data. 
 The basic data properties reviewed in the previous step are useful for exploratory data analysis, but we should perform further inspection. We can start our visual exploration of annual drought in the CONUSA by creating a map illustrating the deficit return period for each of the years in the WSIM-GLDAS object.
 
 ```{python warning = FALSE, message = FALSE}
+# check visuals
 wsim_gldas.deficit.plot(x="lon", y="lat", col="time", col_wrap = 3, cmap = "Reds_r", aspect = 1, size =2, vmin = -60, vmax = 0, cbar_kwargs =  {'orientation':'horizontal', 'shrink':0.6, 'label':'Deficit Anomaly'})
 ```
 
@@ -399,10 +396,13 @@ wsim_gldas_1mo
 Once again, we'll subset the time dimension for our period of interest. However, this time we want every month for 2014 so we can take a closer look at the California drought.
 
 ```{python}
+# list of dates to keep
 keeps = pd.date_range(start="2014-01-01", end="2014-12-01", freq = "MS")
-
+# select just the dates
 wsim_gldas_1mo = wsim_gldas_1mo.sel(time= keeps)
+# keep just the deficit and crs info
 wsim_gldas_1mo = wsim_gldas_1mo[["deficit", "crs"]]
+# check the info
 wsim_gldas_1mo
 ```
 
@@ -411,15 +411,16 @@ Now we have 12 rasters with monthly data for 2014. Let's zoom in on California a
 ```{python warning = FALSE, message = FALSE}
 # isolate only the california border
 california = usa[usa["shapeName"].str.contains("California")]
-# subset wsim-gldas to the extent of the california boundary
+# set the crs for rasterio; it doesn't pick it up from xarray on its own
 wsim_gldas_1mo = wsim_gldas_1mo.rio.write_crs("epsg: 4326")
+# clip/crop the wsim raster
 wsim_gldas_california = wsim_gldas_1mo.rio.clip(california.geometry.values)
 
 import calendar
 
 # give the time dimension pretty labels
 wsim_gldas_california = wsim_gldas_california.assign_coords(time=list(calendar.month_name[1:]))
-
+# plot it
 wsim_gldas_california.deficit.plot(x="lon", y="lat", col="time", col_wrap = 3, cmap = "Reds_r", aspect = 0.9, size =2.5, vmin = -60, vmax = 0, cbar_kwargs =  {'orientation':'vertical', 'shrink':0.6, 'label':'Deficit Anomaly'})
 ```
 
@@ -438,7 +439,7 @@ For this section, we begin by calculating the mean deficit return period within 
 usa_counties = requests.get("https://www.geoboundaries.org/api/current/gbOpen/USA/ADM2/")
 # parse the request for the data
 usa_counties = usa_counties.json()
-usa_counties['gjDownloadURL']
+# download with the provided link
 usa_counties = gp.read_file(usa_counties['gjDownloadURL'])
 # intersect california state level with usa counties
 california_counties = usa_counties.overlay(california, how='intersection')
@@ -462,18 +463,18 @@ Now let's carry out the extraction and check the January output.
 
 ```{python warning=FALSE, message=FALSE}
 from exactextract import exact_extract
-
+# run the extraction
 cc_summaries = exact_extract(wsim_gldas_california.deficit, california_counties, "mean", output = 'pandas', include_cols = "shapeName_1", include_geom = True)
-
+# make the column names pretty
 col_names = [["county"], calendar.month_name[1:], ["geometry"]]
 col_names = sum(col_names, [])
-
 cc_summaries.columns = col_names
 ```
 
 **exactextractr** returns summary statistics in the same order of the input boundary file, therefore we can join the California county names to the **exactextract** summary statistics output for visualization. We can take a quick look at the first 10 counties to see their mean deficit return period for January-June.
 
 ```{python}
+# check first 10 rows
 cc_summaries[0:10]
 ```
 
@@ -494,27 +495,30 @@ Now that we've inspected the raw data we can make a choropleth out of the mean d
 
 ```{python warning=FALSE, message=FALSE}
 import matplotlib.pyplot as plt
-
+# setup the panels for the figures
 fig, axs = plt.subplots(4,3, 
                         figsize=(8,8),
                         facecolor='w', 
                         sharex=True, 
                         sharey=True)
-
+# convert list of 2D axis positions into a 1d list of number 1-12
 axs = axs.ravel()
+# make the layout pretty/tight
 fig.tight_layout()
+# title and size
 fig.suptitle('Monthly California Deficits for 2014', fontsize=14, y=1.05)
-
+# loop through columns to make the plot for each month
 for i, month in enumerate(cc_summaries.columns[1:13]):
     axs[i].set_title(month, fontsize= 11)
     cc_summaries.plot(column=month, ax=axs[i], cmap = "Reds_r")
     california_counties.plot(ax=axs[i], edgecolor='black', color='none', linewidth=0.25)
-
+# loop through again and turn off the axes for a cleaner map
 for ax in axs:
     ax.axis('off')
 
 # assume it's the first (and only) mappable
 patch_col = axs[0].collections[0]
+# setup the colorbar/legend
 cb = fig.colorbar(patch_col, ax=axs, shrink=0.5, label = "Deficit Anomaly")
 ```
 
@@ -545,7 +549,7 @@ The Gridded Population of the World Version 4 is available in multiple target me
 Load in the population count layer.
 
 ```{python}
-# read in GPW with terra
+# read in GPW with rioxarray
 file_path = "data/gpw_v4_population_count_rev11_2015_15_min.tif" 
 # Open with rioxarray
 gpw = rio.open_rasterio(file_path)
@@ -554,18 +558,14 @@ gpw = rio.open_rasterio(file_path)
 For this example we'll classify the WSIM-GLDAS deficit return period raster layer into eight categories. Binning the data will make it easier to manage the output and interpret the results.
 
 ```{python}
-# set the class breaks row-wise (from, to, new label)
-# e.g. first row states: "all return periods from 0 to 5 will now be labeled 0
 import numpy
-
+# list the class breaks
 wsim_bins = [numpy.inf, 0, -3, -5, -10, -20, -40, -60, numpy.NINF]
-
+# classify the wsim layer with the established breaks
 wsim_class = xr.apply_ufunc(
     numpy.digitize,
     wsim_gldas_1mo,
     wsim_bins)
-
-# wsim_class.where(wsim_class['deficit'] == -9223372036854775808) = 7
 ```
 
 In our previous example, we used **exactextractr**'s built-in `'mean'` function, but we can also pass custom functions to **exactextractr** that will carry out several operations at once as well. The following code could be combined into a single function passed to **exactextractr**, but it is presented here as multiple functions in order to follow along more easily. You can read more about **exactextractr** arguments on the package [help guide](https://github.com/isciences/exactextract/blob/master/python/README.md). The key arguments to be aware of are the calls to:
@@ -587,14 +587,18 @@ cal_wsim_gpw = exact_extract(
 This returns a `DataFrame` with a row for every county in the `california_counties` layer we passed to `exact_extract`.
 
 ```{python}
+# check the first few rows
 cal_wsim_gpw[:6]
 ```
 
 In addition to a row for each WSIM-GLDAS raster cell covered by the california boundary, there are 36 columns we need to decipher. Each column is prefixed by `band_<number>_`. The 12 bands represent the 12 months of WSIM-GLDAS data we passed. The 12 bands are replicated 3 times; resulting in 36 columns. Each set of 12 bands represent the 3 operations we requested summaries for (`['coverage', 'values', 'weights']`). To complicate things further, each cell contains a list with multiple values. This is because most counties overlap multiple WSIM-GLDAS cells. We need to disaggregate the nested lists of values before proceeding further.
 
 ```{python}
+# create list of columns to unnest
 explode_cols = list(cal_wsim_gpw.columns)
+# unnest the column value lists
 cal_wsim_gpw = cal_wsim_gpw.explode(explode_cols)
+# check the results
 cal_wsim_gpw[:10]
 ```
 
@@ -607,34 +611,44 @@ There's not a simple way to perform pattern based melts in **pandas** so we'll p
 First the `coverage`.
 
 ```{python}
+# select just columns with word "coverage" in them
 cal_wsim_cov = cal_wsim_gpw.filter(like = 'coverage', axis = 1)
+# rename them for months
 cal_wsim_cov.columns = calendar.month_name[1:]
+# melt them and create new columns; month and coverage
 cal_wsim_cov= pd.melt(cal_wsim_cov, var_name='month', value_name= 'coverage')
 ```
 
 Now `values`.
 
 ```{python}
+# select just columns with word "coverage" in them
 cal_wsim_val = cal_wsim_gpw.filter(like = 'values', axis = 1)
+# rename them for months
 cal_wsim_val.columns = calendar.month_name[1:]
+# melt them and create new columns; month and wsim class
 cal_wsim_val= pd.melt(cal_wsim_val, var_name='month', value_name = 'wsim_class')
 ```
 
 Lastly `density`.
 
 ```{python}
+# select just columns with word "coverage" in them
 cal_wsim_weight = cal_wsim_gpw.filter(like = 'weight', axis = 1)
+# rename them for months
 cal_wsim_weight.columns = calendar.month_name[1:]
+# melt them and create new columns; month and population count
 cal_wsim_weight= pd.melt(cal_wsim_weight, var_name='month', value_name = 'cell_pop_count')
 ```
 
-Put them back together.
+Put them back together. The rows are all in the same order as the counties and months so we don't have to perform a proper merge; just bind them back together.
 
 ```{python}
+# concactenate them back together
 cal_summaries = pd.concat(
-    [cal_wsim_cov, 
-    cal_wsim_val["wsim_class"],
-    cal_wsim_weight["cell_pop_count"]], 
+    [cal_wsim_cov, #the coverages with the county and month names
+    cal_wsim_val["wsim_class"], # just the class values
+    cal_wsim_weight["cell_pop_count"]], # just the pop count values
     axis=1)
 
 cal_summaries
@@ -657,13 +671,14 @@ We can estimate the number of people represented by each county/month/WSIM cell 
 cal_summaries["wsim_class_pop"] = cal_summaries["coverage"]*cal_summaries["cell_pop_count"]
 # round so we don't have fractions of people
 cal_summaries.wsim_class_pop = cal_summaries['wsim_class_pop'].astype('float').round(0)
-
+# check the values
 cal_summaries[:5]
 ```
 
 To estimate the number of people in each unique month/WSIM class combination we'll summarize by group with the `pd.groupby()` function.
 
 ```{python}
+# group by month and class and reset the index
 cal_summaries = cal_summaries.groupby(['month', 'wsim_class'])['wsim_class_pop'].sum().reset_index()
 ```
 
@@ -681,14 +696,17 @@ cal_summaries
 Before plotting we'll make the month labels more legible for plotting, convert the WSIM-GLDAS return period classes into a categorical class, convert the month into an ordered categorical class, and set the WSIM-GLDAS class palette.
 
 ```{python}
+# wsim class as category
 cal_summaries['wsim_class'] = cal_summaries['wsim_class'].astype('category')
+# give ordinal pretty labels
 cal_summaries['wsim_class'] = cal_summaries['wsim_class'].cat.rename_categories(
     {0: "0", 1: "-3", 2: "-5", 3: "-10", 4: "-20", 5: "-40", 6: "-50", 7: "-60"})
-
+# same for the months
 cal_summaries["month"] = pd.Categorical(cal_summaries["month"],
                              categories=["January", "February", "March", "April", "May", "June", "July",
                                          "August", "September", "October", "November", "December"],
                              ordered=True)
+# set our desired palette
 leg_colors=['#9B0039',
     # -50 to -40
     '#D44135',
@@ -710,7 +728,7 @@ Although **matplotlib** is the more "python" way to plot, we are going to use th
 
 ```{python warning=FALSE}
 from plotnine import *
-
+# plot it
 (ggplot(cal_summaries, aes('month', 'wsim_class_frac', fill = 'wsim_class', group='wsim_class'))+ 
 scale_fill_manual(values = leg_colors[::-1])+
 geom_bar(stat='identity', position='stack')+ 
