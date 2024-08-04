@@ -18,7 +18,7 @@ editor: visual
 
 ### Software/Tools
 
-[R (Programing Language)](https://cran.rstudio.com/)
+[R (Programming Language)](https://cran.rstudio.com/)
 
 [R-Studio (Integrated Development Environment \[Abbrv: IDE\])](https://posit.co/download/rstudio-desktop/)
 
@@ -42,15 +42,15 @@ editor: visual
 
 ## Glossary
 
-**Aerosols :** are small particles suspended in the atmosphere. They are often not or barely visible to the human eye, yet their impact on climate, weather, health, and ecology are significant. ([Source](https://earth.gsfc.nasa.gov/climate/data/deep-blue/aerosols#:~:text=Sea%20spray%2C%20mineral%20dust%2C%20smoke,from%20volcanoes%20or%20industrial%20emissions))
+**Aerosols :** are small particles suspended in the atmosphere. They are often not or barely visible to the human eye, yet their impact on climate, weather, health, and ecology are significant. ([Chen et al., 2015](https://earth.gsfc.nasa.gov/climate/data/deep-blue/aerosols#:~:text=Sea%20spray%2C%20mineral%20dust%2C%20smoke,from%20volcanoes%20or%20industrial%20emissions))
 
-**Aggregate :** the formation or combination of units or items ([Source](https://www.edglossary.org/aggregate-data/))
+**Aggregate :** the formation or combination of units or items ([Great Schools Partnership, 2013](https://www.edglossary.org/aggregate-data/))
 
-**Application Programming Interface (API) :** is a set of defined rules that explain how computers or applications communicate with one another. APIs sit between an application and the web server and act as an intermediary layer that processes data transfer between systems. ([Source](https://www.earthdata.nasa.gov/technology/application-programming-interface-api))
+**Application Programming Interface (API) :** is a set of defined rules that explain how computers or applications communicate with one another. APIs sit between an application and the web server and act as an intermediary layer that processes data transfer between systems. ([Earth Science Data Systems, 2015](https://www.earthdata.nasa.gov/technology/application-programming-interface-api))
 
-**Atmosphere :** Earth’s atmosphere is a thin veil of gas surrounding the planet. Although it only extends a few hundred kilometers above the surface, it contains a mixture of gases, such as oxygen and nitrogen, that are critical for life to exist. It distributes incoming solar radiation, protecting life from harmful ultraviolet radiation but also driving atmospheric circulation and weather. ([Source1](https://www.earthdata.nasa.gov/topics/atmosphere), [Source2](https://scied.ucar.edu/learning-zone/atmosphere/what-is-atmosphere))
+**Atmosphere :** Earth’s atmosphere is a thin veil of gas surrounding the planet. Although it only extends a few hundred kilometers above the surface, it contains a mixture of gases, such as oxygen and nitrogen, that are critical for life to exist. It distributes incoming solar radiation, protecting life from harmful ultraviolet radiation but also driving atmospheric circulation and weather. ([Earth Science Data Systems, 2015](https://www.earthdata.nasa.gov/topics/atmosphere), [Education, 2021](https://scied.ucar.edu/learning-zone/atmosphere/what-is-atmosphere))
 
-**Atmospheric Circulation :** is the movement of air around the planet. It explains how thermal energy and storm systems move over the Earth's surface. ([Source1](https://www.noaa.gov/jetstream/global/global-atmospheric-circulations#:~:text=Global%20Atmospheric%20Circulation%20is%20the,global%20circulation%20would%20be%20simple), [Source2](https://ugc.berkeley.edu/background-content/atmospheric-circulation/#heading1))
+**Atmospheric Circulation :** is the movement of air around the planet. It explains how thermal energy and storm systems move over the Earth's surface. ([U.S. Department of Commerce, 2023](https://www.noaa.gov/jetstream/global/global-atmospheric-circulations#:~:text=Global%20Atmospheric%20Circulation%20is%20the,global%20circulation%20would%20be%20simple), [University of California Museum of Paleontology, 2022](https://ugc.berkeley.edu/background-content/atmospheric-circulation/#heading1))
 
 **Attribute :** a specific characteristic that describes data objects within a dataset. ([Source](https://www.geeksforgeeks.org/attributes-and-its-types-in-data-analytics/))
 
@@ -89,3 +89,17 @@ editor: visual
 **Web Coverage Service (WCS) :** offers multi-dimensional coverage data for access over the Internet. WCS Core specifies a core set of requirements that a WCS implementation must fulfill. ([Source](https://www.ogc.org/standard/wcs/#:~:text=A%20Web%20Coverage%20Service%20WCS,a%20WCS%20implementation%20must%20fulfill))
 
 **Web Map Service :** The OpenGIS® Web Map Service Interface Standard (WMS) provides a simple HTTP interface for requesting geo-registered map images from one or more distributed geospatial databases. ([Source](https://www.ogc.org/standard/wms/))
+
+### **References**
+
+Chen, A., Sidel, A., & Howl, B. (2015). Aerosols and their importance. Goddard Earth Sciences Division Projects. https://earth.gsfc.nasa.gov/climate/data/deep-blue/aerosols#:\~:text=Sea%20spray%2C%20mineral%20dust%2C%20smoke,from%20volcanoes%20or%20industrial%20emissions
+
+Great Schools Partnership (2013). The Glossary of Education Reform. https://www.edglossary.org/professional-development/
+
+Earth Science Data Systems, N. (2015). Application programming interface (API). https://www.earthdata.nasa.gov/technology/application-programming-interface-api
+
+Education, U. C. for S. (2021). Center for Science Education. What Is the Atmosphere? \| Center for Science Education. https://scied.ucar.edu/learning-zone/atmosphere/what-is-atmosphere
+
+U.S. Department of Commerce. (2023, October 3). Global Atmospheric Circulations. National Oceanic and Atmospheric Administration. https://www.noaa.gov/jetstream/global/global-atmospheric-circulations#:\~:text=Global%20Atmospheric%20Circulation%20is%20the,global%20circulation%20would%20be%20simple
+
+University of California Museum of Paleontology. (2022, March 8). *Atmospheric circulation*. Understanding Global Change. https://ugc.berkeley.edu/background-content/atmospheric-circulation/#heading1
