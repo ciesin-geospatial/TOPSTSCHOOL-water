@@ -1,36 +1,153 @@
 ---
 title: "WSIM-GLDAS: Prerequisites and Glossary"
-author: 
+authors: 
   - "Dhruvil Prajapati"
+  - "America Munoz"
 date: "July 3, 2024"
 format: html
 editor: visual
 ---
 
-### Prerequisites
+## Prerequisites
 
--   R (Programing Language)
+### Accounts
 
-    -   Link: <https://cran.rstudio.com/>
+[NASA EarthData account](https://urs.earthdata.nasa.gov/users/new)
 
--   R-Studio (Integrated Development Environment \[Abbrv: IDE\])
+The Earth Science Data Systems (ESDS) program offers comprehensive and unrestricted access to NASA's extensive collection of Earth science data, facilitating a deeper understanding of our planet.
 
-    -   Link: <https://posit.co/download/rstudio-desktop/>
+[Open Researcher and Contributor ID (ORCID)](https://orcid.org/)
 
--   NASA EarthData account
+ORDCID is a standard and service designed to help researchers establish and maintain their scholarly identities while also facilitating connections among researchers.
 
-    -   Link: <https://urs.earthdata.nasa.gov/users/new>
+### Software/Tools
+
+[R (Programming Language)](https://cran.rstudio.com/)
+
+An open-source programming language used for statistical computing and data visualization, widely employed in data mining, bioinformatics, and data analysis.
+
+[RStudio (Integrated Development Environment \[Abbrv: IDE\])](https://posit.co/download/rstudio-desktop/)
+
+RStudio IDE is an integrated development environment for R, offering a comprehensive suite of tools designed to enhance productivity with the R programming language.
+
+### RStudio Layout
+
+![RStudio Layout](docs/images/R-Studio%20Layout.png)[Toolbar Above Source Panel]{style="color:orange;"}: Provides quick access to a variety of useful functions and features for managing your R scripts and projects.
+
+-   To import a dataset select ***File and Import Dataset***, proceed with selecting the location of your file.
+
+[Source Panel]{style="color:blue"}: Top-left, where you write and edit your scripts.
+
+[Console Panel]{style="color:red"}: Bottom-left, where you can directly enter and execute R commands.
+
+[Environment/History Panel]{style="color:green"}: Top-right, showing variables, data, and command history.
+
+-   To import a dataset select ***Import Dataset*** and select the location of your file.
+
+[Files/Plots/Packages/Help/Viewer Panel]{style="color:purple"}: Bottom-right, for file navigation, viewing plots, managing packages, and accessing help.
 
 ## Glossary
 
-**Application Programming Interface (API) :** is a set of defined rules that explain how computers or applications communicate with one another. APIs sit between an application and the web server and act as an intermediary layer that processes data transfer between systems. ([Source](https://www.earthdata.nasa.gov/technology/application-programming-interface-api))
+**Aerosols :** are small particles suspended in the atmosphere. They are often not or barely visible to the human eye, yet their impact on climate, weather, health, and ecology are significant. ([Chen et al., 2015](https://earth.gsfc.nasa.gov/climate/data/deep-blue/aerosols#:~:text=Sea%20spray%2C%20mineral%20dust%2C%20smoke,from%20volcanoes%20or%20industrial%20emissions))
 
-**Choropleths map :** A choropleth map is a thematic map that is used to represent statistical data using the color mapping symbology technique. \[Also called: Thematic map\] ([Source](https://www.oxfordreference.com/display/10.1093/acref/9780199599868.001.0001/acref-9780199599868-e-207))
+**Aggregate :** the formation or combination of units or items ([Great Schools Partnership, 2013](https://www.edglossary.org/aggregate-data/))
 
-**Drought :** is an extended period of unusually dry weather when there is not enough rain. ([Source1](https://education.nationalgeographic.org/resource/understanding-droughts/) , [Source2](https://www.ncei.noaa.gov/access/monitoring/dyk/drought-definition))
+**Application Programming Interface (API) :** is a set of defined rules that explain how computers or applications communicate with one another. APIs sit between an application and the web server and act as an intermediary layer that processes data transfer between systems. ([Earth Science Data Systems API, 2015](https://www.earthdata.nasa.gov/technology/application-programming-interface-api))
 
-**Data Frame(s) :**
+**Atmosphere :** Earth’s atmosphere is a thin veil of gas surrounding the planet. Although it only extends a few hundred kilometers above the surface, it contains a mixture of gases, such as oxygen and nitrogen, that are critical for life to exist. It distributes incoming solar radiation, protecting life from harmful ultraviolet radiation but also driving atmospheric circulation and weather. ([Earth Science Data Systems, 2015](https://www.earthdata.nasa.gov/topics/atmosphere)), ([Education, 2021](https://scied.ucar.edu/learning-zone/atmosphere/what-is-atmosphere))
 
-**Precipitation :** is any liquid or frozen water that forms in the atmosphere and falls to Earth. It is one of the three main steps of the global water cycle. ([Source](https://education.nationalgeographic.org/resource/precipitation/))
+**Atmospheric Circulation :** is the movement of air around the planet. It explains how thermal energy and storm systems move over the Earth's surface. ([U.S. Department of Commerce, 2023](https://www.noaa.gov/jetstream/global/global-atmospheric-circulations#:~:text=Global%20Atmospheric%20Circulation%20is%20the,global%20circulation%20would%20be%20simple), [University of California Museum of Paleontology, 2022](https://ugc.berkeley.edu/background-content/atmospheric-circulation/#heading1))
 
-**Raster (Dataset) :** a raster consists of a matrix of cells (or pixels) organized into rows and columns (or a grid) where each cell contains a value representing information, such as temperature. ([Source](https://desktop.arcgis.com/en/arcmap/latest/manage-data/raster-and-images/what-is-raster-data.htm#GUID-CBED6408-2437-4554-A3E1-F0FDC4AFBD63))
+**Attribute :** a specific characteristic that describes data objects within a dataset. ([Dinu, V., & Nadkarni, P. (2007)](https://doi.org/10.1016/j.ijmedinf.2006.09.023))
+
+**Boards of Cooperative Educational Services (BOCES) :** BOCES is a public organization created to provide shared educational programs and services to school districts.([BOCES of New York State, 2023](https://www.boces.org/about-boces/))
+
+**Choropleths map :** a choropleth map is a thematic map that is used to represent statistical data using the color mapping symbology technique. \[Also called: Thematic map\] ([Rogers et al., 2013](https://www.oxfordreference.com/display/10.1093/acref/9780199599868.001.0001/acref-9780199599868-e-207))
+
+**Contaminant :** a contaminant is any physical, chemical, biological or radiological substance or matter that affects the composition, taste, or safety in water. ([Environmental Protection Agency, CCL 2024](https://www.epa.gov/ccl/definition-contaminant))
+
+**Drought :** is an extended period of unusually dry weather when there is not enough rain. ([Rodgers, 2024](https://education.nationalgeographic.org/resource/understanding-droughts/)), ([NCEI, 2024](https://www.ncei.noaa.gov/access/monitoring/dyk/drought-definition))
+
+**Earth Observing System Data and Information System (EOSDIS) :** is the core operational system that provides end-to-end capabilities for managing NASA Earth science data from various sources—satellites, aircraft, field measurements, and various other programs. ([Earth Science Data Systems EOSDIS, 2019)](https://www.earthdata.nasa.gov/eosdis), [(NASA Earth Science Data Systems Program highlights, 2020](https://www.earthdata.nasa.gov/esds/esds-highlights/nasa-earth-science-data-systems-program-highlights-2019))
+
+**Evaporation :** is the process that changes liquid water to gaseous water (water vapor). Water moves from the Earth’s surface to the atmosphere via evaporation. ([Water Science School, 2019](https://www.usgs.gov/special-topics/water-science-school/science/evaporation-and-water-cycle))
+
+**Hectare :** is 10,000 square meters (10,000 m2).
+
+**Land, Atmosphere Near real-time Capability for EOS (LANCE) :** LANCE is a component of the NASA Earth Observing System Data and Information System (EOSDIS). LANCE products are used for monitoring fires, dust storms, hurricanes, air quality, sea ice, vegetation and crop development and volcanic eruptions. ([NASA Earth Science Data Systems LANCE, 2015](https://www.earthdata.nasa.gov/learn/find-data/near-real-time/lance))
+
+**Lead :** Lead is a naturally occurring metal that can be found throughout the earth, particularly in the Earth's crust. It can toxic to humans and animals and lead to health effects. ([Environmental Protection Agency, Learn about Lead 2024](https://www.epa.gov/lead/learn-about-lead))
+
+**Moderate Resolution Imaging Spectroradiometer (MODIS) :** is an instrument that collects remotely sensed data used by scientists for monitoring, modeling, and assessing the effects of natural processes and human actions on the Earth’s surface. ([USGS, LP DAAC, 2008](https://pubs.usgs.gov/fs/2008/3061/pdf/fs2008-3061.pdf) , [(Frazier & Maccherone, 2000)](https://modis.gsfc.nasa.gov/about/))
+
+**Near Real-Time (NRT) :** data are made available more rapidly than routine processing allows, generally with 1-3 hours after a satellite observation. ([NASA Earth Science Systems, NRT 2015](https://www.earthdata.nasa.gov/learn/find-data/near-real-time/near-real-time-versus-standard-products))
+
+**Outlier :** a data point that differs significantly from other observations in the dataset. ([NIST, 2012](https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm))
+
+**Precipitation :** is any liquid or frozen water that forms in the atmosphere and falls to Earth. It is one of the three main steps of the global water cycle. ([National Geographic Society, Precipitation 2023](https://education.nationalgeographic.org/resource/precipitation/))
+
+**Raster (Dataset) :** a raster consists of a matrix of cells (or pixels) organized into rows and columns (or a grid) where each cell contains a value representing information, such as temperature. ([ArcMap, What is raster data?](https://desktop.arcgis.com/en/arcmap/latest/manage-data/raster-and-images/what-is-raster-data.htm#GUID-CBED6408-2437-4554-A3E1-F0FDC4AFBD63))
+
+**Spatial Data :** refers to geographic information about the earth's features and boundaries that identifies a location or area. ([The University of Manchester, Spatial Data: Methods\@manchester: The University of Manchester](https://www.methods.manchester.ac.uk/themes/spatial-and-gis-methods/spatial-data/))
+
+**US Census Bureau :** produces data about the American people including the country's population size and growth as well as changing characteristics of communities and the economy. ([Bureau, About the Bureau 2023](https://www.census.gov/en.html))
+
+**Web Coverage Service (WCS) :** offers multi-dimensional coverage data for access over the Internet. WCS Core specifies a core set of requirements that a WCS implementation must fulfill. ([Open Geospatial Consortium, Web coverage service 2023](https://www.ogc.org/standard/wcs/#:~:text=A%20Web%20Coverage%20Service%20WCS,a%20WCS%20implementation%20must%20fulfill))
+
+**Web Map Service :** The OpenGIS® Web Map Service Interface Standard (WMS) provides a simple HTTP interface for requesting geo-registered map images from one or more distributed geospatial databases. ([Open Geospatial Consortium, 2023](https://www.ogc.org/standard/wms/))
+
+### References
+
+ABOUT BOCES. BOCES of New York State. (2023, March 2). https://www.boces.org/about-boces/
+
+ArcMap. What is raster data?-ArcMap \| Documentation. (n.d.). https://desktop.arcgis.com/en/arcmap/latest/manage-data/raster-and-images/what-is-raster-data.htm#GUID-CBED6408-2437-4554-A3E1-F0FDC4AFBD63
+
+Bureau, U. C. (2023, August 2). About the Bureau. Census.gov. https://www.census.gov/about.html
+
+Chen, A., Sidel, A., & Howl, B. (2015). Aerosols and their importance. Goddard Earth Sciences Division Projects. https://earth.gsfc.nasa.gov/climate/data/deep-blue/aerosols#:\~:text=Sea%20spray%2C%20mineral%20dust%2C%20smoke,from%20volcanoes%20or%20industrial%20emissions
+
+Dinu, V., & Nadkarni, P. (2007). Guidelines for the effective use of entity-attribute-value modeling for biomedical databases. International journal of medical informatics, 76(11-12), 769–779. https://doi.org/10.1016/j.ijmedinf.2006.09.023
+
+Education, U. C. for S. (2021). Center for Science Education. What Is the Atmosphere? \| Center for Science Education. https://scied.ucar.edu/learning-zone/atmosphere/what-is-atmosphere
+
+Environmental Protection Agency. (2024, July). Contaminant Candidate List (CCL) and Regulatory Determination EPA. https://www.epa.gov/ccl/definition-contaminant
+
+Environmental Protection Agency. (2024a, February 7). Learn about Lead. EPA. https://www.epa.gov/lead/learn-about-lead
+
+Frazier, S., & Maccherone, B. (2000). Moderate Resolution Imaging Spectroradiometer (MODIS). NASA. https://modis.gsfc.nasa.gov/about/
+
+Great Schools Partnership (2013). The Glossary of Education Reform. https://www.edglossary.org/professional-development/
+
+National Centers for Environmental Information (NCEI). Definition of Drought. (2024, August). https://www.ncei.noaa.gov/access/monitoring/dyk/drought-definition
+
+NASA. (n.d.). Moderate resolution imaging Spectroradiometer (MODIS ... Land Processes Distributed Active Archive Center (LP DAAC). https://pubs.usgs.gov/fs/2008/3061/pdf/fs2008-3061.pdf
+
+NASA Earth Science Data Systems. (2015). Application programming interface (API). NASA . https://www.earthdata.nasa.gov/technology/application-programming-interface-api
+
+NASA Earth Science Data Systems. (2015, May 1). Land, atmosphere near real-time capability for Earth observations (Lance). NASA Earth Science Data Systems. https://www.earthdata.nasa.gov/learn/find-data/near-real-time/lance
+
+NASA Earth Science Data Systems. (2015a, April 27). Near real-time versus standard products. https://www.earthdata.nasa.gov/learn/find-data/near-real-time/near-real-time-versus-standard-products
+
+NASA Earth Science Data Systems. (2019, May 3). Earth Observing System Data and Information System (EOSDIS). https://www.earthdata.nasa.gov/eosdis
+
+NASA Earth Science Data Systems. (2020, February 6). NASA Earth Science Data Systems Program highlights 2019. NASA. https://www.earthdata.nasa.gov/esds/esds-highlights/nasa-earth-science-data-systems-program-highlights-2019
+
+NASA Earth Science Data Systems. (n.d.). Near real-time data (NRT). NASA Earth Science Data Systems. https://www.earthdata.nasa.gov/technology/near-real-time-data-nrt#:\~:text=Near%20real-time%20NRT,hours%20after%20a%20satellite%20observation
+
+National Geographic Society. (2023, October 19). Precipitation. National Geographic. https://education.nationalgeographic.org/resource/precipitation/
+
+Rodgers, A. I. (2024, April). Understanding droughts. Education. https://education.nationalgeographic.org/resource/understanding-droughts/
+
+Rogers, A., Castree, N., & Kitchin, R. (2013). Choropleth map. Oxford Reference. https://www.oxfordreference.com/display/10.1093/acref/9780199599868.001.0001/acref-9780199599868-e-207
+
+Spatial Data: Methods\@manchester: The University of Manchester. methods\@manchester. (n.d.). https://www.methods.manchester.ac.uk/themes/spatial-and-gis-methods/spatial-data/
+
+University of California Museum of Paleontology. (2022, March 8). Atmospheric circulation. Understanding Global Change. https://ugc.berkeley.edu/background-content/atmospheric-circulation/#heading1
+
+U.S. Department of Commerce. (2023, October 3). Global Atmospheric Circulations. National Oceanic and Atmospheric Administration. https://www.noaa.gov/jetstream/global/global-atmospheric-circulations#:\~:text=Global%20Atmospheric%20Circulation%20is%20the,global%20circulation%20would%20be%20simple
+
+Water Science School. (2019, June 8). Evaporation and the water cycle. Evaporation and the Water Cycle \| U.S. Geological Survey. https://www.usgs.gov/special-topics/water-science-school/science/evaporation-and-water-cycle
+
+Web coverage service. Open Geospatial Consortium. (2023, April 3). https://www.ogc.org/standard/wcs/#:\~:text=A%20Web%20Coverage%20Service%20WCS,a%20WCS%20implementation%20must%20fulfill
+
+Web map service. Open Geospatial Consortium. (2023b, February 21). https://www.ogc.org/standard/wms/
