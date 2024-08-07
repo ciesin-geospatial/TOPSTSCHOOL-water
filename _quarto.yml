@@ -24,6 +24,8 @@ website:
         url: https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/index.html
       - text: "Lessons"
         menu:
+          - text: "Module Prerequisites and GLossary"
+            url: https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m0-prereq-glossary.html
           - text: "WSIM-GLDAS: Acquisition, Exploration, and Integration"
             url: https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m101-wsim-gldas.html
           - text: "MODIS NRT Flood Data Acquisition Exploration"

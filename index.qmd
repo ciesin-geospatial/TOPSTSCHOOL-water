@@ -17,21 +17,15 @@ The SCHOOL Modules do not intend to teach all-encompassing earth science lessons
 
 Module 1: Water datasets and use cases cover:
 
-::: {.callout-tip style="color: #5a7a2b;"}
-## Coding Review
 
-This lesson uses the [R](https://www.r-project.org/about.html) language and environment. R is a popular language used for statistical computing and graphics.
-:::
-
-
+-   **Module 1 Water Prerequisites and Glossary:** General information on the prerequisites needed to maximize the usefulness of this lesson, as well as a glossary of terms than can be found throughout the module.
+    -   [Lesson 0: Prerequisites and Glossary](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m0-prereq-glossary.html)
 -   **Water Security Indicator Model - Global Land Data Assimilation System (WSIM-GLDAS):** Exploring water anomalies using a historical dataset.
     -   [Lesson 1: Acquiring, Pre-Processing, and Advanced Visualizations with WSIM-GLDAS [R Version]](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m101-wsim-gldas.html); [[Python Version]](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m101-wsim-gldas-python.html)
 -   **Moderate Resolution Imaging Spectroradiometer (MODIS) Near Real-Time (NRT) flood data:** Lessons in data acquisition and analysis of recent water anomalies.
     -   [Lesson 2: Acquiring and Exploring MODIS NRT Flood Data](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m102-lance-modis-nrt-global-flood.html)
 -   **Lead in New York State Schools:** Exploring lead contamination data and US Census data and lessons in data cleaning and visualization, with a discerning eye towards data limitations.
     -   [Lesson 3: NYC School Water Quality: Exposure to Lead Data](https://topstschool.shinyapps.io/nyc-lead/)
--   **Conclusion:** Module wrap-up and knowledge check.
-    -   [Lesson 4: Conclusion - Coming soon...]()
 
 <div style="text-align: right;">
 [Start Lesson 1](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m101-wsim-gldas.html){.btn .btn-primary .btn role="button"}

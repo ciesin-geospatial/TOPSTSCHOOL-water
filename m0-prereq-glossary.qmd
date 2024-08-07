@@ -1,5 +1,5 @@
 ---
-title: "WSIM-GLDAS: Prerequisites and Glossary"
+title: "Module 1 Water: Prerequisites and Glossary"
 authors: 
   - "Dhruvil Prajapati"
   - "America Munoz"
