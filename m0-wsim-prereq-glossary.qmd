@@ -6,7 +6,7 @@ authors:
 date: "July 3, 2024"
 format: html
 editor: visual
-bibliography: "references/glossary-references.bib" 
+bibliography: "/Users/americamunoz/Desktop/copy/glossary-references copy.bib"
 ---
 
 ## Prerequisites
