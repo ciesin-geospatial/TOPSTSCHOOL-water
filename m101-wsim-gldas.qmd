@@ -34,13 +34,13 @@ Precipitation deficits, or periods of below-average rainfall, can lead to drough
 
 [^1]: Photo Credit, NASA/JPL.
 
-::: column-margin
+:::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Data Science Review
 
 A [raster](https://docs.qgis.org/2.18/en/docs/gentle_gis_introduction/raster_data.html) dataset is a type of geographic data in digital image format with numerical information stored in each pixel. (Rasters are often called grids because of their regularly-shaped matrix data structure.) Rasters can store many types of information and can have dimensions that include latitude, longitude, and time. NetCDF is one format for raster data; others include Geotiff, ASCII, and many more. Several raster formats like NetCDF can store multiple raster layers, or a "raster stack," which can be useful for storing and analyzing a series of rasters.
 :::
-:::
+::::
 
 The **Water Security (WSIM-GLDAS) Monthly Grids, v1 (1948 - 2014)** The Water Security (WSIM-GLDAS) Monthly Grids, v1 (1948 - 2014) dataset "identifies and characterizes surpluses and deficits of freshwater, and the parameters determining these anomalies, at monthly intervals over the period January 1948 to December 2014" [@isciences2022]. The dataset can be downloaded from the [NASA SEDAC](https://sedac.ciesin.columbia.edu/data/set/water-wsim-gldas-v1) website. Downloads of the WSIM-GLDAS data are organized by a combination of thematic variables (composite surplus/deficit, temperature, PETmE, runoff, soil moisture, precipitation) and integration periods (a temporal aggregation) (1, 3, 6, 12 months). Each variable-integration combination consists of a NetCDF raster (.nc) file ( with a time dimension that contains a raster layer for each of the 804 months between January, 1948 and December, 2014. Some variables also contain multiple attributes each with their own time series. Hence, this is a large file that can take a lot of time to download and may cause computer memory issues on certain systems. This is considered BIG data.
 
@@ -84,7 +84,7 @@ We'll start by downloading the file directly from the SEDAC website. The [datase
 
 ## Reading the Data
 
-::: column-margin
+:::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Data Science Review
 
@@ -94,7 +94,7 @@ The `stars` and `terra` packages are designed to work with large and complex ras
 
 Make sure they are installed before you begin working with the code in this document. If you'd like to learn more about the functions used in this lesson you can use the help guides on their package websites.
 :::
-:::
+::::
 
 Once you have downloaded the WSIM-GLDAS file to your local computer, install and load the R packages required for this exercise. You can do this by defining the list of packages and assigning them to the new variable called "packages_to_check". Next we loop (iterate) through each of the packages in the list to see if they are already installed. If they are we continue to the next item, and if they aren't then we go ahead and install them.
 
@@ -184,13 +184,13 @@ Although we have now reduced the data to a single attribute with a restricted ti
 
 ## Spatial Selection
 
-::: column-margin
+:::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Data Science Review
 
 [GeoJSON](https://geojson.org/) is a format for encoding, storing and sharing geographic data as vector data, i.e., points, lines and polygons. It's commonly used in web mapping applications to represent geographic features and their associated attributes. GeoJSON files are easily readable by both humans and computers, making them a popular choice for sharing geographic data over the internet.
 :::
-:::
+::::
 
 We can spatially crop the raster stack with a few different methods. Options include using a bounding box in which the outer geographic coordinates are specified (xmin, ymin, xmax, ymax), using another raster object, or using a vector boundary like a shapefile or GeoJSON to crop the extent of the original raster data.
 
@@ -200,13 +200,13 @@ To use the geoBoundaries' API, the root URL below is modified to include a 3 let
 
 *https://www.geoboundaries.org/api/current/gbOpen/**ISO3**/**LEVEL**/*
 
-::: column-margin
+:::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Data Science Review
 
 Built by the community and [William & Mary geoLab](https://github.com/wmgeolab), the geoBoundaries Global Database of Political Administrative Boundaries is an online, open license (CC BY 4.0 / ODbL) resource for administrative boundaries (i.e., state, county, province) for every country in the world. Since 2016, this project has tracked approximately 1 million spatial units within more than 200 entities; including all UN member states.
 :::
-:::
+::::
 
 For this example we adjust the bolded components of the sample URL address below to specify the country we want using the ISO3 Character Country Code for the United States (**USA**) and the desired Administrative Level of State (**ADM1**).
 
@@ -311,13 +311,13 @@ The size of the pre-processed dataset is 1.6 MB compared to the original dataset
 
 Now that we've introduced the basics of manipulating and visualizing WSIM-GLDAS, we can explore more advanced visualizations and data integrations. Let's clear the workspace and start over again with the same **WSIM-GLDAS Composite Anomaly Twelve-Month Return Period** we used earlier. We will spatially subset the data to cover only the Continental United States (CONUSA) which will help to minimize our memory footprint. We can further reduce our memory overhead by reading in just the variable we want to analyze. In this instance we can read in just the `deficit` attribute from the WSIM-GLDAS Composite Anomaly Twelve-Month Return Period file, rather than reading the entire NetCDF with all of its attributes.
 
-::: column-margin
+:::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Coding Review
 
 Random Access Memory (RAM) is where data and programs that are currently in use are stored temporarily. It allows the computer to quickly access data, making everything you do on the computer faster and more efficient. Unlike the hard drive, which stores data permanently, RAM loses all its data when the computer is turned off. RAM is like a computer's short-term memory, helping it to handle multiple tasks at once.
 :::
-:::
+::::
 
 For this exercise, we can quickly walk through similar pre-processing steps we performed earlier in this lesson and then move on to more advanced visualizations and integrations. Read the original 12-month integration data back in, filter with a list of dates for each December spanning 2000-2014, and then crop the raster data with the boundary of the contiguous United States using our geoBoundaries object.
 
@@ -339,7 +339,7 @@ wsim_gldas<-wsim_gldas[usa]
 wsim_gldas <-
   wsim_gldas |> stars::st_set_dimensions("time", values = as.character(seq(2000,2014)))
 ```
-
+ 
 Double check the object information.
 
 ```{r}
@@ -537,13 +537,13 @@ This series of maps shows a startling picture. California faced massive water de
 
 ## Monthly Histograms
 
-::: column-margin
+:::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Data Science Review
 
 A [data frame](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/data.frame) is a data structure used for storing tabular data. It organizes data in rows and columns. Each column can have a different type of data (numeric, character, factor, etc.), and rows represent individual observations or cases. Data frames provide a convenient way to work with structured data, making them essential for data analysis and statistics projects.
 :::
-:::
+::::
 
 We can explore the data further by creating a frequency distribution (also called a histogram) of the deficit anomalies for any given spatial extent; here we are still looking at the deficit anomalies in California. We start by extracting the data from the raster time series and then created a data frame of values that are easier to manipulate into a histogram. [R data frames](https://www.w3schools.com/r/r_data_frames.asp) are data displayed in table format, which can be plotted on graphs or charts.
 
@@ -604,7 +604,7 @@ plot(sf::st_geometry(cali_counties))
 
 The output of that intersection looks as expected. As noted above, in general a visual and/or tabular check on your data layers is always a good idea. If you expect 50 counties in a given state, you should see 50 counties resulting from your intersection of your two layers, etc. You may want to be on the look out for too few (such as an island area that may be in one layer but not the other) or too many counties (such as those that intersect with a neighboring state).
 
-::: column-margin
+:::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Coding Review
 
@@ -612,7 +612,7 @@ The [exactextractr](https://github.com/isciences/exactextractr) [@Baston2023] R 
 
 The [terra](https://cran.r-project.org/web/packages/terra/index.html) R package processes raster geospatial data, offering functionalities such as data manipulation, spatial analysis, modeling, and visualization, with a focus on efficiency and scalability.
 :::
-:::
+::::
 
 We will perform our zonal statistics using the `exactextractr` package [@Baston2023]. It is the fastest, most accurate, and most flexible zonal statistics tool for the R programming language, but it currently has no default methods for the `stars` package, so we'll switch to `terra` for this portion of the lesson. You'll notice that there are slight differences in syntax to perform the same operations in **terra** as **stars.**
 
@@ -813,13 +813,13 @@ head(pop_by_rp)
 
 We will need to perform a few more processing steps to prepare this `data.frame` for a time series visualization integrating all of the data. We will use the `melt` function to transform the data from wide format to long format in order to produce a visualization in `ggplot2`. Specifically, we need to use `melt` to make the 12 month columns (`2014-01-01` to `2014-12-01`) into 2 new columns: 1) specifying the WSIM-GLDAS deficit return period value and 2) the month it came from.
 
-::: column-margin
+:::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Coding Review
 
 Converting data from wide to long or long to wide formats is a key component to data processing, however, it can be confusing. To read more about melting/pivoting longer (wide to long) and casting/pivoting wider (long to wide) check out the *data.table* vignette [Efficient reshaping using data.tables](https://cran.r-project.org/web/packages/data.table/vignettes/datatable-reshape.html) and the *dplyr* [`pivot_longer`](https://tidyr.tidyverse.org/reference/pivot_longer.html) and [`pivot_wider`](https://tidyr.tidyverse.org/reference/pivot_wider.html) reference pages.
 :::
-:::
+::::
 
 ```{r}
 # convert the dataset from wide to long (melt)
@@ -866,13 +866,13 @@ head(pop_by_rp)
 
 Before plotting we'll make the month labels more legible for plotting, convert the WSIM-GLDAS return period class into a factor, and set the WSIM-GLDAS class palette.
 
-::: column-margin
+:::: column-margin
 ::: {.callout-tip style="color: #5a7a2b;"}
 ## Coding Review
 
 Factors are the most common way to handle categorical data in R. Although converting your categorical variables into factors is not not always the best choice, in many instances (especially plotting with *ggplot2*) the benefits will out way any annoyances. To learn more about factors and R check out Hadley Wickham's chapter on factors in [**R for Data Science 2nd Edition**.](https://r4ds.hadley.nz/factors.html)
 :::
-:::
+::::
 
 ```{r warning=FALSE}
 # ggplot is easier with factors
