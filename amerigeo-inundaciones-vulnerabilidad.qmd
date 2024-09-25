@@ -1,5 +1,5 @@
 ---
-title: "WSIM-GLDAS: Acquisition, Exploration, and Integration"
+title: "WSIM-GLDAS: Adquisición, Exploración e Integración"
 author: 
   - "Josh Brinks"
   - "Elaine Famutimi"
