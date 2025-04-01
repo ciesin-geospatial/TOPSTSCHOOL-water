@@ -15,9 +15,7 @@ The first SCHOOL module on the theme of “Water and related-resources” explor
 
 The SCHOOL Modules do not intend to teach all-encompassing earth science lessons nor provide learners with total coding expertise. Instead, the SCHOOL Project aims to provide users with the skills to adapt the SCHOOL lessons to the users’ own Open Science workflow. To learn more about Open Science, explore [NASA's TOPS Open Science 101 Curriculum](https://openscience101.org/). To explore other themes in the SCHOOL project, visit our [Modules Page](https://ciesin-geospatial.github.io/TOPSTSCHOOL/modules.html).
 
-Module 1: Water datasets and use cases cover:
-
-
+## Introduction to Water and Module Lessons
 -   **Module 1 Water Prerequisites and Glossary:** General information on the prerequisites needed to maximize the usefulness of this lesson, as well as a glossary of terms than can be found throughout the module.
     -   [Lesson 0: Prerequisites and Glossary](https://ciesin-geospatial.github.io/TOPSTSCHOOL-water/m0-prereq-glossary.html)
 -   **Water Security Indicator Model - Global Land Data Assimilation System (WSIM-GLDAS):** Exploring water anomalies using a historical dataset.
