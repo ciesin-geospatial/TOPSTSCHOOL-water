@@ -1,7 +1,7 @@
 ---
 title: "MODIS NRT Global Flood Product"
 author: 
-  - "SCHOOL Development and Open Science Teams"
+  - "Juan F. Martinez"
 date: "April 14, 2024"
 bibliography: "references/nrt-flood-references.bib"
 ---
